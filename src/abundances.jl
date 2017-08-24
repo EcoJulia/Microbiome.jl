@@ -1,23 +1,22 @@
 struct AbundanceTable{T<:Real} <: AbstractArray{T,2}
-    t::AbstractArray{T,2}
-    samples::AbstractVector
-    rows::AbstractVector
-
-    function AbundanceTable(t, samples, rows)
-        length(samples) == size(t, 2) || error("# of samples ≠ # of columns")
-        length(rows) == size(t, 1) || error("# of row names ≠ # of rows")
-        new(t, samples, rows)
-    end
+    t::Array{T,2}
+    samples::Vector{S} where S
+    rows::Vector{R} where R
 end
 
-AbundanceTable(df::DataFrame) = AbundanceTable(
-                                    Matrix(df[:,2:end]),
-                                    names(df[2:end]),
-                                    vector(df[1])
-                                    )
+function AbundanceTable(df::DataFrame)
+    return AbundanceTable(
+            Matrix(df[:,2:end]),
+            names(df[2:end]),
+            Vector(df[1]))
+end
+function AbundanceTable(table::Array{T,2}) where T<:Real
+    return AbundanceTable(
+             table,
+             Vector{Int64}(1:size(table,2)),
+             Vector{Int64}(1:size(table,1)))
+end
 
-getindex(t::AbundanceTable) = getindex(AbundanceTable.t)
-setindex(t::AbundanceTable) = setindex(AbundanceTable.t)
-length(t::AbundanceTable) = length(AbundanceTable.t)
+@forward_func AbundanceTable.t Base.getindex, Base.setindex, Base.length, Base.size
 
 ## For use with abundance tables generated from Humman2
