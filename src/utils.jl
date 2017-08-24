@@ -6,5 +6,3 @@ macro forward_func(ex, fs)
         for f in fs]...);
     nothing)
 end
-
-microbe() = "test"

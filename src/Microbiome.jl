@@ -11,6 +11,12 @@ import MultivariateStats: classical_mds
 import Clustering: Hclust, hclust
 import Base: getindex, setindex, length
 
+export DistanceMatrix,
+    AbundanceTable,
+
+    getdm
+
+
 include("utils.jl")
 include("abundances.jl")
 include("similarity.jl")
