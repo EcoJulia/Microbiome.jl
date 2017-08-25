@@ -1,5 +1,12 @@
 module Microbiome
 
+export
+    DistanceMatrix,
+    AbundanceTable,
+
+    # functions
+    getdm
+
 using BioSequences
 using RecipesBase
 using Distances
@@ -7,9 +14,9 @@ using DataFrames
 using IterTools
 using Distances
 
-import MultivariateStats: classical_mds
-import Clustering: Hclust, hclust
-import Base: getindex, setindex, length
+using MultivariateStats: classical_mds
+using Clustering: Hclust, hclust
+using Base: getindex, setindex, length
 
 export DistanceMatrix,
     AbundanceTable,
