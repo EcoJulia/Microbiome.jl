@@ -18,11 +18,6 @@ using MultivariateStats: classical_mds
 using Clustering: Hclust, hclust
 using Base: getindex, setindex, length
 
-export DistanceMatrix,
-    AbundanceTable,
-
-    getdm
-
 
 include("utils.jl")
 include("abundances.jl")
