@@ -10,11 +10,9 @@ export
 using BioSequences
 using RecipesBase
 using Distances
-using DataFrames
 using IterTools
-using Distances
 
-using MultivariateStats: classical_mds
+using DataFrames: DataFrame
 using Clustering: Hclust, hclust
 using Base: getindex, setindex, length
 

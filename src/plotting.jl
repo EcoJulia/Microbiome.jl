@@ -3,7 +3,7 @@
     M = classical_mds(dist, 2)
     labels -> string.(dm.labels)
     seriestype := :scatter
-    M[:,1:end], M[:,2:end]
+    M[1,:], M[2,:]
 end
 
 
@@ -48,4 +48,36 @@ function treepositions(hc::Hclust, useheight::Bool)
         positions[i] = (xpos, ypos)
     end
     return positions
+end
+
+@recipe function annotations(annotations::Array{T,1}, colormap::Dict{T, Symbol}) where T
+    xs = Int[]
+    for i in 1:length(annotations)
+        append!(xs, [0,0,1,1,0] .+ (i-1))
+    end
+    xs = reshape(xs, 5, length(samples))
+    ys = hcat([[0,1,1,0,0] for _ in samples]...)
+
+    fillcolor := reshape([colormap[a] for a in annotations], 1, length(annotations))
+    seriestype := path
+    legend := false
+
+    color -> :black
+
+    xs, ys
+end
+
+function plotannotations(ann::Array{T,1}, colormap::Dict{T, Symbol}) where T
+    xs = Int[]
+    for i in 1:length(ann)
+        append!(xs, [0,0,1,1,0] .+ (i-1))
+    end
+    xs = reshape(xs, 5, length(ann))
+    ys = hcat([[0,1,1,0,0] for _ in ann]...)
+
+    fc = reshape([colormap[a] for a in ann], 1,length(ann))
+
+    plot(xs, ys, seriestype=:path, fill=(0,1),fillcolor=fc,
+        legend=:false, color=:black, ticks=false, framestyle=false,
+        top_margin=-5mm, bottom_margin=-1mm)
 end

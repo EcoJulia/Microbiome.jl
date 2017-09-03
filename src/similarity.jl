@@ -21,3 +21,11 @@ function getdm(df::DataFrame, distance::PreMetric)
             Vector(names(df[2:end])),
             distance)
 end
+
+function getrowdm(df::DataFrame, distance::PreMetric)
+    m = Matrix(df[2:end])'
+    return DistanceMatrix(
+            pairwise(distance, m),
+            Vector(df[:,1]),
+            distance)
+end
