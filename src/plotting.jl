@@ -6,6 +6,28 @@
     M[1,:], M[2,:]
 end
 
+@recipe function plot(pc::PCoA)
+    xticks := false
+    yticks := false
+    xlabel -> "PCo1 ($(round(pc.variance_explained[1], 1) * 100)%)"
+    ylabel -> "PCo2 ($(round(pc.variance_explained[2], 1) * 100)%)"
+    seriestype := :scatter
+    principalcoord(pc, 1), principalcoord(pc,2)
+end
+
+# function plot_test(abund::AbundanceTable, dm::DistanceMatrix, annotations::Array{T,1}) where T <: AbstractArray
+#     clust = hclust(dm.dm, :single)
+#
+#
+#
+#     plot(
+#         plot(hclustplot(clust, false), seriestype=:path, color=:black, xlims=(0.5,length(c)+1), framestyle=:none, legend=false, margin=-5px),
+#         plotannotations(diags, colors),
+#         heatmap(abund.t[:,clust.order], color=:PuBu, legend=false, ticks=false, margin=-5px), layout=grid(3,1,heights=[0.1,0.05,.85]))
+# end
+
+
+
 
 function hclustplot(hc::Hclust, useheight::Bool)
     o = indexmap(hc.order)
