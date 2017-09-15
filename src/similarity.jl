@@ -51,7 +51,7 @@ function pcoa(D::DistanceMatrix; correct_neg::Bool=false)
             A[h,i] = -1/2 * D[h,i]^2 - c
         end
         Δ1 = getdelta(A)
-        f = sortedeig(Δ)
+        f = sortedeig(Δ1)
     end
 
     vals = f.values[1:n-1]

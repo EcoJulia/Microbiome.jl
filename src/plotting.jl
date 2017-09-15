@@ -1,9 +1,5 @@
 @recipe function plot(dm::DistanceMatrix)
-    dist = dm.dm
-    M = classical_mds(dist, 2)
-    labels -> string.(dm.labels)
-    seriestype := :scatter
-    M[1,:], M[2,:]
+    plot(pcoa(dm.dm; correct_neg=true))
 end
 
 @recipe function plot(pc::PCoA)
@@ -29,7 +25,7 @@ end
 
 
 
-function hclustplot(hc::Hclust, useheight::Bool)
+function hclustplot(hc::Hclust, useheight::Bool=false)
     o = indexmap(hc.order)
     n = [x for x in 1:length(o)]
 
@@ -51,7 +47,7 @@ function hclustplot(hc::Hclust, useheight::Bool)
     return (reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1)))
 end
 
-function treepositions(hc::Hclust, useheight::Bool)
+function treepositions(hc::Hclust, useheight::Bool=false)
     order = indexmap(hc.order)
     positions = Dict{}()
     for (k,v) in order
