@@ -1,5 +1,5 @@
 @recipe function plot(dm::DistanceMatrix)
-    plot(pcoa(dm.dm; correct_neg=true))
+    plot(pcoa(dm.dm))
 end
 
 @recipe function plot(pc::PCoA)
@@ -85,15 +85,15 @@ end
     xs, ys
 end
 
-function plotannotations(ann::Array{T,1}, colormap::Dict{T, Symbol}) where T
+function plotannotations(colors::Array{T,1}) where T
     xs = Int[]
-    for i in 1:length(ann)
+    for i in 1:length(colors)
         append!(xs, [0,0,1,1,0] .+ (i-1))
     end
-    xs = reshape(xs, 5, length(ann))
-    ys = hcat([[0,1,1,0,0] for _ in ann]...)
+    xs = reshape(xs, 5, length(colors))
+    ys = hcat([[0,1,1,0,0] for _ in colors]...)
 
-    fc = reshape([colormap[a] for a in ann], 1,length(ann))
+    fc = reshape(colors, 1,length(colors))
 
     plot(xs, ys, seriestype=:path, fill=(0,1),fillcolor=fc,
         legend=:false, color=:black, ticks=false, framestyle=false,

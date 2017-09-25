@@ -21,5 +21,7 @@ include("utils.jl")
 include("abundances.jl")
 include("similarity.jl")
 include("plotting.jl")
+include("biobakery_utils.jl")
+
 
 end  # module Microbiome
