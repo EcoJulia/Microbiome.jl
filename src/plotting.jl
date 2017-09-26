@@ -99,3 +99,26 @@ function plotannotations(colors::Array{T,1}) where T
         legend=:false, color=:black, ticks=false, framestyle=false,
         top_margin=-5mm, bottom_margin=-1mm)
 end
+
+
+function plotabund(abun::AbundanceTable, n::Int=10; sorton::Symbol=:top)
+    in(sorton, [:top, :hclust, abun.samples...]) || error("invalid sorton option")
+    2 < n < 12 || error("n must be between 2 and 12")
+
+
+    topabund = filterabund(abun, n)
+
+    c = [color("#a6cee3") color("#1f78b4") color("#b2df8a") color("#33a02c") color("#fb9a99") color("#e31a1c") color("#fdbf6f") color("#ff7f00") color("#cab2d6") color("#6a3d9a") color("#ffff99") color("#b15928")]
+
+    rows = replace.(string(topabund.rows), r"^[\w+\|]+?s__", "")
+    foo = topabund.t'
+
+    if sorton == :top
+        srt = sortperm([topabund[n+1,i] for i in 1:size(topabund, 2)], rev=true)
+    elseif sorton == :hclust
+        DM = getdm(topabund, BrayCurtis())
+        hc = hclust(DM, :single)
+        srt = hc.order
+    end
+    groupedbar(foo[srt,:], bar_position=:stack, color=c, label=Vector(topabund.samples), legend=false)
+end
