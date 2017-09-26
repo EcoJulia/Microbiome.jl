@@ -19,8 +19,6 @@ end
 
 @forward_func AbundanceTable.t Base.getindex, Base.setindex, Base.length, Base.size
 
-cat(1, [3],[1,2])
-
 function filterabund(abun::AbundanceTable, n::Int=10)
     2 < n < 12 || error("n must be between 2 and 12")
 
