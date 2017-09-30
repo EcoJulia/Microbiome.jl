@@ -3,9 +3,13 @@ module Microbiome
 export
     DistanceMatrix,
     AbundanceTable,
+    PCoA,
 
     # functions
-    getdm
+    getdm,
+    filterabund,
+    getrowdm,
+    pcoa
 
 using BioSequences
 using RecipesBase
