@@ -120,5 +120,5 @@ function plotabund(abun::AbundanceTable, n::Int=10; sorton::Symbol=:top)
         hc = hclust(DM, :single)
         srt = hc.order
     end
-    groupedbar(foo[srt,:], bar_position=:stack, color=c, label=Vector(topabund.samples), legend=false)
+    return (groupedbar(foo[srt,:], bar_position=:stack, color=c, label=Vector(topabund.samples), legend=false), srt)
 end

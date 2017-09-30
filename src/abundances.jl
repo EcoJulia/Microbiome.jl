@@ -30,7 +30,7 @@ function filterabund(abun::AbundanceTable, n::Int=10)
     newabun = abun[srt[1:10], :]
     remainder = [100-sum(newabun[:, i]) for i in 1:size(newabun, 2)]'
     newabun = vcat(newabun, remainder)
-    newrows = cat(1, abun.rows[srt[1:10]], ["total"])
+    newrows = cat(1, abun.rows[srt[1:10]], ["other"])
 
     return AbundanceTable(newabun, newrows, abun.samples)
 end
