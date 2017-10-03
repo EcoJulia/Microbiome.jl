@@ -1,2 +1,5 @@
 .DS_Store
 scratch*
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
