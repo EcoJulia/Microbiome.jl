@@ -29,6 +29,10 @@ using Base.Test
 end
 
 @testset "Distances" begin
+    abund = AbundanceTable(
+        rand(100, 10), ["sample_$x" for x in 1:10],
+        ["feature_$x" for x in 1:100])
+
     dm = getdm(abund, BrayCurtis())
     p = pcoa(dm, correct_neg=true)
 
