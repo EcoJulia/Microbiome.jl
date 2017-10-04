@@ -1,6 +1,6 @@
 struct DistanceMatrix{T<:Real} <: AbstractArray{T,2}
     dm::AbstractArray{T,2}
-    labels::AbstractVector{S} where S
+    samples::AbstractVector{S} where S
     distance::PreMetric
 end
 
@@ -15,6 +15,12 @@ DistanceMatrix(dm::AbstractArray, distance) = DistanceMatrix(dm, Vector(1:size(d
 @forward_func DistanceMatrix.dm Base.getindex, Base.setindex, Base.length, Base.size
 @forward_func PCoA.eigenvectors Base.getindex, Base.setindex, Base.length, Base.size
 
+function getdm(t::AbundanceTable, distance::PreMetric)
+    return DistanceMatrix(
+            pairwise(distance, t),
+            t.samples,
+            distance)
+end
 
 function getdm(t::AbstractArray, distance::PreMetric)
     return DistanceMatrix(

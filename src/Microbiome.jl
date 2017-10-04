@@ -9,12 +9,15 @@ export
     getdm,
     filterabund,
     getrowdm,
-    pcoa
+    pcoa,
+    eigenvalue,
+    principalcoord
 
 using BioSequences
 using RecipesBase
 using Distances
 using IterTools
+using Colors
 
 using DataFrames: DataFrame
 using Clustering: Hclust, hclust

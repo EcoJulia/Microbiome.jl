@@ -2,4 +2,5 @@ using Microbiome
 using Base.Test
 
 # write your own tests here
-@test 1 == 2
+@testset "Similarity" begin
+    @test 
