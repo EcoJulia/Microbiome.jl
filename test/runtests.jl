@@ -33,7 +33,7 @@ end
         rand(100, 10), ["sample_$x" for x in 1:10],
         ["feature_$x" for x in 1:100])
 
-    dm = getdm(abund, BrayCurtis())
+    dm = getdm(abund, Jaccard())
     p = pcoa(dm, correct_neg=true)
 
     @test size(dm) == (10, 10)
