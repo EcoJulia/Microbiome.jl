@@ -12,10 +12,11 @@ using Base.Test
 
     @test typeof(relab_fract) <: AbundanceTable
     @test typeof(relab_perc) <: AbundanceTable
-    @test typeof(relab_filt) <: AbundanceTable
+    @test typeof(filt) <: AbundanceTable
 
     @test size(abund) == (100, 10)
     @test size(relab_fract) == (100, 10)
+    @test size(relab_perc) == (100, 10)
     @test size(filt) == (6, 10)
 
     for i in 1:10
