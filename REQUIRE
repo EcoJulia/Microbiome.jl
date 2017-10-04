@@ -2,6 +2,5 @@ julia 0.6-
 RecipesBase
 Distances
 DataFrames
-IterTools
-MultivariateStats
 Clustering
+Colors

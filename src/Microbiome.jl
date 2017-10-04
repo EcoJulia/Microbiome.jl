@@ -13,7 +13,6 @@ export
     eigenvalue,
     principalcoord
 
-using BioSequences
 using RecipesBase
 using Distances
 using IterTools
