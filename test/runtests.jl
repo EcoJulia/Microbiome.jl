@@ -1,6 +1,39 @@
 using Microbiome
 using Base.Test
 
-# write your own tests here
-@testset "Similarity" begin
-    @test 
+@testset "Abundances" begin
+    abund = AbundanceTable(
+        rand(100, 10), ["sample_$x" for x in 1:10],
+        ["feature_$x" for x in 1:100])
+
+    relab_fract = relativeabundance(abund)
+    relab_perc = relativeabundance(abund, kind=:percent)
+    filt = filterabund(relab_fract, 5)
+
+    @test typeof(relab_fract) <: AbundanceTable
+    @test typeof(relab_perc) <: AbundanceTable
+    @test typeof(relab_filt) <: AbundanceTable
+
+    @test size(abund) == (100, 10)
+    @test size(relab_fract) == (100, 10)
+    @test size(filt) == (6, 10)
+
+    for i in 1:10
+        @test sum(relab_fract[:, i]) ≈ 1
+        @test sum(relab_perc[:, i]) ≈ 100
+        @test sum(filt[:, i]) ≈ 1
+    end
+
+    @test filt.features[end] == "other"
+end
+
+@testset "Distances" begin
+    dm = getdm(abund, BrayCurtis())
+    p = pcoa(dm, correct_neg=true)
+
+    @test size(dm) == (10, 10)
+    for i in 1:10; @test dm[i,i] == 0; end
+
+    @test sum(p.variance_explained) ≈ 1
+    for i in p.eigenvalues; @test i > 0; end
+end
