@@ -15,7 +15,6 @@ export
 
 using RecipesBase
 using Distances
-using IterTools
 using Colors
 
 using DataFrames: DataFrame
