@@ -11,7 +11,8 @@ export
     getrowdm,
     pcoa,
     eigenvalue,
-    principalcoord
+    principalcoord,
+    relativeabundance
 
 using RecipesBase
 using Distances
