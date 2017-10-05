@@ -1,4 +1,5 @@
 using Microbiome
+using Distances
 using Base.Test
 
 @testset "Abundances" begin
@@ -12,10 +13,11 @@ using Base.Test
 
     @test typeof(relab_fract) <: AbundanceTable
     @test typeof(relab_perc) <: AbundanceTable
-    @test typeof(relab_filt) <: AbundanceTable
+    @test typeof(filt) <: AbundanceTable
 
     @test size(abund) == (100, 10)
     @test size(relab_fract) == (100, 10)
+    @test size(relab_perc) == (100, 10)
     @test size(filt) == (6, 10)
 
     for i in 1:10
@@ -28,7 +30,11 @@ using Base.Test
 end
 
 @testset "Distances" begin
-    dm = getdm(abund, BrayCurtis())
+    abund = AbundanceTable(
+        rand(100, 10), ["sample_$x" for x in 1:10],
+        ["feature_$x" for x in 1:100])
+
+    dm = getdm(abund, Jaccard()) # TODO: change to BrayCurtis after PR merges in Distances.jl
     p = pcoa(dm, correct_neg=true)
 
     @test size(dm) == (10, 10)

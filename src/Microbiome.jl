@@ -11,12 +11,11 @@ export
     getrowdm,
     pcoa,
     eigenvalue,
-    principalcoord
+    principalcoord,
+    relativeabundance
 
-using BioSequences
 using RecipesBase
 using Distances
-using IterTools
 using Colors
 
 using DataFrames: DataFrame

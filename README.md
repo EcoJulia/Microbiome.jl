@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/kescobo/Microbiome.jl.svg?branch=master)](https://travis-ci.org/kescobo/Microbiome.jl)
+
 # Microbiome-related methods for julia
 
 This package provides (or will provide) methods for microbial community

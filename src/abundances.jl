@@ -51,7 +51,7 @@ function relativeabundance(a::AbundanceTable; kind::Symbol=:fraction)
     kind == :percent ? relab = relab .* 100 : true
 
     return AbundanceTable(
-        reshape([a[x,i] / sum(a[:,i]) for i in 1:size(a, 2) for x in 1:size(a, 1) ], size(a, 1), size(a, 2)),
+        reshape(relab, size(a, 1), size(a, 2)),
         a.samples,
         a.features)
 end
