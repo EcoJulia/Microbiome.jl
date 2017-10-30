@@ -12,7 +12,9 @@ export
     pcoa,
     eigenvalue,
     principalcoord,
-    relativeabundance
+    relativeabundance,
+    hclustplot,
+    panphlan_calcs
 
 using RecipesBase
 using Distances
