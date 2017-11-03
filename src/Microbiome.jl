@@ -17,6 +17,7 @@ export
     panphlan_calcs
 
 using RecipesBase
+using StatsBase
 using Distances
 using Colors
 

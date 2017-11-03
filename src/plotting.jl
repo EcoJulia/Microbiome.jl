@@ -7,36 +7,8 @@
     principalcoord(pc, 1), principalcoord(pc,2)
 end
 
-@recipe function f(hc::Hclust, useheight::Bool=false)
-    xlims := (0.5, length(hc.order) + 0.5)
-    legend := false
-    color := :black
-    xticks := false
-    useheight ? yticks --> true : yticks --> false
-
-    o = indexmap(hc.order)
-    n = [x for x in 1:length(o)]
-
-    pos = treepositions(hc, useheight)
-
-    xs = []
-    ys = []
-    for i in 1: size(hc.merge, 1)
-        x1 = pos[hc.merge[i,1]][1]
-        x2 = pos[hc.merge[i,2]][1]
-        append!(xs, [x1,x1,x2,x2])
-
-        y1 = pos[hc.merge[i,1]][2]
-        y2 = pos[hc.merge[i,2]][2]
-        useheight ? h = hc.height[i] : h = 1
-        newy = maximum([y1,y2]) + h
-        append!(ys, [y1,newy,newy,y2])
-    end
-    reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1))
-end
-
 function treepositions(hc::Hclust, useheight::Bool=false)
-    order = indexmap(hc.order)
+    order = StatsBase.indexmap(hc.order)
     positions = Dict{}()
     for (k,v) in order
         positions[-k] = (v, 0)
@@ -63,8 +35,8 @@ end
 
     c = [color("#a6cee3") color("#1f78b4") color("#b2df8a") color("#33a02c") color("#fb9a99") color("#e31a1c") color("#fdbf6f") color("#ff7f00") color("#cab2d6") color("#6a3d9a") color("#ffff99") color("#b15928")]
 
-    rows = replace.(string.(top.rows), r"^[\w+\|]+?s__", "")
-    foo = top.t'
+    rows = replace.(string.(top.features), r"^[\w+\|]+?s__", "")
+    foo = top.table'
 
     if sorton == :top
         srt = sortperm([top[topabund+1,i] for i in 1:size(top,2)], rev=true)
@@ -87,8 +59,7 @@ end
 end
 
 
-@userplot annotations
-@recipe function f(colors::Array{T,1}) where T
+function plotannotations(colors::Array{T,1}) where T
     xs = Int[]
     for i in 1:length(colors)
         append!(xs, [0,0,1,1,0] .+ (i-1))
@@ -98,14 +69,38 @@ end
 
     fc = reshape(colors, 1,length(colors))
 
-    @series begin
-        seriestype := :path
-        fill := (0,1)
-        fillcolor := fc
-        legend --> false
-        color := :black
-        ticks := false
-        framestyle := false
-        xs, ys
+    plot(xs, ys,
+        seriestype=:path,
+        fill=(0,1),
+        fillcolor=fc,
+        legend=false,
+        color=:black,
+        ticks=false,
+        framestyle=false)
+end
+
+function hclustplot(hc::Hclust; useheight::Bool=false)
+    useheight ? yticks = true : yticks = false
+
+    o = StatsBase.indexmap(hc.order)
+    n = [x for x in 1:length(o)]
+
+    pos = treepositions(hc, useheight)
+
+    xs = []
+    ys = []
+    for i in 1: size(hc.merge, 1)
+        x1 = pos[hc.merge[i,1]][1]
+        x2 = pos[hc.merge[i,2]][1]
+        append!(xs, [x1,x1,x2,x2])
+
+        y1 = pos[hc.merge[i,1]][2]
+        y2 = pos[hc.merge[i,2]][2]
+        useheight ? h = hc.height[i] : h = 1
+        newy = maximum([y1,y2]) + h
+        append!(ys, [y1,newy,newy,y2])
     end
+    plot(reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1)),
+        xlims=(0.5, length(hc.order) + 0.5), yticks=yticks,
+        legend=false, color=:black, xticks=false)
 end
