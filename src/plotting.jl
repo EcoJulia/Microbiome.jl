@@ -7,27 +7,7 @@
     principalcoord(pc, 1), principalcoord(pc,2)
 end
 
-function treepositions(hc::Hclust, useheight::Bool=false)
-    order = StatsBase.indexmap(hc.order)
-    positions = Dict{}()
-    for (k,v) in order
-        positions[-k] = (v, 0)
-    end
-    for i in 1:size(hc.merge,1)
-        xpos = mean([positions[hc.merge[i,1]][1], positions[hc.merge[i,2]][1]])
-        if hc.merge[i,1] < 0 && hc.merge[i,2] < 0
-            useheight ? ypos = hc.height[i] : ypos = 1
-        else
-            useheight ? h = hc.height[i] : h = 1
-            ypos = maximum([positions[hc.merge[i,1]][2], positions[hc.merge[i,2]][2]]) + h
-        end
-
-        positions[i] = (xpos, ypos)
-    end
-    return positions
-end
-
-@recipe function f(abun::AbundanceTable, topabund::Int=10, sorton::Symbol=:top)
+@recipe function f(abun::AbundanceTable; topabund::Int=10, sorton::Symbol=:top)
     in(sorton, [:top, :hclust, abun.samples...]) || error("invalid sorton option")
     2 < topabund < 12 || error("n must be between 2 and 12")
 
@@ -53,13 +33,33 @@ end
         bar_position := :stack
         color := c
         label := top.samples
-        StatPlots.GroupedBar((1:size(foo,1), foo[srt,:]))
+        GroupedBar((1:size(foo,1), foo[srt,:]))
     end
 
 end
 
+function treepositions(hc::Hclust; useheight::Bool=false)
+    order = StatsBase.indexmap(hc.order)
+    positions = Dict{}()
+    for (k,v) in order
+        positions[-k] = (v, 0)
+    end
+    for i in 1:size(hc.merge,1)
+        xpos = mean([positions[hc.merge[i,1]][1], positions[hc.merge[i,2]][1]])
+        if hc.merge[i,1] < 0 && hc.merge[i,2] < 0
+            useheight ? ypos = hc.height[i] : ypos = 1
+        else
+            useheight ? h = hc.height[i] : h = 1
+            ypos = maximum([positions[hc.merge[i,1]][2], positions[hc.merge[i,2]][2]]) + h
+        end
 
-function plotannotations(colors::Array{T,1}) where T
+        positions[i] = (xpos, ypos)
+    end
+    return positions
+end
+
+
+function annotationbar(colors::Array{T,1}) where T
     xs = Int[]
     for i in 1:length(colors)
         append!(xs, [0,0,1,1,0] .+ (i-1))
@@ -79,10 +79,10 @@ function plotannotations(colors::Array{T,1}) where T
         framestyle=false)
 end
 
-function hclustplot(hc::Hclust; useheight::Bool=false)
+@recipe function f(hc::Hclust; useheight::Bool=false)
     useheight ? yticks = true : yticks = false
 
-    o = StatsBase.indexmap(hc.order)
+    o = indexmap(hc.order)
     n = [x for x in 1:length(o)]
 
     pos = treepositions(hc, useheight)

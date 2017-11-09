@@ -1,4 +1,4 @@
-function filter_rows(df::DataFrame, quant::Real; kind::Symbol=:percolumn, calc=:gt)
+function filter_rows(df::DataFrame, quant::Real; kind::Symbol=:percolumn, calc::Symbol=:gt)
     in(kind, [:percolumn, :perrow]) || error("kind must be :percolumn or :perrow")
     in(calc, [:gt, :lt, :sum, :mean, :max, :min]) || error("calc must be :gt, :lt, :sum, :mean, :max, or :min")
 
