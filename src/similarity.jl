@@ -44,6 +44,14 @@ function getrowdm(df::DataFrame, distance::PreMetric)
             distance)
 end
 
+function getrowdm(abt::AbundanceTable, distance::PreMetric)
+    m = abt.table'
+    return DistanceMatrix(
+            pairwise(distance, m),
+            abt.samples,
+            distance)
+end
+
 function pcoa(D::DistanceMatrix; correct_neg::Bool=false)
     n = size(D,1)
     A = -1/2 * D.^2

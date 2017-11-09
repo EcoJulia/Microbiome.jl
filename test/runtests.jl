@@ -36,9 +36,12 @@ end
 
     dm = getdm(abund, Jaccard()) # TODO: change to BrayCurtis after PR merges in Distances.jl
     p = pcoa(dm, correct_neg=true)
+    rowdm = getrowdm(abund, Jaccard()) # TODO: change to BrayCurtis after PR merges in Distances.jl
 
     @test size(dm) == (10, 10)
+    @test size(rowdm) == (100, 100)
     for i in 1:10; @test dm[i,i] == 0; end
+    for i in 1:100; @test rowdm[i,i] == 0; end
 
     @test sum(p.variance_explained) ≈ 1
     for i in p.eigenvalues; @test i > 0; end
