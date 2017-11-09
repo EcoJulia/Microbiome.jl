@@ -33,7 +33,7 @@ end
         bar_position := :stack
         color := c
         label := top.samples
-        GroupedBar((1:size(foo,1), foo[srt,:]))
+        StatPlots.GroupedBar((1:size(foo,1), foo[srt,:]))
     end
 
 end
@@ -100,7 +100,11 @@ end
         newy = maximum([y1,y2]) + h
         append!(ys, [y1,newy,newy,y2])
     end
-    plot(reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1)),
-        xlims=(0.5, length(hc.order) + 0.5), yticks=yticks,
-        legend=false, color=:black, xticks=false)
+    @series begin
+        xlims := (0.5, length(hc.order) + 0.5)
+        yticks := yticks
+        legend := false
+        color := :black
+        xticks := false
+        plot((reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1))))
 end
