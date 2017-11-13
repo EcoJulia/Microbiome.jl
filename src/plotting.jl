@@ -32,10 +32,9 @@ end
     @series begin
         bar_position := :stack
         color := c
-        label := top.samples
+        label := top.features
         StatPlots.GroupedBar((1:size(foo,1), foo[srt,:]))
     end
-
 end
 
 function treepositions(hc::Hclust; useheight::Bool=false)
@@ -107,4 +106,5 @@ end
         color := :black
         xticks := false
         plot((reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1))))
+    end
 end

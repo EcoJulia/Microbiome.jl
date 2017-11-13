@@ -14,7 +14,8 @@ export
     principalcoord,
     relativeabundance,
     hclustplot,
-    panphlan_calcs
+    panphlan_calcs,
+    annotationbar
 
 using RecipesBase
 using StatPlots
