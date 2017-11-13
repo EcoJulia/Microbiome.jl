@@ -18,7 +18,7 @@ MetaPhlAn Utils
 """
 
 """
-`taxfilter!(df::DataFrame, level::Int=7; shortnames::Bool=true)`
+taxfilter!(df::DataFrame, level::Int=7; shortnames::Bool=true)
 
 Filter a MetaPhlAn table (df) to a particular taxon level.
 1 = Kingdom
@@ -30,14 +30,14 @@ Filter a MetaPhlAn table (df) to a particular taxon level.
 7 = Species
 8 = Strain
 
-If `shortennames` is true (default), also changes names in the first column to
+If shortnames is true (default), also changes names in the first column to
 remove higher order taxa
 """
 function taxfilter(taxonomic_profile::DataFrame, level::Int=7; shortnames::Bool=true)
     filt = taxonomic_profile[length.(split.(taxonomic_profile[1], '|')) .== level, :]
     if shortnames
-        matches = match.(r"[kpcofgs]__(\w+)", filt[1])
-        filt[1] = [m.captures[level] for m in matches]
+        matches = collect.(eachmatch.(r"[kpcofgs]__(\w+)", filt[1]))
+        filt[1] = String.[m[level].captures[1] for m in matches]
     end
     return filt
 end
