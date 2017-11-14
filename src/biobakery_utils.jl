@@ -13,9 +13,9 @@ function filter_rows(df::DataFrame, quant::Real; kind::Symbol=:percolumn, calc::
     return df[keep, :]
 end
 
-"""
+#==============
 MetaPhlAn Utils
-"""
+==============#
 
 """
 taxfilter!(df::DataFrame, level::Int=7; shortnames::Bool=true)
@@ -43,9 +43,9 @@ function taxfilter(taxonomic_profile::DataFrame, level::Int=7; shortnames::Bool=
 end
 
 
-"""
+#==============
 PanPhlAn Utils
-"""
+==============#
 
 function panphlan_calcs(df::DataFrame)
     abun = AbundanceTable(df)
