@@ -37,7 +37,7 @@ function taxfilter(taxonomic_profile::DataFrame, level::Int=7; shortnames::Bool=
     filt = taxonomic_profile[length.(split.(taxonomic_profile[1], '|')) .== level, :]
     if shortnames
         matches = collect.(eachmatch.(r"[kpcofgs]__(\w+)", filt[1]))
-        filt[1] = String.[m[level].captures[1] for m in matches]
+        filt[1] = String.([m[level].captures[1] for m in matches])
     end
     return filt
 end
