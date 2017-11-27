@@ -13,9 +13,9 @@ end
 
     top = filterabund(abun, topabund)
 
-    c = [color("#a6cee3") color("#1f78b4") color("#b2df8a") color("#33a02c") color("#fb9a99") color("#e31a1c") color("#fdbf6f") color("#ff7f00") color("#cab2d6") color("#6a3d9a") color("#ffff99") color("#b15928")]
+    c = distinguishable_colors(topabund+1)
 
-    rows = replace.(string.(top.features), r"^[\w+\|]+?s__", "")
+    rows = top.features
     foo = top.table'
 
     if sorton == :top
@@ -31,7 +31,7 @@ end
 
     @series begin
         bar_position := :stack
-        color := c
+        color --> c
         label := top.features
         StatPlots.GroupedBar((1:size(foo,1), foo[srt,:]))
     end
@@ -81,7 +81,7 @@ end
 @recipe function f(hc::Hclust; useheight::Bool=false)
     useheight ? yticks = true : yticks = false
 
-    o = indexmap(hc.order)
+    o = StatsBase.indexmap(hc.order)
     n = [x for x in 1:length(o)]
 
     pos = treepositions(hc, useheight)
