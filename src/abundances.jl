@@ -47,11 +47,14 @@ filterabund(df::DataFrame, n::Int=10) = filterabund(AbundanceTable(df), n)
 function relativeabundance(a::AbundanceTable; kind::Symbol=:fraction)
     in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
 
-    relab = reshape([a[x,i] / sum(a[:,i]) for i in 1:size(a, 2) for x in 1:size(a, 1) ], size(a, 1), size(a, 2))
-    kind == :percent ? relab = relab .* 100 : true
+    relab = a.table
+    for j in 1:size(relab, 2)
+        s = sum(relab[:,j])
+        for i in 1:size(relab,1)
+            @inbounds relab[i,j] = a[i,j] / s
+        end
+    end
+    kind == :percent ? relab = relab .* 100. : true
 
-    return AbundanceTable(
-        reshape(relab, size(a, 1), size(a, 2)),
-        a.samples,
-        a.features)
+    return AbundanceTable(relab, a.samples, a.features)
 end
