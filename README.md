@@ -50,8 +50,7 @@ Quite often, it's useful to boil stuff down to distances between samples. For
 this, I'm using an interface with `Distances.jl` to generate a symetric
 `DistanceMatrix`, which also contains a vector for samples, and a field
 specifying which type of distance was used to calulate it. You can load one
-in manually, or generate it from an `AbundanceTable` (note: `BrayCurtis` depends
-on a [PR][1] that's not yet merged into `Distances.jl`)
+in manually, or generate it from an `AbundanceTable`.
 
 ```julia
 using Distances
