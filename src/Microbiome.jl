@@ -33,8 +33,9 @@ import Clustering: Hclust, hclust
 import Base: getindex, setindex, length
 
 using SpatialEcology
+import SpatialEcology.@forward_func
 
-include("utils.jl")
+
 include("abundances.jl")
 include("similarity.jl")
 include("plotting.jl")
