@@ -28,6 +28,8 @@ Filter an abundance table to the top `n` species accross all samples
 This function also adds a row for "other", which sums the
 """
 function filterabund(abun::AbundanceTable, n::Int=10)
+    # TODO: add prevalence filter
+
     totals = [sum(abun[i,:]) for i in 1:size(abun, 1)]
 
     srt = sortperm(totals, rev=true)
