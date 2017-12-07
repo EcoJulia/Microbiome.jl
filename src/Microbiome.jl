@@ -34,7 +34,8 @@ import DataFrames: DataFrame
 import Clustering: Hclust, hclust
 import Base: getindex, setindex, length
 
-using SpatialEcology
+using Reexport
+@reexport using SpatialEcology
 import SpatialEcology.@forward_func
 
 
