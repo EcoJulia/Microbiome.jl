@@ -48,7 +48,7 @@ PanPhlAn Utils
 ==============#
 
 function panphlan_calcs(df::DataFrame)
-    abun = AbundanceTable(df)
+    abun = abundancetable(df)
     dm = getdm(df, Jaccard())
     rowdm = getrowdm(df, Jaccard())
     clust_h = hclust(dm.dm, :single)
