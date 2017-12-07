@@ -33,10 +33,10 @@ if `kind` is `:percent`)
 function relativeabundance!(abun::AbstractComMatrix{Float64}; kind::Symbol=:fraction)
     in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
 
-    div = total_abundance_site(abun)
     for j in 1:nspecies(abun)
+       s = sum(getspecies(abun, j))
        for i in 1:nsites(abun)
-           abun.occurrences[i,j] = abun.occurrences[i,j] / div[i]
+           abun.occurrences[i,j] = abun.occurrences[i,j] / s
        end
     end
 
