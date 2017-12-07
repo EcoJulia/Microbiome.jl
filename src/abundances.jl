@@ -8,8 +8,6 @@ abundancetable(table::Array{T,2}) where T<:Real = ComMatrix(table')
 @forward_func AbundanceTable.table Base.getindex, Base.setindex, Base.length, Base.size
 #do something about these forward funcions
 
-SpatialEcology.show(io::IO, com::AbstractComMatrix) = show(io, full(com.occurrences))
-
 """
 Filter an abundance table to the top `n` species accross all samples
 
