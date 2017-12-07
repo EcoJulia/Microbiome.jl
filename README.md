@@ -83,8 +83,8 @@ using StatPlots
 
 abund = abundancetable(rand(100, 10))
 
-plot(abund, title="Random abundance")
 relativeabundance!(abund)
+abundanceplot(abund, title="Random abundance")
 
 dm = getdm(abund, BrayCurtis())
 p = pcoa(dm, correct_neg=true)
