@@ -1,5 +1,7 @@
 # Methods for absolute and relative abundances
 
+struct AbundanceTable{T<:Real} end #TODO placeholder
+
 abundancetable(df::DataFrame) = ComMatrix(df, sitecolumns = true)
 abundancetable(table::Array{T,2}) where T<:Real = ComMatrix(table')
 
