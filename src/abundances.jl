@@ -29,17 +29,18 @@ end
 filterabund(df::DataFrame, n::Int=10) = filterabund(AbundanceTable(df), n)
 
 
-function relativeabundance(a::AbundanceTable; kind::Symbol=:fraction)
+"""
+Express abundances as relative abundances, summing to 1 at each site (or to 100
+if `kind` is `:percent`)
+"""
+function relativeabundance!(abun::ComMatrix{Float64}; kind::Symbol=:fraction)
     in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
 
-    relab = a.table
-    for j in 1:size(relab, 2)
-        s = sum(relab[:,j])
-        for i in 1:size(relab,1)
-            @inbounds relab[i,j] = a[i,j] / s
-        end
-    end
-    kind == :percent ? relab = relab .* 100. : true
+    abun.occurrences ./? total_abundance_site(abun)
+    kind == :percent && abun.occurrences .*= 100.
 
-    return AbundanceTable(relab, a.samples, a.features)
+    abun
 end
+
+relativeabundance(abun::AbstractComMatrix; kind::Symbol=:fraction) =
+    relativeabundance!(ComMatrix(convert(Array{Float64}, abun.occurrences), specnames(a), sitenames(a)))
