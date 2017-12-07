@@ -2,7 +2,6 @@ module Microbiome
 
 export
     DistanceMatrix,
-    AbundanceTable,
     abundancetable,
     PCoA,
 

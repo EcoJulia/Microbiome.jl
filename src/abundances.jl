@@ -1,14 +1,11 @@
 # Methods for absolute and relative abundances
 
-struct AbundanceTable{T<:Real} end #TODO placeholder
-
 abundancetable(df::DataFrame) = ComMatrix(df, sitecolumns = true)
 abundancetable(table::Array{T,2}, site = ["sample_$x" for x in indices(table, 2)],
     species = ["feature_$x" for x in indices(table, 1)]) where T<:Real =
     ComMatrix(table', species, site)
 
-@forward_func AbundanceTable.table Base.getindex, Base.setindex, Base.length, Base.size
-#do something about these forward funcions
+@forward_func ComMatrix.occurrences Base.length
 
 """
 Filter an abundance table to the top `n` species accross all samples
