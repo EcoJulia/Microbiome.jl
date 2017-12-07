@@ -7,8 +7,10 @@
     principalcoord(pc, 1), principalcoord(pc,2)
 end
 
-@recipe function f(abun::AbundanceTable; topabund::Int=10, sorton::Symbol=:top)
-    in(sorton, [:top, :hclust, abun.samples...]) || error("invalid sorton option")
+@userplot HclustBars
+@recipe function f(hb::HclustBars; topabund::Int=minimum(10, nspecies(abun)), sorton::Symbol=:top)
+    abun::AbstractComMatrix = hb.args[1]
+    in(sorton, [:top, :hclust, Symbol.(sitenames(abun))...]) || error("invalid sorton option") #replace `, abun.samples...` in the Array, but the code only handles :top and :hclust below anyway
     2 < topabund < 12 || error("n must be between 2 and 12")
 
     top = filterabund(abun, topabund)
@@ -19,7 +21,7 @@ end
     foo = top.table'
 
     if sorton == :top
-        srt = sortperm([top[topabund+1,i] for i in 1:size(top,2)], rev=true)
+        srt = sortperm(getsite(abun, topabund + 1), rev=true)
     elseif sorton == :hclust
         DM = getdm(top, BrayCurtis())
         hc = hclust(DM, :single)
