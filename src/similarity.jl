@@ -15,9 +15,9 @@ DistanceMatrix(dm::AbstractArray, distance) = DistanceMatrix(dm, Vector(1:size(d
 @forward_func DistanceMatrix.dm Base.getindex, Base.setindex, Base.length, Base.size
 @forward_func PCoA.eigenvectors Base.getindex, Base.setindex, Base.length, Base.size
 
-function getdm(t::AbundanceTable, distance::PreMetric)
+function getdm(t::ComMatrix, distance::PreMetric)
     return DistanceMatrix(
-            pairwise(distance, t),
+            pairwise(distance, t.occurrences'),
             t.samples,
             distance)
 end
@@ -44,8 +44,8 @@ function getrowdm(df::DataFrame, distance::PreMetric)
             distance)
 end
 
-function getrowdm(abt::AbundanceTable, distance::PreMetric)
-    m = abt.table'
+function getrowdm(abt::AbstractComMatrix, distance::PreMetric)
+    m = abt.occurrences
     return DistanceMatrix(
             pairwise(distance, m),
             abt.samples,
