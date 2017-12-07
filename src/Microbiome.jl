@@ -14,6 +14,7 @@ export
     eigenvalue,
     principalcoord,
     relativeabundance,
+    relativeabundance!,
     hclustplot,
     panphlan_calcs,
     annotationbar,
