@@ -30,16 +30,6 @@ filterabund(df::DataFrame, n::Int=10) = filterabund(abundancetable(df), n)
 Express abundances as relative abundances, summing to 1 at each site (or to 100
 if `kind` is `:percent`)
 """
-function relativeabundance(abun::AbstractComMatrix; kind::Symbol=:fraction)
-    in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
-
-
-    newabun = abun.occurrences ./ total_abundance_site(abun)
-    kind == :percent && (newabun .*= 100)
-
-    ComMatrix(newabun, specnames(abun), sitenames(abun))
-end
-
 function relativeabundance!(abun::AbstractComMatrix{Float64}; kind::Symbol=:fraction)
     in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
 
