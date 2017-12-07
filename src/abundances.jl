@@ -11,21 +11,21 @@ abundancetable(table::Array{T,2}) where T<:Real = ComMatrix(table')
 """
 Filter an abundance table to the top `n` species accross all samples
 
-This function also adds a row for "other", which sums the
+This function also adds a row for "other", which sums the abundances of
+the remaining species
 """
-function filterabund(abun::AbstractComMatrix, n::Int=10)
+function filterabund(abun::AbstractComMatrix, n::Int=minimum(10, nspecies(abun)))
     srt = sortperm(total_abundance_species(abun), rev=true)
     keep, compact = srt[1:n], srt[n+1:end]
     # TODO: add prevalence filter
 
     newabun = view(abun, species = keep)
-    remainder = total_abundance_site(view(abun, species = compact))
+    remaining_abundances = total_abundance_site(view(abun, species = compact))
 
-    ComMatrix(hcat(newabun.occurrences, remainder), [specnames(newabun); "other"] , sitenames(abun))
+    ComMatrix(hcat(newabun.occurrences, remaining_abundances), [specnames(newabun); "other"] , sitenames(abun))
 end
 
-filterabund(df::DataFrame, n::Int=10) = filterabund(AbundanceTable(df), n)
-
+filterabund(df::DataFrame, n::Int=10) = filterabund(abundancetable(df), n)
 
 """
 Express abundances as relative abundances, summing to 1 at each site (or to 100
