@@ -1,9 +1,12 @@
 module Microbiome
 
 export
+    # Types
     DistanceMatrix,
     AbundanceTable,
     PCoA,
+        # re-exports
+        Hclust,
 
     # functions
     getdm,
@@ -18,10 +21,9 @@ export
     panphlan_calcs,
     annotationbar,
 
-    # re-exports
-    Hclust,
-    DataFrame,
-    hclust
+        # re-exports
+        DataFrame,
+        hclust
 
 using RecipesBase
 using StatPlots
