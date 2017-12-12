@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/kescobo/Microbiome.jl.svg?branch=master)](https://travis-ci.org/kescobo/Microbiome.jl)
+[![Build Status](https://travis-ci.org/BioJulia/Microbiome.jl.svg?branch=master)](https://travis-ci.org/BioJulia/Microbiome.jl)
 
 # Microbiome-related methods for julia
 
