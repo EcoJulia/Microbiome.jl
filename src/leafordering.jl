@@ -1,22 +1,23 @@
-#=
+"""
+optimalorder(hc::Hclust, dm::Array{Float64,2})
+
+Given a hierarchical cluster, use fast algorithm to determine optimal leaf order
+minimizing the distance between adjacent leaves. This is done using a heuristic
+where, when combining multi-leaf sub branches, only the outermost leaves are
+compared (a maximum of 4 comparisons per intersection).
+
+Sub branches are flipped if necessary to minimize the distance between adjacent
+nodes, and then the combined branches are treated as a block for future
+comparisons.
+
 Based on:
 Bar-Joseph et. al. "Fast optimal leaf ordering for hierarchical clustering." _Bioinformatics_. (2001)
-=#
-using Distances
-
-
-m = rand(5, 15)
-dm = pairwise(BrayCurtis(), m)
-
-hcl = hclust(dm, :average)
-dump(hcl)
-
+"""
 function optimalorder(hc::Hclust, dm::Array{Float64,2})
     ord = hc.order
     extents = Tuple[]
 
     for (vl, vr) in zip(hc.merge[:,1], hc.merge[:,2])
-        @show vl, vr
         if vl < 0 && vr < 0
             m = findfirst(abs(vl) .== ord)
             k = findfirst(abs(vr) .== ord)
@@ -43,7 +44,6 @@ function optimalorder(hc::Hclust, dm::Array{Float64,2})
             w = ord[widx]
 
             flp = flip2(u, m, k, w, dm)
-            @show flp
             (flp == 2 || flp == 4) && reverse!(ord, uidx, midx)
             (flp == 3 || flp == 4) && reverse!(ord, kidx, widx)
             push!(extents, (uidx, widx))
@@ -55,7 +55,9 @@ function optimalorder(hc::Hclust, dm::Array{Float64,2})
     return ord
 end
 
-hcl.order = optimalorder(hcl, dm)
+function optimalorder!(hc::Hclust, dm::Array{Float64,2})
+    hc.order = optimalorder(hc, dm)
+end
 
 """
 For 1 multi-leaf branch and a leaf, determine if flipping branch is required
@@ -63,7 +65,7 @@ For 1 multi-leaf branch and a leaf, determine if flipping branch is required
 2 = flip right
 """
 function flip1(m::Int, k::Int, w::Int, dm::Array{Float64,2})
-    @inbounds dm[m,k] <= dm[m,w] ? 1 : 2
+    dm[m,k] <= dm[m,w] ? 1 : 2
 end
 
 """
@@ -77,3 +79,13 @@ function flip2(u::Int, m::Int, k::Int, w::Int, dm::Array{Float64,2})
     s = sortperm([dm[m,k], dm[u,k], dm[m,w], dm[u,w]])
     return s[1]
 end
+
+
+m = rand(1000, 5000)
+dm = pairwise(BrayCurtis(), m)
+
+using BenchmarkTools
+
+@benchmark hcl = hclust(dm, :single)
+
+@benchmark optimalorder(hcl, dm)

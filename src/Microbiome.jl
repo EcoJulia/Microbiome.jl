@@ -20,6 +20,8 @@ export
     hclustplot,
     panphlan_calcs,
     annotationbar,
+    optimalorder,
+    optimalorder!,
 
         # re-exports
         DataFrame,
