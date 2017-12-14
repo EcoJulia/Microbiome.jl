@@ -102,9 +102,9 @@ end
     @show xs
     @show ys
     xlims := (0.5, length(hc.order) + 0.5)
-    yticks := yticks
     legend := false
     color := :black
-    xticks := false
+    yticks --> yticks
+    xticks --> (1:length(hc.labels), hc.labels[hc.order])
     (reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1)))
 end
