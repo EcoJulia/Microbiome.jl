@@ -37,26 +37,6 @@ end
     end
 end
 
-function treepositions(hc::Hclust; useheight::Bool=false)
-    order = StatsBase.indexmap(hc.order)
-    positions = Dict{}()
-    for (k,v) in order
-        positions[-k] = (v, 0)
-    end
-    for i in 1:size(hc.merge,1)
-        xpos = mean([positions[hc.merge[i,1]][1], positions[hc.merge[i,2]][1]])
-        if hc.merge[i,1] < 0 && hc.merge[i,2] < 0
-            useheight ? ypos = hc.height[i] : ypos = 1
-        else
-            useheight ? h = hc.height[i] : h = 1
-            ypos = maximum([positions[hc.merge[i,1]][2], positions[hc.merge[i,2]][2]]) + h
-        end
-
-        positions[i] = (xpos, ypos)
-    end
-    return positions
-end
-
 
 function annotationbar(colors::Array{T,1}) where T
     xs = Int[]
@@ -78,13 +58,33 @@ function annotationbar(colors::Array{T,1}) where T
         framestyle=false)
 end
 
-@recipe function f(hc::Hclust; useheight::Bool=false)
+
+function treepositions(hc::Hclust; useheight::Bool=false)
+    order = StatsBase.indexmap(hc.order)
+    positions = Dict{}()
+    for (k,v) in order
+        positions[-k] = (v, 0)
+    end
+    for i in 1:size(hc.merge,1)
+        xpos = mean([positions[hc.merge[i,1]][1], positions[hc.merge[i,2]][1]])
+        if hc.merge[i,1] < 0 && hc.merge[i,2] < 0
+            useheight ? ypos = hc.height[i] : ypos = 1
+        else
+            useheight ? h = hc.height[i] : h = 1
+            ypos = maximum([positions[hc.merge[i,1]][2], positions[hc.merge[i,2]][2]]) + h
+        end
+
+        positions[i] = (xpos, ypos)
+    end
+    return positions
+end
+
+
+@recipe function f(hc::Hclust)
+    useheight = true # later will be kwarg
     useheight ? yticks = true : yticks = false
 
-    o = StatsBase.indexmap(hc.order)
-    n = [x for x in 1:length(o)]
-
-    pos = treepositions(hc, useheight)
+    pos = treepositions(hc, useheight=useheight)
 
     xs = []
     ys = []
@@ -99,12 +99,12 @@ end
         newy = maximum([y1,y2]) + h
         append!(ys, [y1,newy,newy,y2])
     end
-    @series begin
-        xlims := (0.5, length(hc.order) + 0.5)
-        yticks := yticks
-        legend := false
-        color := :black
-        xticks := false
-        plot((reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1))))
-    end
+    @show xs
+    @show ys
+    xlims := (0.5, length(hc.order) + 0.5)
+    yticks := yticks
+    legend := false
+    color := :black
+    xticks := false
+    (reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1)))
 end
