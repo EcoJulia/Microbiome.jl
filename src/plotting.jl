@@ -7,19 +7,20 @@
     principalcoord(pc, 1), principalcoord(pc,2)
 end
 
-@recipe function f(abun::AbundanceTable; topabund::Int=10, sorton::Symbol=:top)
-    in(sorton, [:top, :hclust, abun.samples...]) || error("invalid sorton option")
+@userplot AbundancePlot
+@recipe function f(hb::AbundancePlot; topabund=10, sorton=:top)
+    abun = hb.args[1]
+
+    topabund = min(topabund, nspecies(abun))
+    in(sorton, [:top, :hclust, Symbol.(sitenames(abun))...]) || error("invalid sorton option") #replace `, abun.samples...` in the Array, but the code only handles :top and :hclust below anyway
     2 < topabund < 12 || error("n must be between 2 and 12")
 
     top = filterabund(abun, topabund)
 
-    c = distinguishable_colors(topabund+1)
-
-    rows = top.features
-    foo = top.table'
+    rows = specnames(top)
 
     if sorton == :top
-        srt = sortperm([top[topabund+1,i] for i in 1:size(top,2)], rev=true)
+        srt = sortperm(getspecies(abun, topabund + 1), rev=true)
     elseif sorton == :hclust
         DM = getdm(top, BrayCurtis())
         hc = hclust(DM, :single)
@@ -28,14 +29,11 @@ end
         error("invalid sorton option")
     end
 
-
-    @series begin
-        bar_position := :stack
-        color --> c
-        label := top.features
-        StatPlots.GroupedBar((1:size(foo,1), foo[srt,:]))
-    end
+    bar_position := :stack
+    label := specnames(top)
+    StatPlots.GroupedBar((1:nsites(top), top.occurrences[srt, :]))
 end
+
 
 function treepositions(hc::Hclust; useheight::Bool=false)
     order = StatsBase.indexmap(hc.order)

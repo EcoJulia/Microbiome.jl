@@ -22,11 +22,12 @@ df = DataFrame(species=["E. coli", "B. fragilis", "L. casei"],
                sample2=[0.3, 0.7, 0.0],
                sample3=[0.0, 0.2, 0.8])
 
-abund = AbundanceTable(df)
+abund = abundancetable(df)
 
 @show abund
-@show abund.samples
-@show abund.features
+full(abund)
+@show sitenames(abund)
+@show specnames(features)
 ```
 
 Note: I've used a relative abundance table here, but that need not be the case.
@@ -41,7 +42,8 @@ reassign if you want to update:
 ```julia
 abund2 = filterabund(abund, 1)
 @show abund2
-@show abund2.features
+full(abund2)
+@show specnames(abund2)
 ```
 
 ## Working with Distances / Dissimilarity
@@ -79,12 +81,10 @@ I've included some plotting recipes for convenience using [`RecipesBase`][3].
 ```julia
 using StatPlots
 
-abund = AbundanceTable(
-    rand(100, 10), ["sample_$x" for x in 1:10],
-    ["feature_$x" for x in 1:100])
+abund = abundancetable(rand(100, 10))
 
-abund = relativeabundance(abund)
-plot(abund, title="Random abundance")
+relativeabundance!(abund)
+abundanceplot(abund, title="Random abundance")
 
 dm = getdm(abund, BrayCurtis())
 p = pcoa(dm, correct_neg=true)

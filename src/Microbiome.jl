@@ -2,7 +2,7 @@ module Microbiome
 
 export
     DistanceMatrix,
-    AbundanceTable,
+    abundancetable,
     PCoA,
 
     # functions
@@ -13,6 +13,7 @@ export
     eigenvalue,
     principalcoord,
     relativeabundance,
+    relativeabundance!,
     hclustplot,
     panphlan_calcs,
     annotationbar,
@@ -32,8 +33,11 @@ import DataFrames: DataFrame
 import Clustering: Hclust, hclust
 import Base: getindex, setindex, length
 
+using Reexport
+@reexport using SpatialEcology
+import SpatialEcology.@forward_func
 
-include("utils.jl")
+
 include("abundances.jl")
 include("similarity.jl")
 include("plotting.jl")
