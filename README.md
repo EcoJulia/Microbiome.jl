@@ -6,43 +6,6 @@ This package provides (or will provide) methods for microbial community
 analyses. For now, I'm adding stuff as I need it, but pull-requests are more
 than welcome.
 
-## Working with microbial abundances
-
-The `AbundanceTable` type is treated like a 2D array where columns are samples
-and rows are features (eg species). Sample and feature names are also stored,
-and there's a convenience function if you want to convert a `DataFrame` to an
-`AbundanceTable`, assuming the first column contains feature names:
-
-```julia
-using Microbiome
-using DataFrames
-
-df = DataFrame(species=["E. coli", "B. fragilis", "L. casei"],
-               sample1=[0.1, 0.4, 0.5],
-               sample2=[0.3, 0.7, 0.0],
-               sample3=[0.0, 0.2, 0.8])
-
-abund = AbundanceTable(df)
-
-@show abund
-@show abund.samples
-@show abund.features
-```
-
-Note: I've used a relative abundance table here, but that need not be the case.
-You can also use raw counts, RPK etc. If you want relative abundance, you can
-do `relativeabundance(abund)`
-
-You can also filter on the `n` most abundant features accross the dataset. This
-function automatically generates an `n+1` row for `other` containing the
-remaining features. Note - these doesn't modify in-place, so you've gotta
-reassign if you want to update:
-
-```julia
-abund2 = filterabund(abund, 1)
-@show abund2
-@show abund2.features
-```
 
 ## Working with Distances / Dissimilarity
 
