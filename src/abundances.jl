@@ -47,7 +47,7 @@ filterabund(df::DataFrame, n::Int=10) = filterabund(AbundanceTable(df), n)
 function relativeabundance(a::AbundanceTable; kind::Symbol=:fraction)
     in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
 
-    relab = copy(a)
+    relab = deepcopy(a)
     for i in 1:size(relab, 2)
         s = sum(relab[:,i])
         for x in 1:size(relab,1)
