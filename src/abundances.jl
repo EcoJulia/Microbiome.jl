@@ -19,7 +19,7 @@ function AbundanceTable(table::Array{T,2}) where T<:Real
              Vector{Int64}(1:size(table,1)))
 end
 
-@forward_func AbundanceTable.table Base.getindex, Base.setindex, Base.length, Base.size
+@forward_func AbundanceTable.table Base.getindex, Base.setindex, Base.setindex!, Base.length, Base.size
 
 
 """
@@ -44,14 +44,22 @@ end
 filterabund(df::DataFrame, n::Int=10) = filterabund(AbundanceTable(df), n)
 
 
+function relativeabundance!(a::AbundanceTable; kind::Symbol=:fraction)
+    in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
+
+    for i in 1:size(a, 2)
+        s = sum(a[:,i])
+        for x in 1:size(a,1)
+            kind == :fraction ? a[x,i] /= s : a[x,i] /= (s / 100.)
+        end
+    end
+end
+
+
 function relativeabundance(a::AbundanceTable; kind::Symbol=:fraction)
     in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
 
-    relab = reshape([a[x,i] / sum(a[:,i]) for i in 1:size(a, 2) for x in 1:size(a, 1) ], size(a, 1), size(a, 2))
-    kind == :percent ? relab = relab .* 100 : true
-
-    return AbundanceTable(
-        reshape(relab, size(a, 1), size(a, 2)),
-        a.samples,
-        a.features)
+    relab = deepcopy(a)
+    relativeabundance!(relab, kind=kind)
+    return relab
 end

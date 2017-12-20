@@ -8,11 +8,12 @@ using Base.Test
         ["feature_$x" for x in 1:100])
 
     relab_fract = relativeabundance(abund)
-    relab_perc = relativeabundance(abund, kind=:percent)
-    filt = filterabund(relab_fract, 5)
-
     @test typeof(relab_fract) <: AbundanceTable
+
+    relab_perc = relativeabundance(abund, kind=:percent)
     @test typeof(relab_perc) <: AbundanceTable
+
+    filt = filterabund(relab_fract, 5)
     @test typeof(filt) <: AbundanceTable
 
     @test size(abund) == (100, 10)
