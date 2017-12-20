@@ -19,7 +19,7 @@ function AbundanceTable(table::Array{T,2}) where T<:Real
              Vector{Int64}(1:size(table,1)))
 end
 
-@forward_func AbundanceTable.table Base.getindex, Base.setindex, Base.length, Base.size
+@forward_func AbundanceTable.table Base.getindex, Base.setindex, Base.setindex!, Base.length, Base.size
 
 
 """
