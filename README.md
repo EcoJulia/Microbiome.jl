@@ -1,33 +1,32 @@
+# Microbiome.jl <small>For analysis of microbiome and microbial community data</small>
+
+[![Latest Release](https://img.shields.io/github/release/BioJulia/Microbiome.jl.svg)](https://github.com/BioJulia/Microbiome.jl/releases/latest)
+[![Microbiome](http://pkg.julialang.org/badges/Microbiome_0.6.svg)](http://pkg.julialang.org/?pkg=Microbiome)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/Microbiome.jl/blob/master/LICENSE)
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://biojulia.github.io/Microbiome.jl/stable)
+[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://biojulia.github.io/Microbiome.jl/latest)
+![BioJulia maintainer: kescobo](https://img.shields.io/badge/BioJulia%20Maintainer-kescobo-blue.svg)
+
+**Development builds:**
 [![Build Status](https://travis-ci.org/BioJulia/Microbiome.jl.svg?branch=master)](https://travis-ci.org/BioJulia/Microbiome.jl)
 
-# Microbiome-related methods for julia
+## Description
 
-This package provides (or will provide) methods for microbial community
-analyses. For now, I'm adding stuff as I need it, but pull-requests are more
-than welcome.
+Microbiome.jl is a package for manipulating and analyzing microbiome and
+microbial community data. Many functions have been added to external packages
+and are imported here.
 
-## Plotting
+## Installation
 
-I've included some plotting recipes for convenience using [`RecipesBase`][3].
+Install Microbiome from the Julia REPL:
 
 ```julia
-using StatPlots
-
-abund = AbundanceTable(
-    rand(100, 10), ["sample_$x" for x in 1:10],
-    ["feature_$x" for x in 1:100])
-
-abund = relativeabundance(abund)
-plot(abund, title="Random abundance")
-
-dm = getdm(abund, BrayCurtis())
-p = pcoa(dm, correct_neg=true)
-
-plot(p, title="Random PCoA")
+julia> Pkg.add("Microbiome")
 ```
 
+If you are interested in the cutting edge of the development, please check out
+the master branch to try new features before release.
 
-
-[1]: https://github.com/JuliaStats/Distances.jl/pull/76
-[2]: https://doi.org/10.1007/BF02291398
-[3]: https://github.com/juliaplots/recipesbase.jl
+```julia
+julia> Pkg.checkout("Microbiome")
+```

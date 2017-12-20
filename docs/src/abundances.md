@@ -54,3 +54,22 @@ julia> abund2.features
  "B. fragilis"
  "other"
  ```
+
+## Plotting
+
+Some convenience plotting types are available using [`RecipesBase`][1] and
+[StatPlots][2]
+
+[1]: https://github.com/juliaplots/recipesbase.jl
+[2]: https://github.com/juliaplots/StatPlots.jl
+
+```julia
+using StatPlots # TODO: add actual example
+
+abund = AbundanceTable(
+    rand(100, 10), ["sample_$x" for x in 1:10],
+    ["feature_$x" for x in 1:100])
+
+abund = relativeabundance(abund)
+plot(abund, title="Random abundance")
+```

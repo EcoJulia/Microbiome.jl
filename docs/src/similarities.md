@@ -51,3 +51,22 @@ julia> p.variance_explained
  0.979751
  0.0202492
 ```
+
+## Plotting
+
+Some convenience plotting types are available using [`RecipesBase`][1].
+
+[1]: https://github.com/juliaplots/recipesbase.jl
+
+```julia
+using StatPlots # TODO: add actual example
+
+abund = AbundanceTable(
+    rand(100, 10), ["sample_$x" for x in 1:10],
+    ["feature_$x" for x in 1:100])
+
+dm = getdm(abund, BrayCurtis())
+p = pcoa(dm, correct_neg=true)
+
+plot(p, title="Random PCoA")
+```
