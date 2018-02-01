@@ -22,6 +22,7 @@ export
     annotationbar,
     optimalorder,
     optimalorder!,
+    bysample
 
         # re-exports
         DataFrame,
