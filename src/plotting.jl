@@ -7,36 +7,60 @@
     principalcoord(pc, 1), principalcoord(pc,2)
 end
 
-@recipe function f(hc::Hclust, useheight::Bool=false)
-    xlims := (0.5, length(hc.order) + 0.5)
-    legend := false
-    color := :black
-    xticks := false
-    useheight ? yticks --> true : yticks --> false
+@recipe function f(abun::AbundanceTable; topabund::Int=10, sorton::Symbol=:top)
+    in(sorton, [:top, :hclust, abun.samples...]) || error("invalid sorton option")
+    2 < topabund < 12 || error("n must be between 2 and 12")
 
-    o = indexmap(hc.order)
-    n = [x for x in 1:length(o)]
+    top = filterabund(abun, topabund)
 
-    pos = treepositions(hc, useheight)
+    c = distinguishable_colors(topabund+1)
 
-    xs = []
-    ys = []
-    for i in 1: size(hc.merge, 1)
-        x1 = pos[hc.merge[i,1]][1]
-        x2 = pos[hc.merge[i,2]][1]
-        append!(xs, [x1,x1,x2,x2])
+    rows = top.features
+    foo = top.table'
 
-        y1 = pos[hc.merge[i,1]][2]
-        y2 = pos[hc.merge[i,2]][2]
-        useheight ? h = hc.height[i] : h = 1
-        newy = maximum([y1,y2]) + h
-        append!(ys, [y1,newy,newy,y2])
+    if sorton == :top
+        srt = sortperm([top[topabund+1,i] for i in 1:size(top,2)], rev=true)
+    elseif sorton == :hclust
+        DM = getdm(top, BrayCurtis())
+        hc = hclust(DM, :single)
+        srt = hc.order
+    else
+        error("invalid sorton option")
     end
-    reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1))
+
+
+    @series begin
+        bar_position := :stack
+        color --> c
+        label := top.features
+        StatPlots.GroupedBar((1:size(foo,1), foo[srt,:]))
+    end
 end
 
-function treepositions(hc::Hclust, useheight::Bool=false)
-    order = indexmap(hc.order)
+
+function annotationbar(colors::Array{T,1}) where T
+    xs = Int[]
+    for i in 1:length(colors)
+        append!(xs, [0,0,1,1,0] .+ (i-1))
+    end
+    xs = reshape(xs, 5, length(colors))
+    ys = hcat([[0,1,1,0,0] for _ in colors]...)
+
+    fc = reshape(colors, 1,length(colors))
+
+    plot(xs, ys,
+        seriestype=:path,
+        fill=(0,1),
+        fillcolor=fc,
+        legend=false,
+        color=:black,
+        ticks=false,
+        framestyle=false)
+end
+
+
+function treepositions(hc::Hclust; useheight::Bool=false)
+    order = StatsBase.indexmap(hc.order)
     positions = Dict{}()
     for (k,v) in order
         positions[-k] = (v, 0)
@@ -55,57 +79,32 @@ function treepositions(hc::Hclust, useheight::Bool=false)
     return positions
 end
 
-@recipe function f(abun::AbundanceTable, topabund::Int=10, sorton::Symbol=:top)
-    in(sorton, [:top, :hclust, abun.samples...]) || error("invalid sorton option")
-    2 < topabund < 12 || error("n must be between 2 and 12")
 
-    top = filterabund(abun, topabund)
+@recipe function f(hc::Hclust)
+    useheight = true # later will be kwarg
+    useheight ? yticks = true : yticks = false
 
-    c = [color("#a6cee3") color("#1f78b4") color("#b2df8a") color("#33a02c") color("#fb9a99") color("#e31a1c") color("#fdbf6f") color("#ff7f00") color("#cab2d6") color("#6a3d9a") color("#ffff99") color("#b15928")]
+    pos = treepositions(hc, useheight=useheight)
 
-    rows = replace.(string.(top.rows), r"^[\w+\|]+?s__", "")
-    foo = top.t'
+    xs = []
+    ys = []
+    for i in 1: size(hc.merge, 1)
+        x1 = pos[hc.merge[i,1]][1]
+        x2 = pos[hc.merge[i,2]][1]
+        append!(xs, [x1,x1,x2,x2])
 
-    if sorton == :top
-        srt = sortperm([top[topabund+1,i] for i in 1:size(top,2)], rev=true)
-    elseif sorton == :hclust
-        DM = getdm(top, BrayCurtis())
-        hc = hclust(DM, :single)
-        srt = hc.order
-    else
-        error("invalid sorton option")
+        y1 = pos[hc.merge[i,1]][2]
+        y2 = pos[hc.merge[i,2]][2]
+        useheight ? h = hc.height[i] : h = 1
+        newy = maximum([y1,y2]) + h
+        append!(ys, [y1,newy,newy,y2])
     end
-
-
-    @series begin
-        bar_position := :stack
-        color := c
-        label := top.samples
-        StatPlots.GroupedBar((1:size(foo,1), foo[srt,:]))
-    end
-
-end
-
-
-@userplot annotations
-@recipe function f(colors::Array{T,1}) where T
-    xs = Int[]
-    for i in 1:length(colors)
-        append!(xs, [0,0,1,1,0] .+ (i-1))
-    end
-    xs = reshape(xs, 5, length(colors))
-    ys = hcat([[0,1,1,0,0] for _ in colors]...)
-
-    fc = reshape(colors, 1,length(colors))
-
-    @series begin
-        seriestype := :path
-        fill := (0,1)
-        fillcolor := fc
-        legend --> false
-        color := :black
-        ticks := false
-        framestyle := false
-        xs, ys
-    end
+    @show xs
+    @show ys
+    xlims := (0.5, length(hc.order) + 0.5)
+    legend := false
+    color := :black
+    yticks --> yticks
+    xticks --> (1:length(hc.labels), hc.labels[hc.order])
+    (reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1)))
 end
