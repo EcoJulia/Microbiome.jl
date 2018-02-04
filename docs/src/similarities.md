@@ -70,3 +70,38 @@ p = pcoa(dm, correct_neg=true)
 
 plot(p, title="Random PCoA")
 ```
+
+### Optimal Leaf Ordering
+
+I've also provided a plotting recipe for making treeplots for `Hclust` objects
+from the [`Clustering.jl`][2] package:
+
+[2]: http://github.com/JuliaStats/Clustering.jl
+
+```julia
+dm = [0. .1 .2
+      .1 0. .15
+      .2 .15 0.]
+
+h = hclust(dm, :single)
+h.labels = ["a", "b", "c"]
+
+plot(h)
+```
+
+![hclust plot 1](docs/img/hclustplot1.png)
+
+Note that even though this is a valid tree, the leaf `a` is closer to leaf `c`,
+despite the fact that `c` is more similar to `b` than to `a`. This can be fixed
+with a method derived from the paper:
+
+[Bar-Joseph et. al. "Fast optimal leaf ordering for hierarchical clustering." _Bioinformatics_. (2001)][3]
+
+[3]: https://doi.org/10.1093/bioinformatics/17.suppl_1.S22
+
+```julia
+optimalorder!(h, dm)
+plot(h)
+```
+
+![hclust plot 2](docs/img/hclustplot2.png)
