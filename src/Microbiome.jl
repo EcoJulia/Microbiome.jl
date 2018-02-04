@@ -5,8 +5,6 @@ export
     DistanceMatrix,
     AbundanceTable,
     PCoA,
-        # re-exports
-        Hclust,
 
     # functions
     getdm,
@@ -24,18 +22,13 @@ export
     optimalorder!,
     bysample
 
-        # re-exports
-        DataFrame,
-        hclust
-
 using RecipesBase
 using StatPlots
 using StatsBase
 using Distances
 using Colors
-using Clustering
 
-
+import Clustering: Hclust, hclust
 import DataFrames: DataFrame
 import Base: getindex, setindex, length
 
