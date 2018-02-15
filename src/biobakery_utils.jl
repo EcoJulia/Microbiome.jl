@@ -54,6 +54,10 @@ function taxfilter(taxonomic_profile::DataFrame, level::Int=7; shortnames::Bool=
     return filt
 end
 
+function taxfilter!(taxonomic_profile::DataFrame, level::Int=7; shortnames::Bool=true)
+    taxfilter = taxfilter(taxonomic_profile, level, shortnames)
+end
+
 
 #==============
 PanPhlAn Utils

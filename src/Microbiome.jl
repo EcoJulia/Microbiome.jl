@@ -6,21 +6,27 @@ export
     AbundanceTable,
     PCoA,
 
-    # functions
-    getdm,
+    # Functions
+    ## abundance
     filterabund,
+    relativeabundance,
+    relativeabundance!,
+    ## similarity
+    getdm,
     getrowdm,
     pcoa,
     eigenvalue,
     principalcoord,
-    relativeabundance,
-    relativeabundance!,
-    hclustplot,
-    panphlan_calcs,
-    annotationbar,
     optimalorder,
     optimalorder!,
-    bysample
+    ## plotting
+    hclustplot,
+    annotationbar,
+    ## utils
+    panphlan_calcs,
+    bysample,
+    taxfilter,
+    taxfilter!
 
 using RecipesBase
 using StatPlots
