@@ -1,15 +1,27 @@
-function bysample(df::DataFrame, samples::Array{String, 1}, rows::Array{Int,1}=Int[])
-    s = [in(String(n), samples) for n in names(df[2:end])]
-
-    length(rows) > 0 ? df = df[rows, [true,s...]] : df = df[:, [true, s...]]
-
-    newrows = DataFrame(samples=String.(names(df[2:end])))
+function fliptable(df::DataFrame, samples::Array{String,1})
+    newrows = DataFrame(samples=samples)
     newcols = Symbol.(df[1])
 
     df = DataFrame(Matrix(df[2:end])', newcols)
     names!(df, newcols)
     return hcat(newrows, df)
 end
+
+function bysample(df::DataFrame, samples::Array{Symbol, 1}, rows::Array{Int,1}=Int[])
+    s = [in(n, samples) for n in names(df[2:end])]
+    length(rows) > 0 ? df = df[rows, [true,s...]] : df = df[:, [true, s...]]
+
+    fliptable(df, String.(samples))
+end
+
+function bysample(df::DataFrame, samples::Array{String, 1}, rows::Array{Int,1}=Int[])
+    s = [in(n, samples) for n in String.(names(df[2:end]))]
+    length(rows) > 0 ? df = df[rows, [true,s...]] : df = df[:, [true, s...]]
+
+    fliptable(df, samples)
+end
+
+bysample(df::DataFrame) = bysample(df, df[1])
 
 
 function filter_rows(df::DataFrame, quant::Real; kind::Symbol=:percolumn, calc=:gt)
