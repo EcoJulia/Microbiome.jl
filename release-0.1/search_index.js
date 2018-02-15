@@ -73,6 +73,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "similarities.html#Optimal-Leaf-Ordering-1",
+    "page": "Distances & Dissimilarity",
+    "title": "Optimal Leaf Ordering",
+    "category": "section",
+    "text": "I've also provided a plotting recipe for making treeplots for Hclust objects from the [Clustering.jl][2] package:[2]: http://github.com/JuliaStats/Clustering.jldm = [0. .1 .2\n      .1 0. .15\n      .2 .15 0.]\n\nh = hclust(dm, :single)\nh.labels = [\"a\", \"b\", \"c\"]\n\nplot(h)(Image: hclust plot 1)Note that even though this is a valid tree, the leaf a is closer to leaf c, despite the fact that c is more similar to b than to a. This can be fixed with a method derived from the paper:[Bar-Joseph et. al. \"Fast optimal leaf ordering for hierarchical clustering.\" _Bioinformatics_. (2001)][3][3]: https://doi.org/10.1093/bioinformatics/17.suppl_1.S22optimalorder!(h, dm)\nplot(h)(Image: hclust plot 2)"
+},
+
+{
     "location": "contributing.html#",
     "page": "Contributing",
     "title": "Contributing",
