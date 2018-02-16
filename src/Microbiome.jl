@@ -33,9 +33,9 @@ using StatPlots
 using StatsBase
 using Distances
 using Colors
+using DataFrames
 
 import Clustering: Hclust, hclust
-import DataFrames: DataFrame
 import Base: getindex, setindex, length
 
 
