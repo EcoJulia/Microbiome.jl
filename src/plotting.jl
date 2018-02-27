@@ -7,6 +7,8 @@
     principalcoord(pc, 1), principalcoord(pc,2)
 end
 
+mytest(a) = a+3
+
 @userplot AbundancePlot
 @recipe function f(hb::AbundancePlot; topabund=10, sorton=:top)
     abun = hb.args[1]
@@ -24,6 +26,7 @@ end
         srt = sortperm(top.features[topabund+1], rev=true)
     elseif sorton == :hclust
         DM = getdm(top, BrayCurtis())
+        coalesce.(DM, 1.)
         hc = hclust(DM, :single)
         srt = hc.order
     else
