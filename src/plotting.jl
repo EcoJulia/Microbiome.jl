@@ -99,8 +99,7 @@ end
         newy = maximum([y1,y2]) + h
         append!(ys, [y1,newy,newy,y2])
     end
-    @show xs
-    @show ys
+
     xlims := (0.5, length(hc.order) + 0.5)
     legend := false
     color := :black
