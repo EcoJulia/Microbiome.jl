@@ -11,6 +11,10 @@ export
     filterabund,
     relativeabundance,
     relativeabundance!,
+    rownormalize,
+    rownormalize!,
+    colnormalize,
+    colnormalize!,
     ## similarity
     getdm,
     getrowdm,
