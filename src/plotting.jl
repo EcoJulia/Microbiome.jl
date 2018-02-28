@@ -7,35 +7,34 @@
     principalcoord(pc, 1), principalcoord(pc,2)
 end
 
-mytest(a) = a+3
-
-@userplot AbundancePlot
-@recipe function f(hb::AbundancePlot; topabund=10, sorton=:top)
-    abun = hb.args[1]
-
-    topabund = min(topabund, length(abun.features))
-    # TODO: add option to sort on `abun.samples...`
-    in(sorton, [:top, :hclust]) || error("invalid sorton option")
+@recipe function f(abun::AbundanceTable, topabund::Int=10, sorton::Symbol=:top)
+    in(sorton, [:top, :hclust, abun.samples...]) || error("invalid sorton option")
     2 < topabund < 12 || error("n must be between 2 and 12")
 
     top = filterabund(abun, topabund)
 
+    c = distinguishable_colors(topabund+1)
+
     rows = top.features
+    foo = top.table'
 
     if sorton == :top
-        srt = sortperm(top.features[topabund+1], rev=true)
+        srt = sortperm([top[topabund+1,i] for i in 1:size(top,2)], rev=true)
     elseif sorton == :hclust
         DM = getdm(top, BrayCurtis())
-        coalesce.(DM, 1.)
         hc = hclust(DM, :single)
         srt = hc.order
     else
         error("invalid sorton option")
     end
 
-    bar_position := :stack
-    label := top.features
-    StatPlots.GroupedBar((1:nsites(top), top.occurrences[srt, :]))
+
+    @series begin
+        bar_position := :stack
+        color --> c
+        label := top.features
+        StatPlots.GroupedBar((1:size(foo,1), foo[srt,:]))
+    end
 end
 
 
