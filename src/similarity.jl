@@ -74,8 +74,9 @@ end
 
 function sortedeig(M::Array{Float64,2})
     f = eigfact(M)
-    p = sortperm(f.values, rev = true)
-    return LinAlg.Eigen(f.values[p], f.vectors[:,p])
+    v = real.(f.values)
+    p = sortperm(v, rev = true)
+    return LinAlg.Eigen(v[p], real.(f.vectors[:,p]))
 end
 
 
