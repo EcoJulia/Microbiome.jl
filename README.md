@@ -1,3 +1,5 @@
+![Microbiome.jl logo](logo.png)
+
 # Microbiome.jl <small>For analysis of microbiome and microbial community data</small>
 
 [![Latest Release](https://img.shields.io/github/release/BioJulia/Microbiome.jl.svg)](https://github.com/BioJulia/Microbiome.jl/releases/latest)

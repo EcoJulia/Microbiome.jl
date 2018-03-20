@@ -45,6 +45,35 @@ end
 
 filterabund(df::DataFrame, n::Int=10) = filterabund(AbundanceTable(df), n)
 
+function rownormalize!(abt::AbundanceTable)
+    for i in 1:size(abt, 1)
+        rowmax = maximum(abt.table[i,:])
+        for j in 1:size(abt, 2)
+            abt.table[i,j] /= rowmax
+        end
+    end
+end
+
+function rownormalize(abt::AbundanceTable)
+    abt = deepcopy(abt)
+    rownormalize!(abt)
+    return abt
+end
+
+function colnormalize!(abt::AbundanceTable)
+    for j in 1:size(abt, 2)
+        colmax = maximum(abt.table[:,j])
+        for i in 1:size(abt, 1)
+            abt.table[i,j] /= colmax
+        end
+    end
+end
+
+function colnormalize(abt::AbundanceTable)
+    abt = deepcopy(abt)
+    rownormalize!(abt)
+    return abt
+end
 
 function relativeabundance!(a::AbundanceTable; kind::Symbol=:fraction)
     in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
@@ -59,8 +88,6 @@ end
 
 
 function relativeabundance(a::AbundanceTable; kind::Symbol=:fraction)
-    in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
-
     relab = deepcopy(a)
     relativeabundance!(relab, kind=kind)
     return relab

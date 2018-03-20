@@ -6,36 +6,46 @@ export
     AbundanceTable,
     PCoA,
 
-    # functions
-    getdm,
+    # Functions
+    ## abundance
     filterabund,
+    relativeabundance,
+    relativeabundance!,
+    rownormalize,
+    rownormalize!,
+    colnormalize,
+    colnormalize!,
+    ## similarity
+    getdm,
     getrowdm,
     pcoa,
     eigenvalue,
     principalcoord,
-    relativeabundance,
-    relativeabundance!,
-    hclustplot,
-    panphlan_calcs,
-    annotationbar,
     optimalorder,
     optimalorder!,
-    bysample
+    ## plotting
+    hclustplot,
+    annotationbar,
+    ## utils
+    panphlan_calcs,
+    bysample,
+    taxfilter,
+    taxfilter!
 
 using RecipesBase
 using StatPlots
 using StatsBase
 using Distances
 using Colors
+using DataFrames
 
 import Clustering: Hclust, hclust
-import DataFrames: DataFrame
 import Base: getindex, setindex, length
 
 
 include("utils.jl")
 include("abundances.jl")
-include("similarity.jl")
+include("distances.jl")
 include("leafordering.jl")
 include("plotting.jl")
 include("biobakery_utils.jl")

@@ -36,6 +36,22 @@ function getdm(df::DataFrame, distance::PreMetric)
             distance)
 end
 
+function getrowdm(abt::AbundanceTable, distance::PreMetric)
+    m = abt.table'
+    return DistanceMatrix(
+            pairwise(distance, m),
+            abt.samples,
+            distance)
+end
+
+function getrowdm(arr::AbstractArray, distance::PreMetric)
+    m = arr'
+    return DistanceMatrix(
+            pairwise(distance, m),
+            Vector(1:size(arr,1)),
+            distance)
+end
+
 function getrowdm(df::DataFrame, distance::PreMetric)
     m = Matrix(df[2:end])'
     return DistanceMatrix(
@@ -44,13 +60,6 @@ function getrowdm(df::DataFrame, distance::PreMetric)
             distance)
 end
 
-function getrowdm(abt::AbundanceTable, distance::PreMetric)
-    m = abt.table'
-    return DistanceMatrix(
-            pairwise(distance, m),
-            abt.samples,
-            distance)
-end
 
 function pcoa(D::DistanceMatrix; correct_neg::Bool=false)
     n = size(D,1)
@@ -74,8 +83,9 @@ end
 
 function sortedeig(M::Array{Float64,2})
     f = eigfact(M)
-    p = sortperm(f.values, rev = true)
-    return LinAlg.Eigen(f.values[p], f.vectors[:,p])
+    v = real.(f.values)
+    p = sortperm(v, rev = true)
+    return LinAlg.Eigen(v[p], real.(f.vectors[:,p]))
 end
 
 

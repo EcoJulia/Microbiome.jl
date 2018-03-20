@@ -7,7 +7,7 @@
     principalcoord(pc, 1), principalcoord(pc,2)
 end
 
-@recipe function f(abun::AbundanceTable; topabund::Int=10, sorton::Symbol=:top)
+@recipe function f(abun::AbundanceTable, topabund::Int=10, sorton::Symbol=:top)
     in(sorton, [:top, :hclust, abun.samples...]) || error("invalid sorton option")
     2 < topabund < 12 || error("n must be between 2 and 12")
 
@@ -99,8 +99,7 @@ end
         newy = maximum([y1,y2]) + h
         append!(ys, [y1,newy,newy,y2])
     end
-    @show xs
-    @show ys
+
     xlims := (0.5, length(hc.order) + 0.5)
     legend := false
     color := :black
