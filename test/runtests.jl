@@ -8,62 +8,62 @@ using Base.Test
     M = rand(100, 10)
     df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
 
-    a1 = AbundanceTable(M)
-    a2 = AbundanceTable(df)
+    a1 = abundancetable(M)
+    a2 = abundancetable(df)
 
-    abund = AbundanceTable(
+    abund = abundancetable(
         M, ["sample_$x" for x in 1:10],
         ["feature_$x" for x in 1:100])
 
-    @test a1.table == a2.table == abund.table
+    @test a1.occurrences == a2.occurrences == abund.occurrences
 
     # Normalization functions
     relab_fract = relativeabundance(abund)
-    @test typeof(relab_fract) <: AbundanceTable
+    @test typeof(relab_fract) <: AbstractComMatrix
 
     relab_perc = relativeabundance(abund, kind=:percent)
-    @test typeof(relab_perc) <: AbundanceTable
+    @test typeof(relab_perc) <: AbstractComMatrix
 
     rnorm = rownormalize(abund)
     cnorm = colnormalize(abund)
 
-    @test size(abund) == (100, 10)
-    @test size(relab_fract) == (100, 10)
-    @test size(relab_perc) == (100, 10)
-    @test size(rnorm) == (100, 10)
-    @test size(cnorm) == (100, 10)
+    @test size(abund) == (nfeatures(abund), nsamples(abund))
+    @test size(relab_fract) == (nfeatures(relab_fract), nsamples(relab_fract))
+    @test size(relab_perc) == (nfeatures(relab_perc), nsamples(relab_perc))
+    @test size(rnorm) == (nfeatures(rnorm), nsamples(rnorm))
+    @test size(cnorm) == (nfeatures(cnorm), nsamples(cnorm))
 
     for j in 1:10
-        @test sum(relab_fract[:, j]) ≈ 1
-        @test sum(relab_perc[:, j]) ≈ 100
+        @test sum(getsample(relab_fract, j)) ≈ 1
+        @test sum(getsample(relab_perc, j)) ≈ 100
     end
 
-    for i in 1:size(rnorm,1)
-        @test maximum(rnorm[i,:]) ≈ 1
+    for i in 1:nfeatures(rnorm)
+        @test maximum(getfeature(rnorm,i)) ≈ 1
     end
 
-    for j in 1:size(cnorm,2)
-        @test maximum(cnorm[:,j]) ≈ 1
+    for j in 1:nsamples(cnorm)
+        @test maximum(getsample(cnorm, j)) ≈ 1
     end
 
     # Filtering Functions
     filt = filterabund(relab_fract, 5)
-    @test typeof(filt) <: AbundanceTable
-    @test typeof(filterabund(df, 5)) <: AbundanceTable
+    @test typeof(filt) <: AbstractComMatrix
+    @test typeof(filterabund(df, 5)) <: AbstractComMatrix
 
     @test size(filt) == (6, 10)
     for i in 1:10
-        @test sum(filt[:, i]) ≈ 1
+        @test sum(getsample(filt, i)) ≈ 1
     end
 
-    @test filt.features[end] == "other"
+    @test featurenames(filt)[end] == "other"
 end
 
 @testset "Distances" begin
     # Constructors
     M = rand(100, 10)
     df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
-    abund = AbundanceTable(
+    abund = abundancetable(
         M, ["sample_$x" for x in 1:10],
         ["feature_$x" for x in 1:100])
 
