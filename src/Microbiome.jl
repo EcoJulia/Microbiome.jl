@@ -45,7 +45,7 @@ import Base: getindex, setindex, length
 
 include("utils.jl")
 include("abundances.jl")
-include("similarity.jl")
+include("distances.jl")
 include("leafordering.jl")
 include("plotting.jl")
 include("biobakery_utils.jl")
