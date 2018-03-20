@@ -1,11 +1,21 @@
 using Microbiome
 using Distances
+using DataFrames
 using Base.Test
 
 @testset "Abundances" begin
+    # Constructors
+    M = rand(100, 10)
+    df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
+
+    a1 = AbundanceTable(M)
+    a2 = AbundanceTable(df)
+
     abund = AbundanceTable(
-        rand(100, 10), ["sample_$x" for x in 1:10],
+        M, ["sample_$x" for x in 1:10],
         ["feature_$x" for x in 1:100])
+
+    @test a1.table == a2.table == abund.table
 
     relab_fract = relativeabundance(abund)
     @test typeof(relab_fract) <: AbundanceTable
