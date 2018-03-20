@@ -71,6 +71,8 @@ p = pcoa(dm, correct_neg=true)
 plot(p, title="Random PCoA")
 ```
 
+![hclust plot 1](docs/img/pcoaplot1.png)
+
 ### Optimal Leaf Ordering
 
 I've also provided a plotting recipe for making treeplots for `Hclust` objects
