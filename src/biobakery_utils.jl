@@ -57,7 +57,7 @@ Filter a MetaPhlAn table (df) to a particular taxon level.
 If shortnames is true (default), also changes names in the first column to
 remove higher order taxa
 """
-function taxfilter!(taxonomic_profile::DataFrame, level::Int=7; shortnames::Bool=true)
+function taxfilter!(taxonomic_profile::DataFrames.DataFrame, level::Int=7; shortnames::Bool=true)
     taxonomic_profile = taxonomic_profile[length.(
         split.(taxonomic_profile[1], '|')) .== level, :]
     if shortnames
@@ -66,13 +66,13 @@ function taxfilter!(taxonomic_profile::DataFrame, level::Int=7; shortnames::Bool
     end
 end
 
-function taxfilter(taxonomic_profile::DataFrame, level::Int=7; shortnames::Bool=true)
+function taxfilter(taxonomic_profile::DataFrames.DataFrame, level::Int=7; shortnames::Bool=true)
     filt = deepcopy(taxonomic_profile)
     taxfilter!(filt, level, shortnames)
     return filt
 end
 
-function taxfilter!(taxonomic_profile::DataFrame, level::Symbol=:species; shortnames::Bool=true)
+function taxfilter!(taxonomic_profile::DataFrames.DataFrame, level::Symbol=:species; shortnames::Bool=true)
     taxlevels = Dict([
         :kingom     => 1,
         :phylum     => 2,
@@ -86,7 +86,7 @@ function taxfilter!(taxonomic_profile::DataFrame, level::Symbol=:species; shortn
     taxfilter!(taxonomic_profile, taxlevels[level], shortnames)
 end
 
-function taxfilter(taxonomic_profile::DataFrame, level::Symbol=:species; shortnames::Bool=true)
+function taxfilter(taxonomic_profile::DataFrames.DataFrame, level::Symbol=:species; shortnames::Bool=true)
     filt = deepcopy(taxonomic_profile)
     taxfilter!(filt, level, shortnames)
 end
