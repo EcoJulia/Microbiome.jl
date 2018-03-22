@@ -20,7 +20,7 @@ function filterabund(abun::AbstractComMatrix, n::Int=minimum(10, nfeatures(abun)
 
     newabun = getfeature(abun, srt[1:n])
 
-    remainder = [sum(abun.occurrences[srt[n+1:end], i]) for i in 1:size(abun, 2)]'
+    remainder = [sum(occurrences(abun)[srt[n+1:end], i]) for i in 1:size(abun, 2)]'
     newabun = vcat(newabun, remainder)
     newrows = cat(1, featurenames(abun)[srt[1:n]], ["other"])
 
@@ -31,9 +31,9 @@ filterabund(df::DataFrame, n::Int=10) = filterabund(abundancetable(df), n)
 
 function rownormalize!(abt::AbstractComMatrix)
     for i in 1:size(abt, 1)
-        rowmax = maximum(abt.occurrences[i,:])
+        rowmax = maximum(occurrences(abt)[i,:])
         for j in 1:size(abt, 2)
-            abt.occurrences[i,j] /= rowmax
+            occurrences(abt)[i,j] /= rowmax
         end
     end
 end
@@ -46,9 +46,9 @@ end
 
 function colnormalize!(abt::AbstractComMatrix)
     for j in 1:size(abt, 2)
-        colmax = maximum(abt.occurrences[:,j])
+        colmax = maximum(occurrences(abt)[:,j])
         for i in 1:size(abt, 1)
-            abt.occurrences[i,j] /= colmax
+            occurrences(abt)[i,j] /= colmax
         end
     end
 end
@@ -65,7 +65,7 @@ function relativeabundance!(a::AbstractComMatrix; kind::Symbol=:fraction)
     for i in 1:nsamples(a)
         s = sum(getsample(a,i))
         for x in 1:nfeatures(a)
-            kind == :fraction ? a.occurrences[x,i] /= s : a.occurrences[x,i] /= (s / 100.)
+            kind == :fraction ? occurrences(a)[x,i] /= s : occurrences(a)[x,i] /= (s / 100.)
         end
     end
 end
