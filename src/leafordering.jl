@@ -15,56 +15,56 @@ Based on:
 """
 function optimalorder(hc::Hclust, dm::Array{Float64,2})
     ord = copy(hc.order)
-    ext = Tuple[]
-    orderleaves!(ord, ext, hc, dm)
+    orderleaves!(ord, hc, dm)
     return ord
 end
 
 
 function optimalorder!(hc::Hclust, dm::Array{Float64,2})
     ord = hc.order
-    ext = Tuple[]
-    orderleaves!(ord, ext, hc, dm)
+    orderleaves!(ord, hc, dm)
 end
 
 
-function orderleaves!(order::Vector{Int}, extents::Vector{Tuple}, hcl::Hclust, dm::Array{Float64,2})
+function orderleaves!(order::Vector{Int}, hcl::Hclust, dm::Array{Float64,2})
+    extents = Tuple{Int,Int}[]
     for (vl, vr) in zip(hcl.merge[:,1], hcl.merge[:,2])
         (u, m, uidx, midx) = leaflocs(vl, order, extents)
-        (w, k, widx, kidx) = leaflocs(vr, order, extents)
+        (k, w, kidx, widx) = leaflocs(vr, order, extents)
         if vl < 0 && vr < 0
-            push!(extents, (m, k))
+            # Nothing needs to be done
         elseif vl < 0
             flp = flip1(m, k, w, dm)
-            flp == 2 && reverse!(order, widx, kidx)
-            push!(extents, (m, widx))
+            flp == 2 && reverse!(order, kidx, widx)
+        elseif vr < 0
+            flp = flip1(k, m, u, dm)
+            flp == 2 && reverse!(order, uidx, midx)
         elseif vl > 0 && vr > 0
             flp = flip2(u, m, k, w, dm)
             (flp == 2 || flp == 4) && reverse!(order, uidx, midx)
-            (flp == 3 || flp == 4) && reverse!(order, widx, uidx)
-            push!(extents, (uidx, widx))
+            (flp == 3 || flp == 4) && reverse!(order, kidx, widx)
         else
             error("invalid 'merge' order in Hclust: ($vl, $vr) ")
         end
+        push!(extents, (uidx, widx))
     end
 end
 
 
-function leaflocs(v::Int, order::Vector{Int}, extents::Vector{Tuple})
+function leaflocs(v::Int, order::Vector{Int}, extents::Vector{Tuple{Int,Int}})
+    ##################
     if v < 0
-        outer = 0
-        inner = findfirst(abs(v) .== order)
-        branchleft = 0
-        branchright = 0
+        leftextent = findfirst(abs(v) .== order)
+        rightextent = leftextent
     elseif v > 0
-        branchleft = extents[abs(v)][1]
-        branchright = extents[abs(v)][2]
-        outer = order[branchleft]
-        inner = order[branchright]
+        leftextent = extents[v][1]
+        rightextent = extents[v][2]
     else
-        error("leaf postition cannot be zero")
+        error("leaf position cannot be zero")
     end
-    return outer, inner, branchleft, branchright
+    left = order[leftextent]
+    right = order[rightextent]
+    return left, right, leftextent, rightextent
 end
 
 
@@ -86,6 +86,5 @@ For 2 multi-leaf branches, determine if one or two flips is required
 4 = flip both
 """
 function flip2(u::Int, m::Int, k::Int, w::Int, dm::Array{Float64,2})
-    s = sortperm([dm[m,k], dm[u,k], dm[m,w], dm[u,w]])
-    return s[1]
+    indmin([dm[m,k], dm[u,k], dm[m,w], dm[u,w]])
 end

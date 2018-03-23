@@ -1,93 +1,77 @@
 # Methods for absolute and relative abundances
 
-struct AbundanceTable{T<:Real} <: AbstractArray{T,2}
-    table::Array{T,2}
-    samples::Vector{S} where S
-    features::Vector{R} where R
-end
-
-function AbundanceTable(df::DataFrame)
-    return AbundanceTable(
-            Matrix(df[:,2:end]),
-            names(df[2:end]),
-            Vector(df[1]))
-end
-function AbundanceTable(table::Array{T,2}) where T<:Real
-    return AbundanceTable(
-             table,
-             Vector{Int64}(1:size(table,2)),
-             Vector{Int64}(1:size(table,1)))
-end
-
-@forward_func AbundanceTable.table Base.getindex, Base.setindex, Base.setindex!, Base.length, Base.size
-
+abundancetable(df::DataFrame) = ComMatrix(Matrix(df[2:end]), string.(df[1]), String.(names(df[2:end])))
+abundancetable(table::AbstractArray{T,2}, site = ["sample_$x" for x in indices(table, 2)],
+    species = ["feature_$x" for x in indices(table, 1)]) where T<:Real =
+    ComMatrix(table, species, site)
 
 """
-Filter an abundance table to the top `n` species accross all samples
+Filter an abundance table to the top `n` features accross all samples
 
-This function also adds a row for "other", which sums the
+This function also adds a row for "other", which sums the abundances of the
+remaining features.
 """
-function filterabund(abun::AbundanceTable, n::Int=10)
+function filterabund(abun::AbstractComMatrix, n::Int=minimum(10, nfeatures(abun)))
     # TODO: add prevalence filter
 
-    totals = [sum(abun[i,:]) for i in 1:size(abun, 1)]
+    totals = featuretotals(abun)
 
     srt = sortperm(totals, rev=true)
 
-    newabun = abun[srt[1:n], :]
+    newabun = getfeature(abun, srt[1:n])
 
-    remainder = [sum(abun[srt[n+1:end], i]) for i in 1:size(abun, 2)]'
+    remainder = [sum(occurrences(abun)[srt[n+1:end], i]) for i in 1:size(abun, 2)]'
     newabun = vcat(newabun, remainder)
-    newrows = cat(1, abun.features[srt[1:n]], ["other"])
+    newrows = cat(1, featurenames(abun)[srt[1:n]], ["other"])
 
-    return AbundanceTable(newabun, abun.samples, newrows)
+    return abundancetable(newabun, samplenames(abun), newrows)
 end
 
-filterabund(df::DataFrame, n::Int=10) = filterabund(AbundanceTable(df), n)
+filterabund(df::DataFrame, n::Int=10) = filterabund(abundancetable(df), n)
 
-function rownormalize!(abt::AbundanceTable)
+function rownormalize!(abt::AbstractComMatrix)
     for i in 1:size(abt, 1)
-        rowmax = maximum(abt.table[i,:])
+        rowmax = maximum(occurrences(abt)[i,:])
         for j in 1:size(abt, 2)
-            abt.table[i,j] /= rowmax
+            occurrences(abt)[i,j] /= rowmax
         end
     end
 end
 
-function rownormalize(abt::AbundanceTable)
+function rownormalize(abt::AbstractComMatrix)
     abt = deepcopy(abt)
     rownormalize!(abt)
     return abt
 end
 
-function colnormalize!(abt::AbundanceTable)
+function colnormalize!(abt::AbstractComMatrix)
     for j in 1:size(abt, 2)
-        colmax = maximum(abt.table[:,j])
+        colmax = maximum(occurrences(abt)[:,j])
         for i in 1:size(abt, 1)
-            abt.table[i,j] /= colmax
+            occurrences(abt)[i,j] /= colmax
         end
     end
 end
 
-function colnormalize(abt::AbundanceTable)
+function colnormalize(abt::AbstractComMatrix)
     abt = deepcopy(abt)
     rownormalize!(abt)
     return abt
 end
 
-function relativeabundance!(a::AbundanceTable; kind::Symbol=:fraction)
+function relativeabundance!(a::AbstractComMatrix; kind::Symbol=:fraction)
     in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
 
-    for i in 1:size(a, 2)
-        s = sum(a[:,i])
-        for x in 1:size(a,1)
-            kind == :fraction ? a[x,i] /= s : a[x,i] /= (s / 100.)
+    for i in 1:nsamples(a)
+        s = sum(getsample(a,i))
+        for x in 1:nfeatures(a)
+            kind == :fraction ? occurrences(a)[x,i] /= s : occurrences(a)[x,i] /= (s / 100.)
         end
     end
 end
 
 
-function relativeabundance(a::AbundanceTable; kind::Symbol=:fraction)
+function relativeabundance(a::AbstractComMatrix; kind::Symbol=:fraction)
     relab = deepcopy(a)
     relativeabundance!(relab, kind=kind)
     return relab

@@ -7,16 +7,16 @@
     principalcoord(pc, 1), principalcoord(pc,2)
 end
 
-@recipe function f(abun::AbundanceTable, topabund::Int=10, sorton::Symbol=:top)
-    in(sorton, [:top, :hclust, abun.samples...]) || error("invalid sorton option")
+@recipe function f(abun::AbstractComMatrix, topabund::Int=10, sorton::Symbol=:top)
+    in(sorton, [:top, :hclust, samplenames(abun)...]) || error("invalid sorton option")
     2 < topabund < 12 || error("n must be between 2 and 12")
 
     top = filterabund(abun, topabund)
 
     c = distinguishable_colors(topabund+1)
 
-    rows = top.features
-    foo = top.table'
+    rows = featurenames(abun)
+    foo = top.occurrences'
 
     if sorton == :top
         srt = sortperm([top[topabund+1,i] for i in 1:size(top,2)], rev=true)
@@ -32,7 +32,7 @@ end
     @series begin
         bar_position := :stack
         color --> c
-        label := top.features
+        label := featurenames(abun)
         StatPlots.GroupedBar((1:size(foo,1), foo[srt,:]))
     end
 end

@@ -52,12 +52,12 @@ Filter a MetaPhlAn table (df) to a particular taxon level.
 5 = Family
 6 = Genus
 7 = Species
-8 = Strain
+8 = Subspecies
 
 If shortnames is true (default), also changes names in the first column to
 remove higher order taxa
 """
-function taxfilter!(taxonomic_profile::DataFrame, level::Int=7; shortnames::Bool=true)
+function taxfilter!(taxonomic_profile::DataFrames.DataFrame, level::Int; shortnames::Bool=true)
     taxonomic_profile = taxonomic_profile[length.(
         split.(taxonomic_profile[1], '|')) .== level, :]
     if shortnames
@@ -66,13 +66,9 @@ function taxfilter!(taxonomic_profile::DataFrame, level::Int=7; shortnames::Bool
     end
 end
 
-function taxfilter(taxonomic_profile::DataFrame, level::Int=7; shortnames::Bool=true)
-    filt = deepcopy(taxonomic_profile)
-    taxfilter!(filt, level, shortnames)
-    return filt
-end
+taxfilter!(tp::DataFrames.DataFrame) = taxfilter(tp, 7)
 
-function taxfilter!(taxonomic_profile::DataFrame, level::Symbol=:species; shortnames::Bool=true)
+function taxfilter!(taxonomic_profile::DataFrames.DataFrame, level::Symbol; shortnames::Bool=true)
     taxlevels = Dict([
         :kingom     => 1,
         :phylum     => 2,
@@ -83,12 +79,23 @@ function taxfilter!(taxonomic_profile::DataFrame, level::Symbol=:species; shortn
         :species    => 7,
         :subspecies => 8])
     in(level, keys(taxlevels)) || error("$level not a valid taxonomic level")
-    taxfilter!(taxonomic_profile, taxlevels[level], shortnames)
+    taxfilter!(taxonomic_profile, taxlevels[level], shortnames=shortnames)
 end
 
-function taxfilter(taxonomic_profile::DataFrame, level::Symbol=:species; shortnames::Bool=true)
+
+function taxfilter(taxonomic_profile::DataFrames.DataFrame, level::Int=7; shortnames::Bool=true)
     filt = deepcopy(taxonomic_profile)
-    taxfilter!(filt, level, shortnames)
+    taxfilter!(filt, level, shortnames=shortnames)
+    return filt
+end
+
+taxfilter(tp::DataFrames.DataFrame) = taxfilter(tp, 7)
+
+
+function taxfilter(taxonomic_profile::DataFrames.DataFrame, level::Symbol; shortnames::Bool=true)
+    filt = deepcopy(taxonomic_profile)
+    taxfilter!(filt, level, shortnames=shortnames)
+    return filt
 end
 
 #==============
