@@ -1,9 +1,10 @@
 ## Working with microbial abundances
 
-The `AbundanceTable` type is treated like a 2D array where columns are samples
-and rows are features (eg species). Sample and feature names are also stored,
-and there's a convenience function if you want to convert a `DataFrame` to an
-`AbundanceTable`, assuming the first column contains feature names:
+Tables of abundances are based off `ComMatrix` types from SpatialEcology.jl,
+where columns are samples and rows are features (eg species). Sample and feature
+names are also stored, and there's a convenience function if you want to convert
+a `DataFrame` to a `ComMatrix`, assuming the first column contains feature
+names:
 
 ```julia
 julia> using Microbiome
@@ -20,12 +21,46 @@ julia> df = DataFrame(species=["E. coli", "B. fragilis", "L. casei"],
 │ 2   │ B. fragilis │ 4       │ 8       │ 3       │
 │ 3   │ L. casei    │ 5       │ 0       │ 4       │
 
-julia> abund = AbundanceTable(df)
-3×3 Microbiome.AbundanceTable{Int64}:
- 1  3  0
- 4  8  3
- 5  0  4
+julia> abund = abundancetable(df)
+ComMatrix with 3 species in 3 sites
+
+Species names:
+E. coli, B. fragilis, L. casei
+
+Site names:
+sample1, sample2, sample3
 ```
+
+Forgive the clutter... ComMatricies name rows as species (which is true in this
+case, but need not be), and columns are "sites" rather than samples. That will
+be fixed eventually.
+
+```julia
+julia> samplenames(abund)
+3-element Array{String,1}:
+ "sample1"
+ "sample2"
+ "sample3"
+
+julia> featurenames(abund)
+3-element Array{String,1}:
+ "E. coli"
+ "B. fragilis"
+ "L. casei"
+
+julia> sampletotals(abund) # this is column sums
+3-element Array{Int64,1}:
+ 10
+ 11
+  7
+
+julia> featuretotals(abund) # and row sums
+3-element Array{Int64,1}:
+  4
+ 15
+  9
+```
+
 
 If you want relative abundance, you can do `relativeabundance(abund)` or
 `relativeabundance!(abund)`:
