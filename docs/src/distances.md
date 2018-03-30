@@ -10,13 +10,16 @@ in manually, or generate it from an `AbundanceTable`.
 julia> using Distances
 julia> using Microbiome
 
-julia> abund = AbundanceTable([1  3  0;
-                               4  8  3;
-                               5  0  4])
-3×3 Microbiome.AbundanceTable{Int64}:
- 1  3  0
- 4  8  3
- 5  0  4
+julia> abund = abundancetable([1  3  0;
+                                      4  8  3;
+                                      5  0  4])
+ComMatrix with 3 species in 3 sites
+
+Species names:
+feature_1, feature_2, feature_3
+
+Site names:
+sample_1, sample_2, sample_3
 
 julia> dm = getdm(abund, BrayCurtis())
 3×3 Microbiome.DistanceMatrix{Float64}:
@@ -46,7 +49,7 @@ julia> principalcoord(p, 1)
   0.79841
  -0.547212
 
-julia> p.variance_explained
+julia> variance(p, [1,2])
 2-element Array{Float64,1}:
  0.979751
  0.0202492
@@ -59,9 +62,9 @@ Some convenience plotting types are available using [`RecipesBase`][1].
 [1]: https://github.com/juliaplots/recipesbase.jl
 
 ```julia
-using StatPlots # TODO: add actual example
+using StatPlots
 
-abund = AbundanceTable(
+abund = abundancetable(
     rand(100, 10), ["sample_$x" for x in 1:10],
     ["feature_$x" for x in 1:100])
 
