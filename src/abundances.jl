@@ -1,7 +1,7 @@
 # Methods for absolute and relative abundances
 
 abundancetable(df::DataFrame) = ComMatrix(
-    Matrix{Float64,2}(df[2:end]),
+    Matrix{Float64}(df[2:end]),
     string.(df[1]),
     String.(names(df[2:end])))
 
@@ -66,7 +66,7 @@ end
 
 function relativeabundance!(a::AbstractComMatrix; kind::Symbol=:fraction)
     in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
-    if eltype(a.occurences) != Float64; a.occurences = Float64.(a.occurences) end
+    if eltype(a.occurrences) != Float64; a.occurrences = Float64.(a.occurrences) end
     for i in 1:nsamples(a)
         s = sum(getsample(a,i))
         for x in 1:nfeatures(a)
