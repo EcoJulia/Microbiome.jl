@@ -10,6 +10,7 @@ end
 @userplot AbundancePlot
 @recipe function f(hb::AbundancePlot; topabund=10, sorton=:top)
     abun = hb.args[1]
+    typeof(abun) <: AbstractComMatrix || error("AbundancePlot not defined for $(typeof(abun))")
 
     topabund = min(topabund, nfeatures(abun))
     in(sorton, [:top, :hclust, Symbol.(samplenames(abun))...]) || error("invalid sorton option") #replace `, abun.samples...` in the Array, but the code only handles :top and :hclust below anyway
@@ -55,8 +56,11 @@ function annotationbar(colors::Array{T,1}) where T
         framestyle=false)
 end
 
+@userplot TreePositions
+@recipe function f(hb::TreePositions; useheight::Bool=false)
+    hc = hb.args[1]
+    typeof(hc) <: Hclust || error("treepositions is only defined for Hclust")
 
-function treepositions(hc::Hclust; useheight::Bool=false)
     order = StatsBase.indexmap(hc.order)
     positions = Dict{}()
     for (k,v) in order
