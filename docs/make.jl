@@ -6,10 +6,10 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "Microbial Abundances" => "abundances.md",
-        "Distances & Dissimilarity" => "similarities.md",
+        "Distances & Dissimilarity" => "distances.md",
         "Contributing" => "contributing.md"
     ],
-    authors = "Kevin Bonham."
+    authors = "Kevin Bonham, PhD"
 )
 
 deploydocs(

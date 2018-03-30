@@ -6,16 +6,14 @@ this, I'm using an interface with `Distances.jl` to generate a symetric
 specifying which type of distance was used to calulate it. You can load one
 in manually, or generate it from an `AbundanceTable`.
 
-```@example 2
+```@repl 2
 using Distances
 using Microbiome
 
 abund = abundancetable([1  3  0;
                         4  8  3;
-                        5  0  4])
-```
+                        5  0  4]);
 
-```@example 2
 dm = getdm(abund, BrayCurtis())
 ```
 
@@ -26,11 +24,9 @@ described in [Lingoes (1971)][2]
 ```@example 2
 p = pcoa(dm)
 
-@show eigenvalue(p, 2))
-
-@show principalcoord(p, 1)
-
-@show variance(p, [1,2])
+eigenvalue(p, 2))
+principalcoord(p, 1)
+variance(p, [1,2])
 ```
 
 ## Plotting
@@ -39,7 +35,7 @@ Some convenience plotting types are available using [`RecipesBase`][1].
 
 [1]: https://github.com/juliaplots/recipesbase.jl
 
-```@example 2
+```@repl 2
 using StatPlots
 
 srand(1) # hide
@@ -54,7 +50,7 @@ plot(p, title="Random PCoA")
 savefig("pcoplot.png"); nothing # hide
 ```
 
-![hclust plot 1](pcoaplot.png)
+![pcoa plot](pcoaplot.png)
 
 ### Optimal Leaf Ordering
 
@@ -63,15 +59,15 @@ from the [`Clustering.jl`][2] package:
 
 [2]: http://github.com/JuliaStats/Clustering.jl
 
-```@example 2
+```@repl 2
 using Hclust
 
 dm = [0. .1 .2
       .1 0. .15
-      .2 .15 0.]
+      .2 .15 0.];
 
-h = hclust(dm, :single)
-h.labels = ["a", "b", "c"]
+h = hclust(dm, :single);
+h.labels = ["a", "b", "c"];
 
 plot(h)
 savefig("hclustplot.png"); nothing # hide
@@ -87,7 +83,7 @@ with a method derived from the paper:
 
 [3]: https://doi.org/10.1093/bioinformatics/17.suppl_1.S22
 
-```@example 2
+```@repl 2
 optimalorder!(h, dm)
 plot(h)
 
