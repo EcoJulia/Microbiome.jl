@@ -50,15 +50,15 @@ julia> featurenames(abund)
 
 julia> sampletotals(abund) # this is column sums
 3-element Array{Int64,1}:
- 10
- 11
-  7
+ 10.0
+ 11.0
+  7.0
 
-julia> featuretotals(abund) # and row sums
-3-element Array{Int64,1}:
-  4
- 15
-  9
+julia> featuretotals(abund)
+3-element Array{Float64,1}:
+  4.0
+ 15.0
+  9.0
 ```
 
 
@@ -66,11 +66,13 @@ If you want relative abundance, you can do `relativeabundance(abund)` or
 `relativeabundance!(abund)`:
 
 ```julia
-julia> abund = relativeabundance(abund)
-3×3 Microbiome.AbundanceTable{Float64}:
- 0.1  0.272727  0.0
- 0.4  0.727273  0.428571
- 0.5  0.0       0.571429
+julia> relativeabundance!(abund)
+
+julia> sampletotals(abund)
+3-element Array{Float64,1}:
+ 1.0
+ 1.0
+ 1.0
  ```
 
 You can also filter on the `n` most abundant features accross the dataset. This
@@ -80,11 +82,15 @@ reassign if you want to update:
 
 ```julia
 julia> abund2 = filterabund(abund, 1)
-2×3 Microbiome.AbundanceTable{Float64}:
- 0.4  0.727273  0.428571
- 0.6  0.272727  0.571429
+ComMatrix with 2 species in 3 sites
 
-julia> abund2.features
+Species names:
+B. fragilis, other
+
+Site names:
+sample1, sample2, sample3
+
+julia> featurenames(abund2)
 2-element Array{String,1}:
  "B. fragilis"
  "other"
@@ -99,12 +105,22 @@ Some convenience plotting types are available using [`RecipesBase`][1] and
 [2]: https://github.com/juliaplots/StatPlots.jl
 
 ```julia
-using StatPlots # TODO: add actual example
+julia> using StatPlots # TODO: add actual example
 
-abund = AbundanceTable(
-    rand(100, 10), ["sample_$x" for x in 1:10],
-    ["feature_$x" for x in 1:100])
+julia> abund = abundancetable(
+           rand(100, 10), ["sample_$x" for x in 1:10],
+           ["feature_$x" for x in 1:100])
+ComMatrix with 100 species in 10 sites
 
-abund = relativeabundance(abund)
-plot(abund, title="Random abundance")
+Species names:
+feature_1, feature_2, feature_3...feature_99, feature_100
+
+Site names:
+sample_1, sample_2, sample_3...sample_9, sample_10
+
+julia> relativeabundance!(abund)
+
+julia> abundanceplot(abund)
 ```
+
+![](/img/abundanceplot.png)
