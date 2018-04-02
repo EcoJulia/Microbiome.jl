@@ -14,8 +14,8 @@ Based on:
 [Bar-Joseph et. al. "Fast optimal leaf ordering for hierarchical clustering." _Bioinformatics_. (2001)](https://doi.org/10.1093/bioinformatics/17.suppl_1.S22)
 """
 function optimalorder(hc::Hclust, dm::Array{Float64,2})
-    ord = copy(hc.order)
-    orderleaves!(ord, hc, dm)
+    ord = deepcopy(hc)
+    optimalorder!(ord, dm)
     return ord
 end
 

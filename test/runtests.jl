@@ -1,6 +1,9 @@
 using Microbiome
 using Distances
 using DataFrames
+using Clustering
+using Colors
+using StatPlots
 using Base.Test
 
 @testset "Abundances" begin
@@ -57,10 +60,20 @@ using Base.Test
     end
 
     @test featurenames(filt)[end] == "other"
+
+    # Plotting
+
+    @test typeof(abundanceplot(abund, topabund=5)) <: Plots.Plot
+    @test_skip typeof(abundanceplot(abund, sorton=:hclust)) <: Plots.Plot # Needs BrayCurtis()
+    @test_skip typeof(abundanceplot(abund, sorton=:x1)) <: Plots.Plot # Needs method feature sorting
+
+    @test typeof(annotationbar(parse.(Color, ["red", "white", "blue"]))) <: Plots.Plot
+
 end
 
 @testset "Distances" begin
     # Constructors
+    srand(1)
     M = rand(100, 10)
     df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
     abund = abundancetable(
@@ -87,8 +100,37 @@ end
     # PCoA
     p = pcoa(dm, correct_neg=true)
     @test sum(p.variance_explained) ≈ 1
-    for i in p.eigenvalues; @test i > 0; end
+    for i in 1:size(p, 2)
+        @test eigenvalue(p, i) > 0
+        @test typeof(eigenvalue(p, i)) <: Real
+    end
+
+    @test sum([variance(p, i) for i in 1:size(p,2)]) ≈ 1
+    @test sort(variance(p, 1:size(p,2)), rev=true) == variance(p, 1:size(p,2))
 
     @test length(principalcoord(p, 1)) == size(dm, 1)
-    for i in 1:9; @test typeof(eigenvalue(p, i)) <: Real; end
+    @test principalcoord(p, 1:size(p,2)) == p.eigenvectors
+
+    # Plotting
+    @test typeof(plot(p)) <: Plots.Plot
+    @test typeof(plot(p)) <: Plots.Plot
+
+end
+
+@testset "Leaf Ordering" begin
+    srand(42)
+    m = rand(100, 10)
+
+    dm = pairwise(Jaccard(), m)
+    h = hclust(dm, :single);
+
+    ordered = optimalorder(h, dm)
+
+    @test ordered.order == [7, 3, 1, 9, 2, 6, 10, 4, 5, 8]
+    @test ordered.merge == h.merge
+
+    # Plotting
+
+    @test typeof(hclustplot(ordered)) <: Plots.Plot
+
 end
