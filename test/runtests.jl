@@ -134,3 +134,10 @@ end
     @test typeof(hclustplot(ordered)) <: Plots.Plot
 
 end
+
+@testset "Biobakery Utilities" begin
+    abund = metaphlan_import("metaphlan_test.tsv", level=:species)
+
+    @test typeof(abund) <: ComMatrix
+
+end
