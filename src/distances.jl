@@ -96,6 +96,6 @@ function getdelta(A::AbstractArray{T,2}) where T <: AbstractFloat
 end
 
 
-eigenvalue(p::PCoA, n::Int) = p.eigenvalues[n]
-principalcoord(p::PCoA, n::Int) = [p[i,n] for i in 1:size(p,1)]
-variance(p::PCoA, n::Int) = p.variance_explained[n]
+eigenvalue(p::PCoA, inds...) = p.eigenvalues[inds...]
+variance(p::PCoA, inds...) = p.variance_explained[inds...]
+principalcoord(p::PCoA, inds...) = p[:,inds...]

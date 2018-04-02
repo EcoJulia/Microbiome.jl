@@ -40,6 +40,30 @@ end
 #==============
 MetaPhlAn Utils
 ==============#
+const taxlevels = Dict([
+    :kingom     => 1,
+    :phylum     => 2,
+    :class      => 3,
+    :order      => 4,
+    :family     => 5,
+    :genus      => 6,
+    :species    => 7,
+    :subspecies => 8])
+
+function metaphlan_import(path::String; level=0, shortnames::Bool=true)
+    df = readtable(path)
+    for n in names(df)
+        df[n] = coalesce.(df[n], 0)
+    end
+
+    if typeof(level) <: Symbol
+        in(level, keys(taxlevels)) || error("$level not a valid taxonomic level")
+        level = taxlevels[level]
+    end
+
+    level > 0 && taxfilter!(df, level, shortnames=shortnames)
+    return abundancetable(df)
+end
 
 """
 taxfilter!(df::DataFrame, level::Int=7; shortnames::Bool=true)
@@ -57,39 +81,26 @@ Filter a MetaPhlAn table (df) to a particular taxon level.
 If shortnames is true (default), also changes names in the first column to
 remove higher order taxa
 """
-function taxfilter!(taxonomic_profile::DataFrames.DataFrame, level::Int; shortnames::Bool=true)
-    taxonomic_profile = taxonomic_profile[length.(
-        split.(taxonomic_profile[1], '|')) .== level, :]
+function taxfilter!(taxonomic_profile::DataFrames.DataFrame, level::Int=7; shortnames::Bool=true)
+    filter!(row->length(split(row[1], '|')) == level, taxonomic_profile)
     if shortnames
         matches = collect.(eachmatch.(r"[kpcofgs]__(\w+)", taxonomic_profile[1]))
         taxonomic_profile[1] = String.([m[level].captures[1] for m in matches])
     end
+    return taxonomic_profile
 end
 
-taxfilter!(tp::DataFrames.DataFrame) = taxfilter(tp, 7)
-
 function taxfilter!(taxonomic_profile::DataFrames.DataFrame, level::Symbol; shortnames::Bool=true)
-    taxlevels = Dict([
-        :kingom     => 1,
-        :phylum     => 2,
-        :class      => 3,
-        :order      => 4,
-        :family     => 5,
-        :genus      => 6,
-        :species    => 7,
-        :subspecies => 8])
     in(level, keys(taxlevels)) || error("$level not a valid taxonomic level")
     taxfilter!(taxonomic_profile, taxlevels[level], shortnames=shortnames)
 end
 
 
-function taxfilter(taxonomic_profile::DataFrames.DataFrame, level::Int; shortnames::Bool=true)
+function taxfilter(taxonomic_profile::DataFrames.DataFrame, level::Int=7; shortnames::Bool=true)
     filt = deepcopy(taxonomic_profile)
     taxfilter!(filt, level, shortnames=shortnames)
     return filt
 end
-
-taxfilter(tp::DataFrames.DataFrame) = taxfilter(tp, 7)
 
 function taxfilter(taxonomic_profile::DataFrames.DataFrame, level::Symbol; shortnames::Bool=true)
     filt = deepcopy(taxonomic_profile)

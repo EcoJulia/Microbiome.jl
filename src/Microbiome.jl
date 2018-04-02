@@ -36,6 +36,7 @@ export
     hclustplot,
     annotationbar,
     ## utils
+    metaphlan_import,
     panphlan_calcs,
     bysample,
     taxfilter,

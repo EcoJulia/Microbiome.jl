@@ -10,6 +10,7 @@ abundancetable(table::AbstractArray{T,2},
     species = ["feature_$x" for x in indices(table, 1)]) where T<:Real =
     ComMatrix(Float64.(table), species, site)
 
+
 """
 Filter an abundance table to the top `n` features accross all samples
 

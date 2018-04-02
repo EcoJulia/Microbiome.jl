@@ -1,8 +1,8 @@
 @recipe function f(pc::PCoA)
     xticks := false
     yticks := false
-    xlabel --> "PCo1 ($(round(pc.variance_explained[1] * 100, 2))%)"
-    ylabel --> "PCo2 ($(round(pc.variance_explained[2] * 100, 2))%)"
+    xlabel --> "PCo1 ($(round(variance(pc, 1) * 100, 2))%)"
+    ylabel --> "PCo2 ($(round(variance(pc, 2) * 100, 2))%)"
     seriestype := :scatter
     principalcoord(pc, 1), principalcoord(pc,2)
 end
@@ -13,7 +13,7 @@ end
     typeof(abun) <: AbstractComMatrix || error("AbundancePlot not defined for $(typeof(abun))")
 
     topabund = min(topabund, nfeatures(abun))
-    in(sorton, [:top, :hclust, Symbol.(samplenames(abun))...]) || error("invalid sorton option") #replace `, abun.samples...` in the Array, but the code only handles :top and :hclust below anyway
+    in(sorton, [:top, :hclust, Symbol.(samplenames(abun))...]) || error("invalid sorton option")
     2 <= topabund < 12 || error("n must be between 2 and 12")
 
     top = filterabund(abun, topabund)
@@ -27,7 +27,7 @@ end
         hc = hclust(DM, :single)
         srt = hc.order
     else
-        error("invalid sorton option")
+        error("invalid sorton option") # TODO: add feature-specific sorting
     end
 
     bar_position := :stack
