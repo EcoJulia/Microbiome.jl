@@ -98,3 +98,4 @@ end
 
 eigenvalue(p::PCoA, n::Int) = p.eigenvalues[n]
 principalcoord(p::PCoA, n::Int) = [p[i,n] for i in 1:size(p,1)]
+variance(p::PCoA, n::Int) = p.variance_explained[n]

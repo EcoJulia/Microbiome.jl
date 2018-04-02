@@ -83,14 +83,13 @@ function taxfilter!(taxonomic_profile::DataFrames.DataFrame, level::Symbol; shor
 end
 
 
-function taxfilter(taxonomic_profile::DataFrames.DataFrame, level::Int=7; shortnames::Bool=true)
+function taxfilter(taxonomic_profile::DataFrames.DataFrame, level::Int; shortnames::Bool=true)
     filt = deepcopy(taxonomic_profile)
     taxfilter!(filt, level, shortnames=shortnames)
     return filt
 end
 
 taxfilter(tp::DataFrames.DataFrame) = taxfilter(tp, 7)
-
 
 function taxfilter(taxonomic_profile::DataFrames.DataFrame, level::Symbol; shortnames::Bool=true)
     filt = deepcopy(taxonomic_profile)

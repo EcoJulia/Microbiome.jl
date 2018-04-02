@@ -1,9 +1,14 @@
 # Methods for absolute and relative abundances
 
-abundancetable(df::DataFrame) = ComMatrix(Matrix(df[2:end]), string.(df[1]), String.(names(df[2:end])))
-abundancetable(table::AbstractArray{T,2}, site = ["sample_$x" for x in indices(table, 2)],
+abundancetable(df::DataFrame) = ComMatrix(
+    Matrix{Float64}(df[2:end]),
+    string.(df[1]),
+    String.(names(df[2:end])))
+
+abundancetable(table::AbstractArray{T,2},
+    site = ["sample_$x" for x in indices(table, 2)],
     species = ["feature_$x" for x in indices(table, 1)]) where T<:Real =
-    ComMatrix(table, species, site)
+    ComMatrix(Float64.(table), species, site)
 
 """
 Filter an abundance table to the top `n` features accross all samples
@@ -61,7 +66,7 @@ end
 
 function relativeabundance!(a::AbstractComMatrix; kind::Symbol=:fraction)
     in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
-
+    if eltype(a.occurrences) != Float64; a.occurrences = Float64.(a.occurrences) end
     for i in 1:nsamples(a)
         s = sum(getsample(a,i))
         for x in 1:nfeatures(a)

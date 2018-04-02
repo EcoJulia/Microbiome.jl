@@ -7,19 +7,21 @@
     principalcoord(pc, 1), principalcoord(pc,2)
 end
 
-@recipe function f(abun::AbstractComMatrix, topabund::Int=10, sorton::Symbol=:top)
-    in(sorton, [:top, :hclust, samplenames(abun)...]) || error("invalid sorton option")
-    2 < topabund < 12 || error("n must be between 2 and 12")
+@userplot AbundancePlot
+@recipe function f(plt::AbundancePlot; topabund=10, sorton=:top)
+    abun = plt.args[1]
+    typeof(abun) <: AbstractComMatrix || error("AbundancePlot not defined for $(typeof(abun))")
+
+    topabund = min(topabund, nfeatures(abun))
+    in(sorton, [:top, :hclust, Symbol.(samplenames(abun))...]) || error("invalid sorton option") #replace `, abun.samples...` in the Array, but the code only handles :top and :hclust below anyway
+    2 <= topabund < 12 || error("n must be between 2 and 12")
 
     top = filterabund(abun, topabund)
 
-    c = distinguishable_colors(topabund+1)
-
-    rows = featurenames(abun)
-    foo = top.occurrences'
+    rows = specnames(top)
 
     if sorton == :top
-        srt = sortperm([top[topabund+1,i] for i in 1:size(top,2)], rev=true)
+        srt = sortperm(getfeature(abun, topabund + 1), rev=true)
     elseif sorton == :hclust
         DM = getdm(top, BrayCurtis())
         hc = hclust(DM, :single)
@@ -28,13 +30,9 @@ end
         error("invalid sorton option")
     end
 
-
-    @series begin
-        bar_position := :stack
-        color --> c
-        label := featurenames(abun)
-        StatPlots.GroupedBar((1:size(foo,1), foo[srt,:]))
-    end
+    bar_position := :stack
+    label := featurenames(top)
+    StatPlots.GroupedBar((1:nsamples(top), occurrences(top)[:,srt]'))
 end
 
 
@@ -58,7 +56,6 @@ function annotationbar(colors::Array{T,1}) where T
         framestyle=false)
 end
 
-
 function treepositions(hc::Hclust; useheight::Bool=false)
     order = StatsBase.indexmap(hc.order)
     positions = Dict{}()
@@ -79,13 +76,14 @@ function treepositions(hc::Hclust; useheight::Bool=false)
     return positions
 end
 
+@userplot HClustPlot
+@recipe function f(plt::HClustPlot; useheight=true)
+    typeof(useheight) <: Bool || error("'useheight' argument must be true or false")
 
-@recipe function f(hc::Hclust)
-    useheight = true # later will be kwarg
-    useheight ? yticks = true : yticks = false
+    hc = plt.args[1]
+    useheight ? yt = true : yt = false
 
     pos = treepositions(hc, useheight=useheight)
-
     xs = []
     ys = []
     for i in 1: size(hc.merge, 1)
@@ -99,11 +97,13 @@ end
         newy = maximum([y1,y2]) + h
         append!(ys, [y1,newy,newy,y2])
     end
+    xs = reshape(xs, 4, size(hc.merge, 1))
+    ys = reshape(ys, 4, size(hc.merge, 1))
 
     xlims := (0.5, length(hc.order) + 0.5)
     legend := false
     color := :black
-    yticks --> yticks
+    yticks --> yt
     xticks --> (1:length(hc.labels), hc.labels[hc.order])
-    (reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1)))
+    (xs, ys)
 end
