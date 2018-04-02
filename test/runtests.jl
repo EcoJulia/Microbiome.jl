@@ -136,8 +136,8 @@ end
 end
 
 @testset "Biobakery Utilities" begin
-    abund = metaphlan_import("metaphlan_test.tsv", level=:species)
+    abund = metaphlan_import("metaphlan_test.tsv", level=:species, shortnames=true)
 
     @test typeof(abund) <: ComMatrix
-
+    @test size(abund) == (15, 7)
 end

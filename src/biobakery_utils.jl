@@ -82,16 +82,15 @@ If shortnames is true (default), also changes names in the first column to
 remove higher order taxa
 """
 function taxfilter!(taxonomic_profile::DataFrames.DataFrame, level::Int=7; shortnames::Bool=true)
-    taxonomic_profile = taxonomic_profile[length.(
-        split.(taxonomic_profile[1], '|')) .== level, :]
+    filter!(row->length(split(row[1], '|')) == level, taxonomic_profile)
     if shortnames
         matches = collect.(eachmatch.(r"[kpcofgs]__(\w+)", taxonomic_profile[1]))
         taxonomic_profile[1] = String.([m[level].captures[1] for m in matches])
     end
+    return taxonomic_profile
 end
 
 function taxfilter!(taxonomic_profile::DataFrames.DataFrame, level::Symbol; shortnames::Bool=true)
-
     in(level, keys(taxlevels)) || error("$level not a valid taxonomic level")
     taxfilter!(taxonomic_profile, taxlevels[level], shortnames=shortnames)
 end
