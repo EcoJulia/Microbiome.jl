@@ -56,11 +56,7 @@ function annotationbar(colors::Array{T,1}) where T
         framestyle=false)
 end
 
-@userplot TreePlot
-@recipe function f(plt::TreePlot; useheight::Bool=false)
-    hc = plt.args[1]
-    typeof(hc) <: Hclust || error("treepositions is only defined for Hclust")
-
+function treepositions(hc::Hclust; useheight::Bool=false)
     order = StatsBase.indexmap(hc.order)
     positions = Dict{}()
     for (k,v) in order
@@ -77,15 +73,15 @@ end
 
         positions[i] = (xpos, ypos)
     end
-    plot(positions, framestyle=nothing)
+    return positions
 end
 
 @userplot HClustPlot
 @recipe function f(plt::HClustPlot; useheight::Bool=true)
     hc = plt.args[1]
-    useheight ? yticks = true : yticks = false
+    useheight ? yt = true : yt = false
 
-    pos = treeplot(hc, useheight=useheight)
+    pos = treepositions(hc, useheight=useheight)
 
     xs = []
     ys = []
@@ -104,7 +100,7 @@ end
     xlims := (0.5, length(hc.order) + 0.5)
     legend := false
     color := :black
-    yticks --> yticks
+    yticks --> yt
     xticks --> (1:length(hc.labels), hc.labels[hc.order])
     (reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1)))
 end

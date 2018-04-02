@@ -63,7 +63,8 @@ using StatPlots
 srand(1) # hide
 
 abund = abundancetable(
-           rand(100, 10), ["sample_$x" for x in 1:10],
+           rand(100, 10),
+           ["sample_$x" for x in 1:10],
            ["feature_$x" for x in 1:100]);
 relativeabundance!(abund)
 

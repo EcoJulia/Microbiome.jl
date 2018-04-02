@@ -69,7 +69,7 @@ dm = [0. .1 .2
 h = hclust(dm, :single);
 h.labels = ["a", "b", "c"];
 
-plot(h)
+hclustplot(h)
 savefig("hclustplot1.png"); nothing # hide
 ```
 
@@ -85,7 +85,7 @@ with a method derived from the paper:
 
 ```@repl 2
 optimalorder!(h, dm)
-plot(h)
+hclustplot(h)
 
 savefig("hclustplot2.png"); nothing # hide
 ```
