@@ -77,12 +77,14 @@ function treepositions(hc::Hclust; useheight::Bool=false)
 end
 
 @userplot HClustPlot
-@recipe function f(plt::HClustPlot; useheight::Bool=true)
+@recipe function f(plt::HClustPlot; useheight=true)
+    typeof(useheight) <: Bool || error("'useheight' argument must be true or false")
+
     hc = plt.args[1]
     useheight ? yt = true : yt = false
 
     pos = treepositions(hc, useheight=useheight)
-
+    @show pos
     xs = []
     ys = []
     for i in 1: size(hc.merge, 1)
@@ -96,11 +98,15 @@ end
         newy = maximum([y1,y2]) + h
         append!(ys, [y1,newy,newy,y2])
     end
+    xs = reshape(xs, 4, size(hc.merge, 1))
+    ys = reshape(ys, 4, size(hc.merge, 1))
+    @show xs
+    @show ys
 
     xlims := (0.5, length(hc.order) + 0.5)
     legend := false
     color := :black
     yticks --> yt
     xticks --> (1:length(hc.labels), hc.labels[hc.order])
-    (reshape(xs, 4, size(hc.merge, 1)), reshape(ys, 4, size(hc.merge, 1)))
+    (xs, ys)
 end
