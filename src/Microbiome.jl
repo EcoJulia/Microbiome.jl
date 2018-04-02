@@ -29,6 +29,7 @@ export
     pcoa,
     eigenvalue,
     principalcoord,
+    variance,
     optimalorder,
     optimalorder!,
     ## plotting

@@ -84,7 +84,6 @@ end
     useheight ? yt = true : yt = false
 
     pos = treepositions(hc, useheight=useheight)
-    @show pos
     xs = []
     ys = []
     for i in 1: size(hc.merge, 1)
@@ -100,8 +99,6 @@ end
     end
     xs = reshape(xs, 4, size(hc.merge, 1))
     ys = reshape(ys, 4, size(hc.merge, 1))
-    @show xs
-    @show ys
 
     xlims := (0.5, length(hc.order) + 0.5)
     legend := false
