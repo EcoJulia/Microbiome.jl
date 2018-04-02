@@ -36,7 +36,7 @@ If you want relative abundance, you can do `relativeabundance(abund)` or
 relativeabundance!(abund)
 
 sampletotals(abund)
- ```
+```
 
 You can also filter on the `n` most abundant features accross the dataset. This
 function automatically generates an `n+1` row for `other` containing the
@@ -47,7 +47,7 @@ reassign if you want to update:
 abund2 = filterabund(abund, 1)
 
 featurenames(abund2)
- ```
+```
 
 ## Plotting
 

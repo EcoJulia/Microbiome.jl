@@ -8,8 +8,8 @@
 end
 
 @userplot AbundancePlot
-@recipe function f(hb::AbundancePlot; topabund=10, sorton=:top)
-    abun = hb.args[1]
+@recipe function f(plt::AbundancePlot; topabund=10, sorton=:top)
+    abun = plt.args[1]
     typeof(abun) <: AbstractComMatrix || error("AbundancePlot not defined for $(typeof(abun))")
 
     topabund = min(topabund, nfeatures(abun))
@@ -56,9 +56,9 @@ function annotationbar(colors::Array{T,1}) where T
         framestyle=false)
 end
 
-@userplot TreePositions
-@recipe function f(hb::TreePositions; useheight::Bool=false)
-    hc = hb.args[1]
+@userplot TreePlot
+@recipe function f(plt::TreePlot; useheight::Bool=false)
+    hc = plt.args[1]
     typeof(hc) <: Hclust || error("treepositions is only defined for Hclust")
 
     order = StatsBase.indexmap(hc.order)
@@ -77,15 +77,15 @@ end
 
         positions[i] = (xpos, ypos)
     end
-    return positions
+    plot(positions, framestyle=nothing)
 end
 
-
-@recipe function f(hc::Hclust)
-    useheight = true # later will be kwarg
+@userplot HClustPlot
+@recipe function f(plt::HClustPlot; useheight::Bool=true)
+    hc = plt.args[1]
     useheight ? yticks = true : yticks = false
 
-    pos = treepositions(hc, useheight=useheight)
+    pos = treeplot(hc, useheight=useheight)
 
     xs = []
     ys = []

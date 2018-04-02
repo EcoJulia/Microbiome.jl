@@ -21,7 +21,7 @@ I've also implemented a method to do a principle coordinates analysis. If
 necessary, you can include `correct_neg=true` to use the correction method
 described in [Lingoes (1971)][2]
 
-```@example 2
+```@repl 2
 p = pcoa(dm)
 
 eigenvalue(p, 2))
@@ -41,16 +41,16 @@ using StatPlots
 srand(1) # hide
 abund = abundancetable(
     rand(100, 10), ["sample_$x" for x in 1:10],
-    ["feature_$x" for x in 1:100])
+    ["feature_$x" for x in 1:100]);
 
-dm = getdm(abund, BrayCurtis())
-p = pcoa(dm, correct_neg=true)
+dm = getdm(abund, BrayCurtis());
+p = pcoa(dm, correct_neg=true);
 
 plot(p, title="Random PCoA")
 savefig("pcoplot.png"); nothing # hide
 ```
 
-![pcoa plot](pcoaplot.png)
+![pcoa plot](pcoplot.png)
 
 ### Optimal Leaf Ordering
 
@@ -60,7 +60,7 @@ from the [`Clustering.jl`][2] package:
 [2]: http://github.com/JuliaStats/Clustering.jl
 
 ```@repl 2
-using Hclust
+using Clustering
 
 dm = [0. .1 .2
       .1 0. .15
@@ -70,7 +70,7 @@ h = hclust(dm, :single);
 h.labels = ["a", "b", "c"];
 
 plot(h)
-savefig("hclustplot.png"); nothing # hide
+savefig("hclustplot1.png"); nothing # hide
 ```
 
 ![hclust plot 1](hclustplot1.png)
