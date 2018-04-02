@@ -51,11 +51,8 @@ featurenames(abund2)
 
 ## Plotting
 
-Some convenience plotting types are available using [`RecipesBase`][1] and
-[StatPlots][2]
-
-[1]: https://github.com/juliaplots/recipesbase.jl
-[2]: https://github.com/juliaplots/StatPlots.jl
+Some convenience plotting types are available using [`RecipesBase`](https://github.com/juliaplots/recipesbase.jl) and
+[StatPlots](https://github.com/juliaplots/StatPlots.jl)
 
 ```@repl 1
 using StatPlots
