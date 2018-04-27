@@ -18,12 +18,12 @@ end
 
     top = filterabund(abun, topabund)
 
-    rows = specnames(top)
+    rows = featurenames(top)
 
     if sorton == :top
-        srt = sortperm(getfeature(abun, topabund + 1), rev=true)
+        srt = sortperm(getfeature(top, topabund + 1), rev=true)
     elseif sorton == :hclust
-        DM = getdm(top, BrayCurtis())
+        DM = getdm(abun, BrayCurtis())
         hc = hclust(DM, :single)
         srt = hc.order
     else
@@ -31,7 +31,7 @@ end
     end
 
     bar_position := :stack
-    label := featurenames(top)
+    label := rows
     StatPlots.GroupedBar((1:nsamples(top), occurrences(top)[:,srt]'))
 end
 

@@ -65,6 +65,27 @@ function metaphlan_import(path::String; level=0, shortnames::Bool=true)
     return abundancetable(df)
 end
 
+function metaphlan_import(paths::Array{String,1}; level=0, shortnames::Bool=true)
+    tax = DataFrame(SampleID=String[])
+    for f in paths
+        df = load(f) |> DataFrame
+        rename!(df, Symbol("#SampleID"), :SampleID)
+        tax = join(tax, df, on=:SampleID, kind=:outer)
+    end
+
+    for n in names(tax)
+        tax[n] = coalesce.(tax[n], 0)
+    end
+
+    if typeof(level) <: Symbol
+        in(level, keys(taxlevels)) || error("$level not a valid taxonomic level")
+        level = taxlevels[level]
+    end
+
+    level > 0 && taxfilter!(tax, level, shortnames=shortnames)
+    return abundancetable(tax)
+end
+
 """
 taxfilter!(df::DataFrame, level::Int=7; shortnames::Bool=true)
 
