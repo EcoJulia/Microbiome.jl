@@ -51,6 +51,9 @@ using StatPlots
 using StatsBase
 using Colors
 using DataFrames
+using FileIO
+using CSVFiles
+using MicroLogging
 
 import SpatialEcology.@forward_func
 import SpatialEcology.summary
