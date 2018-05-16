@@ -105,3 +105,19 @@ end
 eigenvalue(p::PCoA, inds...) = p.eigenvalues[inds...]
 variance(p::PCoA, inds...) = p.variance_explained[inds...]
 principalcoord(p::PCoA, inds...) = p[:,inds...]
+
+
+## Diversity Measures
+
+function shannon(v::AbstractVector{T}) where T<:Real
+    total = sum(v)
+    relab = map(x-> x/total, v)
+    return -sum([log(x^x) for x in relab])
+end
+
+
+function ginisimpson(v::AbstractVector{T}) where T<:Real
+    total = sum(v)
+    relab = map(x-> x/total, v)
+    return 1 - sum([x^2 for x in relab])
+end

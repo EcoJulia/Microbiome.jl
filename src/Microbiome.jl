@@ -23,7 +23,7 @@ export
     getsample,
     samplenames,
     sampletotals,
-    ## similarity
+    ## distances
     getdm,
     getrowdm,
     pcoa,
@@ -32,6 +32,8 @@ export
     variance,
     optimalorder,
     optimalorder!,
+    ginisimpson,
+    shannon,
     ## plotting
     hclustplot,
     annotationbar,
