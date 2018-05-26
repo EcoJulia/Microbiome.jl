@@ -42,7 +42,8 @@ export
     panphlan_calcs,
     bysample,
     taxfilter,
-    taxfilter!
+    taxfilter!,
+    qvalue!
 
 using Reexport
 @reexport using SpatialEcology
