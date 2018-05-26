@@ -8,17 +8,28 @@ julia&gt; abund = abundancetable([1  3  0;
                                5  0  4]);
 
 julia&gt; dm = getdm(abund, BrayCurtis())
-ERROR: UndefVarError: BrayCurtis not defined</code></pre><p>I&#39;ve also implemented a method to do a principle coordinates analysis. If necessary, you can include <code>correct_neg=true</code> to use the correction method described in <a href="http://dx.doi.org/10.1007/BF02291398">Lingoes (1971)</a></p><pre><code class="language-julia-repl">julia&gt; p = pcoa(dm)
-ERROR: UndefVarError: dm not defined
+3×3 Microbiome.DistanceMatrix{Float64}:
+ 0.0       0.52381   0.176471
+ 0.52381   0.0       0.666667
+ 0.176471  0.666667  0.0</code></pre><p>I&#39;ve also implemented a method to do a principle coordinates analysis. If necessary, you can include <code>correct_neg=true</code> to use the correction method described in <a href="http://dx.doi.org/10.1007/BF02291398">Lingoes (1971)</a></p><pre><code class="language-julia-repl">julia&gt; p = pcoa(dm)
+3×2 Microbiome.PCoA{Float64}:
+ -0.251198   0.776895
+  0.79841   -0.170903
+ -0.547212  -0.605992
 
 julia&gt; eigenvalue(p, 2)
-ERROR: UndefVarError: p not defined
+0.0050620487880063784
 
 julia&gt; principalcoord(p, 1)
-ERROR: UndefVarError: p not defined
+3-element Array{Float64,1}:
+ -0.251198
+  0.79841
+ -0.547212
 
 julia&gt; variance(p, [1,2])
-ERROR: UndefVarError: p not defined</code></pre><h2><a class="nav-anchor" id="Plotting-1" href="#Plotting-1">Plotting</a></h2><p>Some convenience plotting types are available using <a href="https://github.com/juliaplots/recipesbase.jl"><code>RecipesBase</code></a>.</p><pre><code class="language-julia-repl">julia&gt; using StatPlots
+2-element Array{Float64,1}:
+ 0.979751
+ 0.0202492</code></pre><h2><a class="nav-anchor" id="Plotting-1" href="#Plotting-1">Plotting</a></h2><p>Some convenience plotting types are available using <a href="https://github.com/juliaplots/recipesbase.jl"><code>RecipesBase</code></a>.</p><pre><code class="language-julia-repl">julia&gt; using StatPlots
 
 
 julia&gt; abund = abundancetable(
@@ -27,13 +38,10 @@ julia&gt; abund = abundancetable(
            [&quot;feature_$x&quot; for x in 1:100]);
 
 julia&gt; dm = getdm(abund, BrayCurtis());
-ERROR: UndefVarError: BrayCurtis not defined
 
 julia&gt; p = pcoa(dm, correct_neg=true);
-ERROR: UndefVarError: dm not defined
 
-julia&gt; plot(p, title=&quot;Random PCoA&quot;)
-ERROR: UndefVarError: p not defined</code></pre><p><img src="pcoplot.png" alt="pcoa plot"/></p><h3><a class="nav-anchor" id="Optimal-Leaf-Ordering-1" href="#Optimal-Leaf-Ordering-1">Optimal Leaf Ordering</a></h3><p>I&#39;ve also provided a plotting recipe for making treeplots for <code>Hclust</code> objects from the <a href="http://github.com/JuliaStats/Clustering.jl"><code>Clustering.jl</code></a> package:</p><pre><code class="language-julia-repl">julia&gt; using Clustering
+julia&gt; plot(p, title=&quot;Random PCoA&quot;)</code></pre><p><img src="pcoplot.png" alt="pcoa plot"/></p><h3><a class="nav-anchor" id="Optimal-Leaf-Ordering-1" href="#Optimal-Leaf-Ordering-1">Optimal Leaf Ordering</a></h3><p>I&#39;ve also provided a plotting recipe for making treeplots for <code>Hclust</code> objects from the <a href="http://github.com/JuliaStats/Clustering.jl"><code>Clustering.jl</code></a> package:</p><pre><code class="language-julia-repl">julia&gt; using Clustering
 
 julia&gt; dm = [0. .1 .2
              .1 0. .15
