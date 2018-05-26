@@ -1,3 +1,8 @@
+"""
+Functions for working with files from Biobakery tools.
+Note: these functions may not be well tested
+"""
+
 function fliptable(df::DataFrame, samples::Array{String,1})
     newrows = DataFrame(samples=samples)
     newcols = Symbol.(df[1])
@@ -51,7 +56,7 @@ const taxlevels = Dict([
     :subspecies => 8])
 
 function metaphlan_import(path::String; level=0, shortnames::Bool=true)
-    df = readtable(path)
+    df = FileIO.load(path) |> DataFrame
     for n in names(df)
         df[n] = coalesce.(df[n], 0)
     end

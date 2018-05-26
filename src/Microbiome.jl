@@ -52,15 +52,12 @@ using Reexport
 using RecipesBase
 using StatPlots
 using StatsBase
-using Colors
 using DataFrames
 using FileIO
 using CSVFiles
 using MicroLogging
 
 import SpatialEcology.@forward_func
-import SpatialEcology.summary
-import SpatialEcology.show
 import Clustering: Hclust, hclust
 import Base: getindex, setindex, length
 

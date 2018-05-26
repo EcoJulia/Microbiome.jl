@@ -102,9 +102,9 @@ function getdelta(A::AbstractArray{T,2}) where T <: AbstractFloat
 end
 
 
-eigenvalue(p::PCoA, inds...) = p.eigenvalues[inds...]
-variance(p::PCoA, inds...) = p.variance_explained[inds...]
-principalcoord(p::PCoA, inds...) = p[:,inds...]
+@inline eigenvalue(p::PCoA, inds...) = p.eigenvalues[inds...]
+@inline variance(p::PCoA, inds...) = p.variance_explained[inds...]
+@inline principalcoord(p::PCoA, inds...) = p[:,inds...]
 
 
 ## Diversity Measures
