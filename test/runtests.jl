@@ -80,15 +80,15 @@ end
         M, ["sample_$x" for x in 1:10],
         ["feature_$x" for x in 1:100])
 
-    dm1 = getdm(M, Jaccard()) # TODO: switch to BrayCurtis when Distances.jl adds release
-    dm2 = getdm(df, Jaccard()) # TODO: switch to BrayCurtis when Distances.jl adds release
-    dm = getdm(abund, Jaccard()) # TODO: switch to BrayCurtis when Distances.jl adds release
+    dm1 = getdm(M, BrayCurtis())
+    dm2 = getdm(df, BrayCurtis())
+    dm = getdm(abund, BrayCurtis())
 
     @test dm.dm == dm1.dm == dm2.dm
 
-    rowdm1 = getrowdm(M, Jaccard()) # TODO: switch to BrayCurtis when Distances.jl adds release
-    rowdm2 = getrowdm(df, Jaccard()) # TODO: switch to BrayCurtis when Distances.jl adds release
-    rowdm = getrowdm(abund, Jaccard()) # TODO: switch to BrayCurtis when Distances.jl adds release
+    rowdm1 = getrowdm(M, BrayCurtis())
+    rowdm2 = getrowdm(df, BrayCurtis())
+    rowdm = getrowdm(abund, BrayCurtis())
 
     @test rowdm.dm == rowdm1.dm == rowdm2.dm
 
@@ -136,7 +136,7 @@ end
     srand(42)
     m = rand(100, 10)
 
-    dm = pairwise(Jaccard(), m)
+    dm = pairwise(BrayCurtis(), m)
     h = hclust(dm, :single);
 
     ordered = optimalorder(h, dm)
