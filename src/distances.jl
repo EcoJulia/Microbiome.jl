@@ -16,22 +16,28 @@ DistanceMatrix{T<:Real}(dm::AbstractArray{T,2}, distance) = DistanceMatrix(dm, V
 @forward_func PCoA.eigenvectors Base.getindex, Base.setindex, Base.length, Base.size
 
 function getdm(t::AbstractComMatrix, distance::PreMetric)
+    dm = pairwise(distance, t.occurrences)
+    for i in eachindex(dm); if isnan(dm[i]); dm[i] = 1; end; end
     return DistanceMatrix(
-            pairwise(distance, t.occurrences),
+            dm,
             samplenames(t),
             distance)
 end
 
 function getdm(t::AbstractArray, distance::PreMetric)
+    dm = pairwise(distance, t)
+    for i in eachindex(dm); if isnan(dm[i]); dm[i] = 1; end; end
     return DistanceMatrix(
-            pairwise(distance, t),
+            dm,
             Vector(1:size(t,2)),
             distance)
 end
 
 function getdm(df::DataFrame, distance::PreMetric)
+    dm = pairwise(distance, Matrix(df[2:end]))
+    for i in eachindex(dm); if isnan(dm[i]); dm[i] = 1; end; end
     return DistanceMatrix(
-            pairwise(distance, Matrix(df[2:end])),
+            dm,
             Vector(names(df[2:end])),
             distance)
 end
@@ -96,6 +102,22 @@ function getdelta(A::AbstractArray{T,2}) where T <: AbstractFloat
 end
 
 
-eigenvalue(p::PCoA, inds...) = p.eigenvalues[inds...]
-variance(p::PCoA, inds...) = p.variance_explained[inds...]
-principalcoord(p::PCoA, inds...) = p[:,inds...]
+@inline eigenvalue(p::PCoA, inds...) = p.eigenvalues[inds...]
+@inline variance(p::PCoA, inds...) = p.variance_explained[inds...]
+@inline principalcoord(p::PCoA, inds...) = p[:,inds...]
+
+
+## Diversity Measures
+
+function shannon(v::AbstractVector{T}) where T<:Real
+    total = sum(v)
+    relab = map(x-> x/total, v)
+    return -sum([log(x^x) for x in relab])
+end
+
+
+function ginisimpson(v::AbstractVector{T}) where T<:Real
+    total = sum(v)
+    relab = map(x-> x/total, v)
+    return 1 - sum([x^2 for x in relab])
+end

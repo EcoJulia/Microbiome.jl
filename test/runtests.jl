@@ -64,7 +64,7 @@ using Base.Test
     # Plotting
 
     @test typeof(abundanceplot(abund, topabund=5)) <: Plots.Plot
-    @test_skip typeof(abundanceplot(abund, sorton=:hclust)) <: Plots.Plot # Needs BrayCurtis()
+    @test typeof(abundanceplot(abund, sorton=:hclust)) <: Plots.Plot
     @test_skip typeof(abundanceplot(abund, sorton=:x1)) <: Plots.Plot # Needs method feature sorting
 
     @test typeof(annotationbar(parse.(Color, ["red", "white", "blue"]))) <: Plots.Plot
@@ -110,6 +110,21 @@ end
 
     @test length(principalcoord(p, 1)) == size(dm, 1)
     @test principalcoord(p, 1:size(p,2)) == p.eigenvectors
+
+    # Diversity indicies
+    R = 100
+    s1 = rand(R) # high diversity
+    s2 = [i % 10 == 0 ? s1[i] : 0 for i in 1:R] # low diversity
+    s3 = ones(R) # uniform
+    s4 = [1., zeros(R-1)...] # no diversity
+
+    @test shannon(s1) > shannon(s2)
+    @test shannon(s3) ≈ log(R)
+    @test shannon(s4) ≈ 0.
+
+    @test ginisimpson(s1) > ginisimpson(s2)
+    @test ginisimpson(s3) ≈ 1. - 1/R
+    @test ginisimpson(s4) ≈ 0.
 
     # Plotting
     @test typeof(plot(p)) <: Plots.Plot

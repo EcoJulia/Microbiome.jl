@@ -70,6 +70,7 @@ function relativeabundance!(a::AbstractComMatrix; kind::Symbol=:fraction)
     if eltype(a.occurrences) != Float64; a.occurrences = Float64.(a.occurrences) end
     for i in 1:nsamples(a)
         s = sum(getsample(a,i))
+        s == 0 && continue
         for x in 1:nfeatures(a)
             kind == :fraction ? occurrences(a)[x,i] /= s : occurrences(a)[x,i] /= (s / 100.)
         end

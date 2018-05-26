@@ -1,3 +1,8 @@
+"""
+Functions for working with files from Biobakery tools.
+Note: these functions may not be well tested
+"""
+
 function fliptable(df::DataFrame, samples::Array{String,1})
     newrows = DataFrame(samples=samples)
     newcols = Symbol.(df[1])
@@ -51,7 +56,7 @@ const taxlevels = Dict([
     :subspecies => 8])
 
 function metaphlan_import(path::String; level=0, shortnames::Bool=true)
-    df = readtable(path)
+    df = FileIO.load(path) |> DataFrame
     for n in names(df)
         df[n] = coalesce.(df[n], 0)
     end
@@ -63,6 +68,27 @@ function metaphlan_import(path::String; level=0, shortnames::Bool=true)
 
     level > 0 && taxfilter!(df, level, shortnames=shortnames)
     return abundancetable(df)
+end
+
+function metaphlan_import(paths::Array{String,1}; level=0, shortnames::Bool=true)
+    tax = DataFrame(SampleID=String[])
+    for f in paths
+        df = load(f) |> DataFrame
+        rename!(df, Symbol("#SampleID"), :SampleID)
+        tax = join(tax, df, on=:SampleID, kind=:outer)
+    end
+
+    for n in names(tax)
+        tax[n] = coalesce.(tax[n], 0)
+    end
+
+    if typeof(level) <: Symbol
+        in(level, keys(taxlevels)) || error("$level not a valid taxonomic level")
+        level = taxlevels[level]
+    end
+
+    level > 0 && taxfilter!(tax, level, shortnames=shortnames)
+    return abundancetable(tax)
 end
 
 """
@@ -108,17 +134,34 @@ function taxfilter(taxonomic_profile::DataFrames.DataFrame, level::Symbol; short
     return filt
 end
 
+"""
+Given a dataframe with a column that has a pvalue column, perform
+Benjamini Hochberch correction to generate q value column with given Q.
+"""
+function qvalue!(df::DataFrame, q::Float64=0.2; pcol::Symbol=:p_value, qcol::Symbol=:q_value)
+    if eltype(df[pcol]) <:StatsBase.PValue
+        ranks = invperm(sortperm(map(x->x.v,df[pcol])))
+    else
+        ranks = invperm(sortperm(map(x->x,df[pcol])))
+    end
+    m = length(ranks)
+    df[qcol] = [i / m * q for i in eachindex(df[pcol])]
+end
+
 #==============
 PanPhlAn Utils
 ==============#
 
 function panphlan_calcs(df::DataFrame)
-    abun = AbundanceTable(df)
+    abun = abundancetable(df)
     dm = getdm(df, Jaccard())
     rowdm = getrowdm(df, Jaccard())
-    clust_h = hclust(dm.dm, :single)
-    clust_v = hclust(rowdm.dm, :single)
+    col_clust = hclust(dm.dm, :single)
+    row_clust = hclust(rowdm.dm, :single)
+    optimalorder!(col_clust, dm.dm)
+    optimalorder!(row_clust, rowdm.dm)
+
     pco = pcoa(dm)
 
-    return abun, dm, clust_h, clust_v, pco
+    return abun, dm, col_clust, row_clust, pco
 end

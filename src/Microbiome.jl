@@ -23,7 +23,7 @@ export
     getsample,
     samplenames,
     sampletotals,
-    ## similarity
+    ## distances
     getdm,
     getrowdm,
     pcoa,
@@ -32,6 +32,8 @@ export
     variance,
     optimalorder,
     optimalorder!,
+    ginisimpson,
+    shannon,
     ## plotting
     hclustplot,
     annotationbar,
@@ -40,7 +42,8 @@ export
     panphlan_calcs,
     bysample,
     taxfilter,
-    taxfilter!
+    taxfilter!,
+    qvalue!
 
 using Reexport
 @reexport using SpatialEcology
@@ -49,12 +52,12 @@ using Reexport
 using RecipesBase
 using StatPlots
 using StatsBase
-using Colors
 using DataFrames
+using FileIO
+using CSVFiles
+using MicroLogging
 
 import SpatialEcology.@forward_func
-import SpatialEcology.summary
-import SpatialEcology.show
 import Clustering: Hclust, hclust
 import Base: getindex, setindex, length
 

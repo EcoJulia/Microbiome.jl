@@ -18,12 +18,12 @@ end
 
     top = filterabund(abun, topabund)
 
-    rows = specnames(top)
+    rows = featurenames(top)
 
     if sorton == :top
-        srt = sortperm(getfeature(abun, topabund + 1), rev=true)
+        srt = sortperm(getfeature(top, topabund + 1), rev=true)
     elseif sorton == :hclust
-        DM = getdm(top, BrayCurtis())
+        DM = getdm(abun, BrayCurtis())
         hc = hclust(DM, :single)
         srt = hc.order
     else
@@ -31,7 +31,7 @@ end
     end
 
     bar_position := :stack
-    label := featurenames(top)
+    label := rows
     StatPlots.GroupedBar((1:nsamples(top), occurrences(top)[:,srt]'))
 end
 
@@ -76,6 +76,7 @@ function treepositions(hc::Hclust; useheight::Bool=false)
     return positions
 end
 
+
 @userplot HClustPlot
 @recipe function f(plt::HClustPlot; useheight=true)
     typeof(useheight) <: Bool || error("'useheight' argument must be true or false")
@@ -106,4 +107,38 @@ end
     yticks --> yt
     xticks --> (1:length(hc.labels), hc.labels[hc.order])
     (xs, ys)
+end
+
+# From Michael K. Borregaard (posted to slack 2018-05-18)
+# Usage:
+#
+# x = randn(100)
+# y = randn(100) + 2
+# y[y.<0] = 0
+#
+# zeroyplot(x,y, yscale = :log10, color = :red, markersize = 8)
+@userplot ZeroYPlot
+@recipe function f(h::ZeroYPlot)
+           length(h.args) != 2 && error("zeroyplot only defined for x and y input arguments")
+           x, y = h.args
+           val0 = y .== 0
+
+           layout := @layout([a
+                              b{0.05h}])
+
+           markeralpha --> 0.4
+           seriestype --> :scatter
+
+           @series begin
+               primary := false
+               subplot := 2
+               yscale := :identity
+               ylim := (-1,1)
+               yticks := ([0],[0])
+               grid := false
+               x[val0], y[val0]
+           end
+
+           subplot := 1
+           x[.!val0], y[.!val0]
 end
