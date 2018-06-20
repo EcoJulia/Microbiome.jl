@@ -10,7 +10,7 @@ struct PCoA{T<:AbstractFloat} <: AbstractArray{T,2}
     variance_explained::Array{T,1}
 end
 
-DistanceMatrix{T<:Real}(dm::AbstractArray{T,2}, distance) = DistanceMatrix(dm, Vector(1:size(dm,1)), distance)
+DistanceMatrix(dm::AbstractArray{T,2}, distance) where {T<:Real} = DistanceMatrix(dm, Vector(1:size(dm,1)), distance)
 
 @forward_func DistanceMatrix.dm Base.getindex, Base.setindex, Base.length, Base.size
 @forward_func PCoA.eigenvectors Base.getindex, Base.setindex, Base.length, Base.size
