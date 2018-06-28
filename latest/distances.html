@@ -41,7 +41,8 @@ julia&gt; dm = getdm(abund, BrayCurtis());
 
 julia&gt; p = pcoa(dm, correct_neg=true);
 
-julia&gt; plot(p, title=&quot;Random PCoA&quot;)</code></pre><p><img src="pcoplot.png" alt="pcoa plot"/></p><h3><a class="nav-anchor" id="Optimal-Leaf-Ordering-1" href="#Optimal-Leaf-Ordering-1">Optimal Leaf Ordering</a></h3><p>I&#39;ve also provided a plotting recipe for making treeplots for <code>Hclust</code> objects from the <a href="http://github.com/JuliaStats/Clustering.jl"><code>Clustering.jl</code></a> package:</p><pre><code class="language-julia-repl">julia&gt; using Clustering
+julia&gt; plot(p, title=&quot;Random PCoA&quot;)
+Plot{Plots.GRBackend() n=1}</code></pre><p><img src="pcoplot.png" alt="pcoa plot"/></p><h3><a class="nav-anchor" id="Optimal-Leaf-Ordering-1" href="#Optimal-Leaf-Ordering-1">Optimal Leaf Ordering</a></h3><p>I&#39;ve also provided a plotting recipe for making treeplots for <code>Hclust</code> objects from the <a href="http://github.com/JuliaStats/Clustering.jl"><code>Clustering.jl</code></a> package:</p><pre><code class="language-julia-repl">julia&gt; using Clustering
 
 julia&gt; dm = [0. .1 .2
              .1 0. .15
@@ -51,6 +52,8 @@ julia&gt; h = hclust(dm, :single);
 
 julia&gt; h.labels = [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;];
 
-julia&gt; hclustplot(h)</code></pre><p><img src="hclustplot1.png" alt="hclust plot 1"/></p><p>Note that even though this is a valid tree, the leaf <code>a</code> is closer to leaf <code>c</code>, despite the fact that <code>c</code> is more similar to <code>b</code> than to <code>a</code>. This can be fixed with a method derived from the paper:</p><p><a href="https://doi.org/10.1093/bioinformatics/17.suppl_1.S22">Bar-Joseph et. al. &quot;Fast optimal leaf ordering for hierarchical clustering.&quot; _Bioinformatics_. (2001)</a></p><pre><code class="language-julia-repl">julia&gt; optimalorder!(h, dm)
+julia&gt; hclustplot(h)
+Plot{Plots.GRBackend() n=2}</code></pre><p><img src="hclustplot1.png" alt="hclust plot 1"/></p><p>Note that even though this is a valid tree, the leaf <code>a</code> is closer to leaf <code>c</code>, despite the fact that <code>c</code> is more similar to <code>b</code> than to <code>a</code>. This can be fixed with a method derived from the paper:</p><p><a href="https://doi.org/10.1093/bioinformatics/17.suppl_1.S22">Bar-Joseph et. al. &quot;Fast optimal leaf ordering for hierarchical clustering.&quot; _Bioinformatics_. (2001)</a></p><pre><code class="language-julia-repl">julia&gt; optimalorder!(h, dm)
 
-julia&gt; hclustplot(h)</code></pre><p><img src="hclustplot2.png" alt="hclust plot 1"/></p><footer><hr/><a class="previous" href="abundances.html"><span class="direction">Previous</span><span class="title">Microbial Abundances</span></a><a class="next" href="contributing.html"><span class="direction">Next</span><span class="title">Contributing</span></a></footer></article></body></html>
+julia&gt; hclustplot(h)
+Plot{Plots.GRBackend() n=2}</code></pre><p><img src="hclustplot2.png" alt="hclust plot 1"/></p><footer><hr/><a class="previous" href="abundances.html"><span class="direction">Previous</span><span class="title">Microbial Abundances</span></a><a class="next" href="contributing.html"><span class="direction">Next</span><span class="title">Contributing</span></a></footer></article></body></html>
