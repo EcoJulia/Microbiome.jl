@@ -3,7 +3,7 @@ using Distances
 using DataFrames
 using Clustering
 using Colors
-using Base.Test
+using Test
 
 @testset "Abundances" begin
     # Constructors
