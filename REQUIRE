@@ -1,12 +1,9 @@
-julia 0.6
+julia 0.7
 SpatialEcology 0.3
 Reexport
-RecipesBase
-StatPlots
 Distances
 DataFrames
 Clustering
 Colors
 CSVFiles
 FileIO
-MicroLogging
