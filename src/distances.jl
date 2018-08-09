@@ -91,7 +91,7 @@ function sortedeig(M::Array{Float64,2})
     f = eigen(M, scale=true, permute=true)
     v = real.(f.values)
     p = sortperm(v, rev = true)
-    return LinAlg.Eigen(v[p], real.(f.vectors[:,p]))
+    return LinearAlgebra.Eigen(v[p], real.(f.vectors[:,p]))
 end
 
 
