@@ -34,7 +34,7 @@ function getdm(t::AbstractArray, distance::PreMetric)
 end
 
 function getdm(df::DataFrame, distance::PreMetric)
-    dm = pairwise(distance, Matrix(df[2:end]))
+    dm = pairwise(distance, convert(Matrix, df[2:end]))
     for i in eachindex(dm); if isnan(dm[i]); dm[i] = 1; end; end
     return DistanceMatrix(
             dm,
