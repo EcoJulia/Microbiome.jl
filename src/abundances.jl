@@ -6,8 +6,8 @@ abundancetable(df::DataFrame) = ComMatrix(
     String.(names(df[2:end])))
 
 abundancetable(table::AbstractArray{T,2},
-    site = ["sample_$x" for x in indices(table, 2)],
-    species = ["feature_$x" for x in indices(table, 1)]) where T<:Real =
+    site = ["sample_$x" for x in axes(table, 2)],
+    species = ["feature_$x" for x in axes(table, 1)]) where T<:Real =
     ComMatrix(Float64.(table), species, site)
 
 

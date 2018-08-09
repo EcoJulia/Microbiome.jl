@@ -39,11 +39,13 @@ using Reexport
 @reexport using SpatialEcology
 @reexport using Distances
 
+using LinearAlgebra
+using Statistics
 using StatsBase
 using DataFrames
+using Clustering
 
-import SpatialEcology.@forward_func
-import Clustering: Hclust, hclust
+import SpatialEcology: @forward_func
 import Base: getindex, setindex, length
 
 include("ecotranslations.jl")
