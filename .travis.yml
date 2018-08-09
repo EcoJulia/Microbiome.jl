@@ -3,8 +3,9 @@ language: julia
 os:
   - linux
   - osx
+  - windows
 julia:
-  - 0.6
+  - 0.7
   - nightly
 notifications:
   email: false
@@ -16,6 +17,7 @@ git:
 matrix:
  allow_failures:
  - julia: nightly
+ - os: windows
 
 ## uncomment and modify the following lines to manually install system packages
 #addons:

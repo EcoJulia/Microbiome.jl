@@ -86,5 +86,5 @@ For 2 multi-leaf branches, determine if one or two flips is required
 4 = flip both
 """
 function flip2(u::Int, m::Int, k::Int, w::Int, dm::Array{Float64,2})
-    indmin([dm[m,k], dm[u,k], dm[m,w], dm[u,w]])
+    argmin([dm[m,k], dm[u,k], dm[m,w], dm[u,w]])
 end

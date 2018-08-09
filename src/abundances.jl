@@ -1,14 +1,15 @@
 # Methods for absolute and relative abundances
 
 abundancetable(df::DataFrame) = ComMatrix(
-    Matrix{Float64}(df[2:end]),
-    string.(df[1]),
-    String.(names(df[2:end])))
+    convert(Matrix{Float64}, df[2:end]),
+        string.(df[1]),
+        string.(names(df[2:end]))
+    )
 
 abundancetable(table::AbstractArray{T,2},
-    site = ["sample_$x" for x in indices(table, 2)],
-    species = ["feature_$x" for x in indices(table, 1)]) where T<:Real =
-    ComMatrix(Float64.(table), species, site)
+    site = ["sample_$x" for x in axes(table, 2)],
+    species = ["feature_$x" for x in axes(table, 1)]
+    ) where T<:Real = ComMatrix(Float64.(table), species, site)
 
 
 """
@@ -28,7 +29,7 @@ function filterabund(abun::AbstractComMatrix, n::Int=minimum(10, nfeatures(abun)
 
     remainder = [sum(occurrences(abun)[srt[n+1:end], i]) for i in 1:size(abun, 2)]'
     newabun = vcat(newabun, remainder)
-    newrows = cat(1, featurenames(abun)[srt[1:n]], ["other"])
+    newrows = cat(featurenames(abun)[srt[1:n]], ["other"], dims=1)
 
     return abundancetable(newabun, samplenames(abun), newrows)
 end

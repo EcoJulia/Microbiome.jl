@@ -33,40 +33,24 @@ export
     optimalorder,
     optimalorder!,
     ginisimpson,
-    shannon,
-    ## plotting
-    hclustplot,
-    annotationbar,
-    ## utils
-    metaphlan_import,
-    panphlan_calcs,
-    bysample,
-    taxfilter,
-    taxfilter!,
-    qvalue!
+    shannon
 
 using Reexport
 @reexport using SpatialEcology
 @reexport using Distances
 
-using RecipesBase
-using StatPlots
+using LinearAlgebra
+using Statistics
 using StatsBase
 using DataFrames
-using FileIO
-using CSVFiles
-using MicroLogging
+using Clustering
 
-import SpatialEcology.@forward_func
-import Clustering: Hclust, hclust
+import SpatialEcology: @forward_func
 import Base: getindex, setindex, length
 
 include("ecotranslations.jl")
 include("abundances.jl")
 include("distances.jl")
 include("leafordering.jl")
-include("plotting.jl")
-include("biobakery_utils.jl")
-
 
 end  # module Microbiome

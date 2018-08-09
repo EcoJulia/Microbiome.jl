@@ -1,10 +1,10 @@
 using Microbiome
 using Distances
+using LinearAlgebra
 using DataFrames
 using Clustering
-using Colors
-using StatPlots
-using Base.Test
+using Random
+using Test
 
 @testset "Abundances" begin
     # Constructors
@@ -13,6 +13,8 @@ using Base.Test
 
     a1 = abundancetable(M)
     a2 = abundancetable(df)
+    @test typeof(a1) <:AbstractComMatrix
+    @test typeof(a2) <:AbstractComMatrix
 
     abund = abundancetable(
         M, ["sample_$x" for x in 1:10],
@@ -60,20 +62,11 @@ using Base.Test
     end
 
     @test featurenames(filt)[end] == "other"
-
-    # Plotting
-
-    @test typeof(abundanceplot(abund, topabund=5)) <: Plots.Plot
-    @test typeof(abundanceplot(abund, sorton=:hclust)) <: Plots.Plot
-    @test_skip typeof(abundanceplot(abund, sorton=:x1)) <: Plots.Plot # Needs method feature sorting
-
-    @test typeof(annotationbar(parse.(Color, ["red", "white", "blue"]))) <: Plots.Plot
-
 end
 
 @testset "Distances" begin
     # Constructors
-    srand(1)
+    Random.seed!(1)
     M = rand(100, 10)
     df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
     abund = abundancetable(
@@ -125,15 +118,10 @@ end
     @test ginisimpson(s1) > ginisimpson(s2)
     @test ginisimpson(s3) ≈ 1. - 1/R
     @test ginisimpson(s4) ≈ 0.
-
-    # Plotting
-    @test typeof(plot(p)) <: Plots.Plot
-    @test typeof(plot(p)) <: Plots.Plot
-
 end
 
 @testset "Leaf Ordering" begin
-    srand(42)
+    Random.seed!(42)
     m = rand(100, 10)
 
     dm = pairwise(BrayCurtis(), m)
@@ -143,16 +131,4 @@ end
 
     @test ordered.order == [7, 3, 1, 9, 2, 6, 10, 4, 5, 8]
     @test ordered.merge == h.merge
-
-    # Plotting
-
-    @test typeof(hclustplot(ordered)) <: Plots.Plot
-
-end
-
-@testset "Biobakery Utilities" begin
-    abund = metaphlan_import("metaphlan_test.tsv", level=:species, shortnames=true)
-
-    @test typeof(abund) <: ComMatrix
-    @test size(abund) == (15, 7)
 end
