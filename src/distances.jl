@@ -88,7 +88,7 @@ function pcoa(D::DistanceMatrix; correct_neg::Bool=false)
 end
 
 function sortedeig(M::Array{Float64,2})
-    f = eigfact(M)
+    f = eigen(M, scale=true, permute=true)
     v = real.(f.values)
     p = sortperm(v, rev = true)
     return LinAlg.Eigen(v[p], real.(f.vectors[:,p]))
