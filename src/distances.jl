@@ -59,7 +59,7 @@ function getrowdm(arr::AbstractArray, distance::PreMetric)
 end
 
 function getrowdm(df::DataFrame, distance::PreMetric)
-    m = Matrix(df[2:end])'
+    m = convert(Matrix, df[2:end])'
     return DistanceMatrix(
             pairwise(distance, m),
             Vector(df[:,1]),
