@@ -33,17 +33,7 @@ export
     optimalorder,
     optimalorder!,
     ginisimpson,
-    shannon,
-    ## plotting
-    hclustplot,
-    annotationbar,
-    ## utils
-    metaphlan_import,
-    panphlan_calcs,
-    bysample,
-    taxfilter,
-    taxfilter!,
-    qvalue!
+    shannon
 
 using Reexport
 @reexport using SpatialEcology

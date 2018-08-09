@@ -1,23 +1,17 @@
 using Microbiome
 using Distances
-using DataFrames
-using Clustering
-using Colors
 using Test
 
 @testset "Abundances" begin
     # Constructors
     M = rand(100, 10)
-    df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
 
-    a1 = abundancetable(M)
-    a2 = abundancetable(df)
+    a = abundancetable(M)
+    @test typeof(a) <: AbstractComMatrix
 
     abund = abundancetable(
         M, ["sample_$x" for x in 1:10],
         ["feature_$x" for x in 1:100])
-
-    @test a1.occurrences == a2.occurrences == abund.occurrences
 
     # Normalization functions
     relab_fract = relativeabundance(abund)
@@ -59,14 +53,6 @@ using Test
     end
 
     @test featurenames(filt)[end] == "other"
-
-    # Plotting - not working on 0.7
-    @test_skip typeof(abundanceplot(abund, topabund=5)) <: Plots.Plot
-    @test_skip typeof(abundanceplot(abund, sorton=:hclust)) <: Plots.Plot
-    @test_skip typeof(abundanceplot(abund, sorton=:x1)) <: Plots.Plot # Needs method feature sorting
-
-    @test_skip typeof(annotationbar(parse.(Color, ["red", "white", "blue"]))) <: Plots.Plot
-
 end
 
 @testset "Distances" begin
@@ -123,11 +109,6 @@ end
     @test ginisimpson(s1) > ginisimpson(s2)
     @test ginisimpson(s3) ≈ 1. - 1/R
     @test ginisimpson(s4) ≈ 0.
-
-    # Plotting - not working on 0.7
-    @test_skip typeof(plot(p)) <: Plots.Plot
-    @test_skip typeof(plot(p)) <: Plots.Plot
-
 end
 
 @testset "Leaf Ordering" begin
@@ -141,16 +122,4 @@ end
 
     @test ordered.order == [7, 3, 1, 9, 2, 6, 10, 4, 5, 8]
     @test ordered.merge == h.merge
-
-    # Plotting - not working on 0.7
-
-    @test_skip typeof(hclustplot(ordered)) <: Plots.Plot
-
-end
-
-@testset "Biobakery Utilities" begin
-    abund = metaphlan_import("metaphlan_test.tsv", level=:species, shortnames=true)
-
-    @test typeof(abund) <: ComMatrix
-    @test size(abund) == (15, 7)
 end
