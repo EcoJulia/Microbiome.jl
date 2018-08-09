@@ -31,6 +31,8 @@ variance(p, [1,2])
 
 ## Plotting
 
+**NOTE: The following functions are not currently working - I've moved them to a new package to simplify dependencies. I'm leaving the docs for now as a reference - see `Microbiome.jl` versions 0.2.1 and below for working versions**
+
 Some convenience plotting types are available using [`RecipesBase`](https://github.com/juliaplots/recipesbase.jl).
 
 ```@repl 2
