@@ -121,7 +121,7 @@ end
 end
 
 @testset "Leaf Ordering" begin
-    srand(42)
+    Random.seed!(42)
     m = rand(100, 10)
 
     dm = pairwise(BrayCurtis(), m)

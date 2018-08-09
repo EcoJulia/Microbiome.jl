@@ -29,7 +29,7 @@ function filterabund(abun::AbstractComMatrix, n::Int=minimum(10, nfeatures(abun)
 
     remainder = [sum(occurrences(abun)[srt[n+1:end], i]) for i in 1:size(abun, 2)]'
     newabun = vcat(newabun, remainder)
-    newrows = cat(1, featurenames(abun)[srt[1:n]], ["other"])
+    newrows = cat(featurenames(abun)[srt[1:n]], ["other"], dims=1)
 
     return abundancetable(newabun, samplenames(abun), newrows)
 end
