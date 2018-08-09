@@ -1,14 +1,15 @@
 # Methods for absolute and relative abundances
 
 abundancetable(df::DataFrame) = ComMatrix(
-    Matrix{Float64}(df[2:end]),
-    string.(df[1]),
-    String.(names(df[2:end])))
+    convert(Matrix{Float64}, df[2:end]),
+        string.(df[1]),
+        string.(names(df[2:end]))
+    )
 
 abundancetable(table::AbstractArray{T,2},
     site = ["sample_$x" for x in axes(table, 2)],
-    species = ["feature_$x" for x in axes(table, 1)]) where T<:Real =
-    ComMatrix(Float64.(table), species, site)
+    species = ["feature_$x" for x in axes(table, 1)]
+    ) where T<:Real = ComMatrix(Float64.(table), species, site)
 
 
 """
