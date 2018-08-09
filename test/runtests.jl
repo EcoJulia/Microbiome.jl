@@ -45,7 +45,6 @@ using Test
     # Filtering Functions
     filt = filterabund(relab_fract, 5)
     @test typeof(filt) <: AbstractComMatrix
-    @test typeof(filterabund(df, 5)) <: AbstractComMatrix
 
     @test size(filt) == (6, 10)
     for i in 1:10
@@ -59,30 +58,27 @@ end
     # Constructors
     srand(1)
     M = rand(100, 10)
-    df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
     abund = abundancetable(
         M, ["sample_$x" for x in 1:10],
         ["feature_$x" for x in 1:100])
 
     dm1 = getdm(M, BrayCurtis())
-    dm2 = getdm(df, BrayCurtis())
-    dm = getdm(abund, BrayCurtis())
+    dm2 = getdm(abund, BrayCurtis())
 
-    @test dm.dm == dm1.dm == dm2.dm
+    @test dm1.dm == dm2.dm
 
     rowdm1 = getrowdm(M, BrayCurtis())
-    rowdm2 = getrowdm(df, BrayCurtis())
-    rowdm = getrowdm(abund, BrayCurtis())
+    rowdm2 = getrowdm(abund, BrayCurtis())
 
-    @test rowdm.dm == rowdm1.dm == rowdm2.dm
+    @test rowdm1.dm == rowdm2.dm
 
-    @test size(dm) == (10, 10)
-    @test size(rowdm) == (100, 100)
-    for i in 1:10; @test dm[i,i] == 0; end
-    for i in 1:100; @test rowdm[i,i] == 0; end
+    @test size(dm1) == (10, 10)
+    @test size(rowdm1) == (100, 100)
+    for i in 1:10; @test dm1[i,i] == 0; end
+    for i in 1:100; @test rowdm1[i,i] == 0; end
 
     # PCoA
-    p = pcoa(dm, correct_neg=true)
+    p = pcoa(dm1, correct_neg=true)
     @test sum(p.variance_explained) ≈ 1
     for i in 1:size(p, 2)
         @test eigenvalue(p, i) > 0
@@ -92,7 +88,7 @@ end
     @test sum([variance(p, i) for i in 1:size(p,2)]) ≈ 1
     @test sort(variance(p, 1:size(p,2)), rev=true) == variance(p, 1:size(p,2))
 
-    @test length(principalcoord(p, 1)) == size(dm, 1)
+    @test length(principalcoord(p, 1)) == size(dm1, 1)
     @test principalcoord(p, 1:size(p,2)) == p.eigenvectors
 
     # Diversity indicies
