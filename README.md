@@ -1,6 +1,6 @@
 ![Microbiome.jl logo](logo.png)
 
-# Microbiome.jl <small>For analysis of microbiome and microbial community data</small>
+## For analysis of microbiome and microbial community data
 
 **Latest Release:**
 
@@ -24,13 +24,26 @@ and are imported here.
 
 Install Microbiome from the Julia REPL:
 
+```
+pkg> add Microbiome
+```
+or
+
 ```julia
+julia> using Pkg
 julia> Pkg.add("Microbiome")
 ```
 
 If you are interested in the cutting edge of the development, please check out
 the master branch to try new features before release.
 
+```
+pkg> add Microbiome#master
+```
+
+or
+
 ```julia
-julia> Pkg.checkout("Microbiome")
+julia> using Pkg
+julia> Pkg.add("Microbiome#master")
 ```
