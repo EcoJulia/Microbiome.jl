@@ -47,3 +47,12 @@ or
 julia> using Pkg
 julia> Pkg.add("Microbiome#master")
 ```
+
+## Companion Packages
+
+You might also be interested in some functionality provided by
+[MicrobiomePlots.jl](https://github.com/BioJulia/MicrobiomePlots)
+and [BiobakeryUtils.jl](https://github.com/BioJulia/BiobakeryUtils).
+
+Microbiome.jl uses [EcoBase](https://github.com/EcoJulia/EcoBase.jl) under the hood
+for many of its types and methods.  
