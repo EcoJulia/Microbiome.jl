@@ -33,7 +33,10 @@ export
     optimalorder,
     optimalorder!,
     ginisimpson,
-    shannon
+    shannon,
+    present,
+    prevalence
+
 
 using Reexport
 @reexport using SpatialEcology
