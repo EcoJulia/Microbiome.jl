@@ -84,3 +84,14 @@ function relativeabundance(a::AbstractComMatrix; kind::Symbol=:fraction)
     relativeabundance!(relab, kind=kind)
     return relab
 end
+
+"""
+Check if a given (non-zero) value is greater than a minimum value.
+If the minimum abundance is 0, just checks if value is non-zero
+"""
+present(t::Float64, minabundance::Float64=0.0001) = t == 0 ? false : t >= minabundance
+
+"""
+Return the fraction of values that are greater than a minimum
+"""
+prevalence(a::AbstractArray{<:Real}, minabundance::Float64=0.0001) = mean(x-> present(x, minabundance), a)
