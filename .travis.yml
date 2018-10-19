@@ -4,8 +4,8 @@ os:
   - linux
   - osx
 julia:
-  - 1.0
   - 0.7
+  - 1.0
   - nightly
 notifications:
   email: false
@@ -28,5 +28,16 @@ matrix:
 # script:
 #  - julia -e 'Pkg.clone(pwd()); Pkg.build("Microbiome"); Pkg.test("Microbiome"; coverage=true)'
 after_success:
-  - julia --project -e 'import Pkg; Pkg.add("Documenter"); include("docs/make.jl")'
-  - julia --project -e 'import Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia --project=coverage/ -e 'using Pkg; Pkg.instantiate()'
+  - julia --project=coverage/ coverage/coverage.jl
+
+jobs:
+  include:
+    - stage: "Documentation"
+      julia: 1.0
+      os: linux
+      script:
+        - julia --project=docs/ -e 'using Pkg; Pkg.instantiate();
+                                    Pkg.develop(PackageSpec(path=pwd()))'
+        - julia --project=docs/ docs/make.jl
+      after_success: skip
