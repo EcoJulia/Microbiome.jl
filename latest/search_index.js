@@ -53,7 +53,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Microbial Abundances",
     "title": "Plotting",
     "category": "section",
-    "text": "Some convenience plotting types are available using RecipesBase and StatPlotsusing StatPlots\n\nsrand(1) # hide\n\nabund = abundancetable(\n           rand(100, 10),\n           [\"sample_$x\" for x in 1:10],\n           [\"feature_$x\" for x in 1:100]);\nrelativeabundance!(abund)\n\nabundanceplot(abund)\n\nsavefig(\"abundanceplot.png\"); nothing # hide(Image: )"
+    "text": "NOTE: The following functions are not currently working - I\'ve moved them to a new package to simplify dependencies. I\'m leaving the docs for now as a reference - see Microbiome.jl versions 0.2.1 and below for working versionsSome convenience plotting types are available using RecipesBase and StatPlotsusing StatPlots\n\nsrand(1) # hide\n\nabund = abundancetable(\n           rand(100, 10),\n           [\"sample_$x\" for x in 1:10],\n           [\"feature_$x\" for x in 1:100]);\nrelativeabundance!(abund)\n\nabundanceplot(abund)\n\nsavefig(\"abundanceplot.png\"); nothing # hide(Image: )"
 },
 
 {
@@ -77,7 +77,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Distances & Dissimilarity",
     "title": "Plotting",
     "category": "section",
-    "text": "Some convenience plotting types are available using RecipesBase.using StatPlots\n\nsrand(1) # hide\nabund = abundancetable(\n    rand(100, 10),\n    [\"sample_$x\" for x in 1:10],\n    [\"feature_$x\" for x in 1:100]);\n\ndm = getdm(abund, BrayCurtis());\np = pcoa(dm, correct_neg=true);\n\nplot(p, title=\"Random PCoA\")\nsavefig(\"pcoplot.png\"); nothing # hide(Image: pcoa plot)"
+    "text": "NOTE: The following functions are not currently working - I\'ve moved them to a new package to simplify dependencies. I\'m leaving the docs for now as a reference - see Microbiome.jl versions 0.2.1 and below for working versionsSome convenience plotting types are available using RecipesBase.using StatPlots\n\nsrand(1) # hide\nabund = abundancetable(\n    rand(100, 10),\n    [\"sample_$x\" for x in 1:10],\n    [\"feature_$x\" for x in 1:100]);\n\ndm = getdm(abund, BrayCurtis());\np = pcoa(dm, correct_neg=true);\n\nplot(p, title=\"Random PCoA\")\nsavefig(\"pcoplot.png\"); nothing # hide(Image: pcoa plot)"
 },
 
 {
@@ -85,7 +85,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Distances & Dissimilarity",
     "title": "Optimal Leaf Ordering",
     "category": "section",
-    "text": "I\'ve also provided a plotting recipe for making treeplots for Hclust objects from the Clustering.jl package:using Clustering\n\ndm = [0. .1 .2\n      .1 0. .15\n      .2 .15 0.];\n\nh = hclust(dm, :single);\nh.labels = [\"a\", \"b\", \"c\"];\n\nhclustplot(h)\nsavefig(\"hclustplot1.png\"); nothing # hide(Image: hclust plot 1)Note that even though this is a valid tree, the leaf a is closer to leaf c, despite the fact that c is more similar to b than to a. This can be fixed with a method derived from the paper:Bar-Joseph et. al. \"Fast optimal leaf ordering for hierarchical clustering.\" _Bioinformatics_. (2001)optimalorder!(h, dm)\nhclustplot(h)\n\nsavefig(\"hclustplot2.png\"); nothing # hide(Image: hclust plot 1)"
+    "text": "I\'ve also provided a plotting recipe for making treeplots for Hclust objects from the Clustering.jl package:using Clustering\n\ndm = [0. .1 .2\n      .1 0. .15\n      .2 .15 0.];\n\nh = hclust(dm, :single);\nh.labels = [\"a\", \"b\", \"c\"];\n\nhclustplot(h)\nsavefig(\"hclustplot1.png\"); nothing # hide(Image: hclust plot 1)Note that even though this is a valid tree, the leaf a is closer to leaf c, despite the fact that c is more similar to b than to a. This can be fixed with a method derived from the paper:Bar-Joseph et. al. \"Fast optimal leaf ordering for hierarchical clustering.\" Bioinformatics. (2001)optimalorder!(h, dm)\nhclustplot(h)\n\nsavefig(\"hclustplot2.png\"); nothing # hide(Image: hclust plot 1)"
 },
 
 {
