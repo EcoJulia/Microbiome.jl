@@ -1,0 +1,29 @@
+authors = ["kescobo <kevbonham@gmail.com"]
+desc = "Functions for working with microbial community data"
+keywords = ["microbiology", "microbiome", "biology"]
+license = "MIT"
+name = "Microbiome"
+version = "0.4.0"
+uuid = "3bd8f0ae-a0f2-5238-a5af-e1b399a4940c"
+
+[compat]
+julia = "0.7, 1.0"
+SpatialEcology = "^0.4"
+
+[deps]
+Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
+SpatialEcology = "348f2d5d-71a3-5ad4-b565-8af070f99681"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+Coverage = "a2441757-f6aa-5fb2-8edb-039e3f45d037"
+
+[targets]
+test = ["Test"]
+coverage = ["Coverage"]
