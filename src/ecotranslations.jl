@@ -3,7 +3,7 @@
 # species -> features
 const nfeatures = nspecies
 const getfeature = getspecies
-const featurenames = specnames
+const featurenames = speciesnames
 const featuretotals = speciestotals
 
 # sites -> samples

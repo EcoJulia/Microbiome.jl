@@ -3,12 +3,11 @@ desc = "Functions for working with microbial community data"
 keywords = ["microbiology", "microbiome", "biology"]
 license = "MIT"
 name = "Microbiome"
-version = "0.4.0"
+version = "0.4.1"
 uuid = "3bd8f0ae-a0f2-5238-a5af-e1b399a4940c"
 
 [compat]
-julia = "0.7, 1.0"
-SpatialEcology = "^0.4"
+julia = "1.0, 1.1"
 
 [deps]
 Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
