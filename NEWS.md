@@ -1,8 +1,13 @@
 # News for Microbiome.jl
 
+## v0.4.1
+
+Major Changes:  
+- Dropped support for julia-0.7
+
 ## v0.3.0
 
-Major changes:
+Major changes:  
 - Dropped support for julia-0.6, moved on to julia-0.7
 - Moved Plotting and BioBakery utilities out to separate packages to reduce dependencies
     - These two new packages will be released shortly

@@ -28,7 +28,7 @@ end
 
 function orderleaves!(order::Vector{Int}, hcl::Hclust, dm::Array{Float64,2})
     extents = Tuple{Int,Int}[]
-    for (vl, vr) in zip(hcl.merge[:,1], hcl.merge[:,2])
+    for (vl, vr) in zip(hcl.merges[:,1], hcl.merges[:,2])
         (u, m, uidx, midx) = leaflocs(vl, order, extents)
         (k, w, kidx, widx) = leaflocs(vr, order, extents)
         if vl < 0 && vr < 0

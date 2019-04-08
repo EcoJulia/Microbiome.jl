@@ -1,7 +1,0 @@
-julia 0.7
-SpatialEcology 0.4
-StatsBase
-Reexport
-Distances
-DataFrames
-Clustering

@@ -16,7 +16,7 @@ DistanceMatrix(dm::AbstractArray{T,2}, distance) where {T<:Real} = DistanceMatri
 @forward_func PCoA.eigenvectors Base.getindex, Base.setindex, Base.length, Base.size
 
 function getdm(t::AbstractComMatrix, distance::PreMetric)
-    dm = pairwise(distance, t.occurrences)
+    dm = pairwise(distance, t.occurrences, dims=2)
     for i in eachindex(dm); if isnan(dm[i]); dm[i] = 1; end; end
     return DistanceMatrix(
             dm,
@@ -25,7 +25,7 @@ function getdm(t::AbstractComMatrix, distance::PreMetric)
 end
 
 function getdm(t::AbstractArray, distance::PreMetric)
-    dm = pairwise(distance, t)
+    dm = pairwise(distance, t, dims=2)
     for i in eachindex(dm); if isnan(dm[i]); dm[i] = 1; end; end
     return DistanceMatrix(
             dm,
@@ -34,7 +34,7 @@ function getdm(t::AbstractArray, distance::PreMetric)
 end
 
 function getdm(df::DataFrame, distance::PreMetric)
-    dm = pairwise(distance, convert(Matrix, df[2:end]))
+    dm = pairwise(distance, convert(Matrix, df[2:end]), dims=2)
     for i in eachindex(dm); if isnan(dm[i]); dm[i] = 1; end; end
     return DistanceMatrix(
             dm,
@@ -45,7 +45,7 @@ end
 function getrowdm(abt::AbstractComMatrix, distance::PreMetric)
     m = abt.occurrences'
     return DistanceMatrix(
-            pairwise(distance, m),
+            pairwise(distance, m, dims=2),
             samplenames(abt),
             distance)
 end
@@ -53,7 +53,7 @@ end
 function getrowdm(arr::AbstractArray, distance::PreMetric)
     m = arr'
     return DistanceMatrix(
-            pairwise(distance, m),
+            pairwise(distance, m, dims=2),
             Vector(1:size(arr,1)),
             distance)
 end
@@ -61,7 +61,7 @@ end
 function getrowdm(df::DataFrame, distance::PreMetric)
     m = convert(Matrix, df[2:end])'
     return DistanceMatrix(
-            pairwise(distance, m),
+            pairwise(distance, m, dims=2),
             Vector(df[:,1]),
             distance)
 end

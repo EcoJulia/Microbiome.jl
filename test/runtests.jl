@@ -133,11 +133,11 @@ end
     Random.seed!(42)
     m = rand(100, 10)
 
-    dm = pairwise(BrayCurtis(), m)
-    h = hclust(dm, :single);
+    dm = pairwise(BrayCurtis(), m, dims=2)
+    h = hclust(dm, linkage=:single);
 
     ordered = optimalorder(h, dm)
 
     @test ordered.order == [7, 3, 1, 9, 2, 6, 10, 4, 5, 8]
-    @test ordered.merge == h.merge
+    @test ordered.merges == h.merges
 end
