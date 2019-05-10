@@ -36,7 +36,7 @@ variance(p, [1,2])
 Some convenience plotting types are available using [`RecipesBase`](https://github.com/juliaplots/recipesbase.jl).
 
 ```@repl 2
-using StatPlots
+using StatsPlots
 
 srand(1) # hide
 abund = abundancetable(

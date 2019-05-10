@@ -54,10 +54,10 @@ featurenames(abund2)
 **NOTE: The following functions are not currently working - I've moved them to a new package to simplify dependencies. I'm leaving the docs for now as a reference - see `Microbiome.jl` versions 0.2.1 and below for working versions**
 
 Some convenience plotting types are available using [`RecipesBase`](https://github.com/juliaplots/recipesbase.jl) and
-[StatPlots](https://github.com/juliaplots/StatPlots.jl)
+[StatsPlots](https://github.com/juliaplots/StatsPlots.jl)
 
 ```@repl 1
-using StatPlots
+using StatsPlots
 
 srand(1) # hide
 
