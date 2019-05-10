@@ -127,6 +127,9 @@ end
     @test ginisimpson(s1) > ginisimpson(s2)
     @test ginisimpson(s3) ≈ 1. - 1/R
     @test ginisimpson(s4) ≈ 0.
+
+    @test length(shannon(abund)) == 10
+    @test length(ginisimpson(abund)) == 10
 end
 
 @testset "Leaf Ordering" begin
