@@ -116,7 +116,7 @@ function shannon(v::AbstractVector{T}) where T<:Real
 end
 
 function shannon(abt::AbstractComMatrix)
-    return shannon.(eachcol(occurrences(abt))
+    return shannon.(eachcol(occurrences(abt)))
 end
 
 function ginisimpson(v::AbstractVector{T}) where T<:Real
@@ -126,5 +126,5 @@ function ginisimpson(v::AbstractVector{T}) where T<:Real
 end
 
 function ginisimpson(abt::AbstractComMatrix)
-    return ginisimpson.(eachcol(occurrences(abt))
+    return ginisimpson.(eachcol(occurrences(abt)))
 end
