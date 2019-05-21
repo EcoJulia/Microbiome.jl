@@ -68,30 +68,9 @@ end
 
 
 function pcoa(D::DistanceMatrix; correct_neg::Bool=false)
-    n = size(D,1)
-    A = -1/2 * D.^2
-    Δ1 = getdelta(A)
-
-    f = sortedeig(Δ1)
-
-    if correct_neg && f.values[end] < 0
-        c = abs(f.values[end])
-        for (i,h) in [(i, h) for i in 1:n for h in 1:n if i != h]
-            A[h,i] = -1/2 * D[h,i]^2 - c
-        end
-        Δ1 = getdelta(A)
-        f = sortedeig(Δ1)
-    end
-
-    vals = f.values[1:n-1]
-    return PCoA(f.vectors[:,1:n-1], vals, [v/sum(vals) for v in vals])
-end
-
-function sortedeig(M::Array{Float64,2})
-    f = eigen(M, scale=true, permute=true)
-    v = real.(f.values)
-    p = sortperm(v, rev = true)
-    return LinearAlgebra.Eigen(v[p], real.(f.vectors[:,p]))
+    f = fit(MDS, D.dm, distances=true)
+    vals = eigvals(f)
+    return PCoA(projection(f), vals, [v/sum(vals) for v in vals])
 end
 
 

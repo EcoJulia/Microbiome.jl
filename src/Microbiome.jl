@@ -50,6 +50,7 @@ using Clustering
 
 import SpatialEcology: @forward_func
 import Base: getindex, setindex, length
+import MultivariateStats: MDS, fit, projection, eigvals
 
 include("ecotranslations.jl")
 include("abundances.jl")
