@@ -1,10 +1,6 @@
 module Microbiome
 
 export
-    # Types
-    DistanceMatrix,
-    PCoA,
-
     # Functions
     ## abundance
     abundancetable,
@@ -23,15 +19,10 @@ export
     getsample,
     samplenames,
     sampletotals,
-    ## distances
-    getdm,
-    getrowdm,
-    pcoa,
-    eigenvalue,
-    principalcoord,
-    variance,
+    ## Leave ordering
     optimalorder,
     optimalorder!,
+    ## Diversity
     ginisimpson,
     shannon,
     present,
@@ -50,7 +41,6 @@ using Clustering
 
 import SpatialEcology: @forward_func
 import Base: getindex, setindex, length
-import MultivariateStats: MDS, fit, projection, eigvals
 
 include("ecotranslations.jl")
 include("abundances.jl")

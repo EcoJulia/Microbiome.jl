@@ -75,43 +75,7 @@ end
 
 @testset "Distances" begin
     # Constructors
-    Random.seed!(1)
-    M = rand(100, 10)
-    df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
-    abund = abundancetable(
-        M, ["sample_$x" for x in 1:10],
-        ["feature_$x" for x in 1:100])
-
-    dm1 = getdm(M, BrayCurtis())
-    dm2 = getdm(df, BrayCurtis())
-    dm = getdm(abund, BrayCurtis())
-
-    @test dm.dm == dm1.dm == dm2.dm
-
-    rowdm1 = getrowdm(M, BrayCurtis())
-    rowdm2 = getrowdm(df, BrayCurtis())
-    rowdm = getrowdm(abund, BrayCurtis())
-
-    @test rowdm.dm == rowdm1.dm == rowdm2.dm
-
-    @test size(dm) == (10, 10)
-    @test size(rowdm) == (100, 100)
-    for i in 1:10; @test dm[i,i] == 0; end
-    for i in 1:100; @test rowdm[i,i] == 0; end
-
-    # PCoA
-    p = pcoa(dm, correct_neg=true)
-    @test sum(p.variance_explained) ≈ 1
-    for i in 1:size(p, 2)
-        @test eigenvalue(p, i) > 0
-        @test typeof(eigenvalue(p, i)) <: Real
-    end
-
-    @test sum([variance(p, i) for i in 1:size(p,2)]) ≈ 1
-    @test sort(variance(p, 1:size(p,2)), rev=true) == variance(p, 1:size(p,2))
-
-    @test length(principalcoord(p, 1)) == size(dm, 1)
-    @test principalcoord(p, 1:size(p,2)) == p.eigenvectors
+    Random.seed!!(1)
 
     # Diversity indicies
     R = 100
@@ -133,7 +97,7 @@ end
 end
 
 @testset "Leaf Ordering" begin
-    Random.seed!(42)
+    Random.seed!!(42)
     m = rand(100, 10)
 
     dm = pairwise(BrayCurtis(), m, dims=2)
