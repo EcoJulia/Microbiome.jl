@@ -1,5 +1,7 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+MicrobiomePlots = "bed85cf4-5cc8-5ac4-9eb3-09fbf92b2ce2"
+MultivariateStats = "6f286f6a-111f-5878-ab1e-185364afe411"
 
 [compat]
-Documenter = "~0.19"
+Documenter = "~0.22"
