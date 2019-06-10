@@ -1,7 +1,6 @@
 using Documenter, Microbiome
 
 makedocs(
-    format = :html,
     sitename = "Microbiome.jl",
     pages = [
         "Home" => "index.md",
@@ -9,14 +8,12 @@ makedocs(
         "Distances & Dissimilarity" => "distances.md",
         "Contributing" => "contributing.md"
     ],
-    authors = "Kevin Bonham, PhD"
+    authors = "Kevin Bonham, PhD",
+    format = Documenter.HTML(
+        prettyurls = get(ENV, "CI", nothing) == "true"
+    ),
 )
 
 deploydocs(
     repo = "github.com/BioJulia/Microbiome.jl.git",
-    julia = "1.0",
-    osname = "linux",
-    target = "build",
-    deps = nothing,
-    make = nothing
 )
