@@ -19,9 +19,6 @@ export
     getsample,
     samplenames,
     sampletotals,
-    ## Leave ordering
-    optimalorder,
-    optimalorder!,
     ## Diversity
     ginisimpson,
     shannon,
@@ -31,13 +28,10 @@ export
 
 using Reexport
 @reexport using SpatialEcology
-@reexport using Distances
 
-using LinearAlgebra
 using Statistics
 using StatsBase
 using DataFrames
-using Clustering
 
 import SpatialEcology: @forward_func
 import Base: getindex, setindex, length
@@ -45,6 +39,5 @@ import Base: getindex, setindex, length
 include("ecotranslations.jl")
 include("abundances.jl")
 include("distances.jl")
-include("leafordering.jl")
 
 end  # module Microbiome

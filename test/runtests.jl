@@ -1,8 +1,5 @@
 using Microbiome
-using Distances
-using LinearAlgebra
 using DataFrames
-using Clustering
 using Random
 using Test
 
@@ -75,7 +72,12 @@ end
 
 @testset "Distances" begin
     # Constructors
-    Random.seed!!(1)
+    Random.seed!(1)
+    M = rand(100, 10)
+    df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
+    abund = abundancetable(
+        M, ["sample_$x" for x in 1:10],
+        ["feature_$x" for x in 1:100])
 
     # Diversity indicies
     R = 100
@@ -94,17 +96,4 @@ end
 
     @test length(shannon(abund)) == 10
     @test length(ginisimpson(abund)) == 10
-end
-
-@testset "Leaf Ordering" begin
-    Random.seed!!(42)
-    m = rand(100, 10)
-
-    dm = pairwise(BrayCurtis(), m, dims=2)
-    h = hclust(dm, linkage=:single);
-
-    ordered = optimalorder(h, dm)
-
-    @test ordered.order == [7, 3, 1, 9, 2, 6, 10, 4, 5, 8]
-    @test ordered.merges == h.merges
 end
