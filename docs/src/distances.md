@@ -1,8 +1,9 @@
 # Working with Distances / Dissimilarity
 
-Quite often, it's useful to boil stuff down to distances between samples. For
-this, I'm using an interface with `Distances.jl` to generate a symetric
-`DistanceMatrix`.
+Quite often, it's useful to boil stuff down to distances between samples.
+`AbundanceTable`s can be used with the `pairwise()` function
+from [`Distances.jl`](https://github.com/JuliaStats/Distances.jl)
+to get a symetric distance matrix.
 
 ```@example 2
 using Distances
@@ -12,24 +13,30 @@ abund = abundancetable([1  3  0;
                         4  8  3;
                         5  0  4]);
 
-dm = getdm(abund, BrayCurtis())
+dm = pairwise(BrayCurtis(), abund, dims=2)
 ```
 
-I've also implemented a method to do a principle coordinates analysis. If
-necessary, you can include `correct_neg=true` to use the correction method
-described in [Lingoes (1971)](http://dx.doi.org/10.1007/BF02291398)
+To plot this, use the `MDS` or `PCA` implementations
+from [MultivariateStats](https://github.com/JuliaStats/MultivariateStats.jl) [^1]
+and plotting functionality
+from [StatsPlots](https://github.com/JuliaPlots/StatsPlots.jl)[^2].
 
 ```@example 2
-p = pcoa(dm)
+using MultivariateStats
+using StatsPlots
 
-eigenvalue(p, 2)
-principalcoord(p, 1)
-variance(p, [1,2])
+mds = fit(MDS, dm, distances=true)
+
+plot(mds)
+
+savefig("mds.png"); nothing # hide
 ```
+
+![mds plot](./mds.png)
 
 ### Optimal Leaf Ordering
 
-I've also provided a plotting recipe for making treeplots for `Hclust` objects
+I also wrote a plotting recipe for making treeplots for `Hclust` objects
 from the [`Clustering.jl`](http://github.com/JuliaStats/Clustering.jl) package,
 and the recipe for plotting was moved into StatsPlots:
 
@@ -52,13 +59,18 @@ Note that even though this is a valid tree, the leaf `a` is closer to leaf `c`,
 despite the fact that `c` is more similar to `b` than to `a`. This can be fixed
 with a method derived from the paper:
 
-[Bar-Joseph et. al. "Fast optimal leaf ordering for hierarchical clustering." _Bioinformatics_. (2001)](https://doi.org/10.1093/bioinformatics/17.suppl_1.S22)
+[Bar-Joseph et. al. "Fast optimal leaf ordering for hierarchical clustering." _Bioinformatics_. (2001)](https://doi.org/10.1093/bioinformatics/17.suppl_1.S22)[^3]
 
 ```@example 2
-optimalorder!(h, dm)
-plot(h)
+h2 = hclust(dm, linkage=:single, branchorder=:optimal);
+
+plot(h2)
 
 savefig("hclustplot2.png"); nothing # hide
 ```
 
 ![hclust plot 1](./hclustplot2.png)
+
+[^1]: Requires https://github.com/JuliaStats/MultivariateStats.jl/pull/85
+[^2]: Requires https://github.com/JuliaPlots/StatsPlots.jl/pull/152
+[^3]: Requires https://github.com/JuliaStats/Clustering.jl/pull/170
