@@ -3,8 +3,8 @@
 ## v0.5.0
 
 Major Changes:  
-- Dropped Microbiome.jl-defined types and methods for DistanceMatrix. Use Distances.jl instead. [SpatialEcology PR](https://github.com/EcoJulia/SpatialEcology.jl/pull/36)
-- Dropped Microbiome.jl-defined types and methods for PCoA. Use MDS from MultivariateStats.jl instead.
+- Dropped Microbiome.jl-defined types and methods for DistanceMatrix. Use Distances.jl instead. [Requires this SpatialEcology PR](https://github.com/EcoJulia/SpatialEcology.jl/pull/36)
+- Dropped Microbiome.jl-defined types and methods for PCoA. Use MDS from MultivariateStats.jl instead. [Requires this MultivariateStats PR](https://github.com/JuliaStats/MultivariateStats.jl/pull/85)
 - Dropped Hclust leaf ordering. Added to Clustering.jl instead ([see Clustering.jl PR](https://github.com/JuliaStats/Clustering.jl/pull/170))
 
 
