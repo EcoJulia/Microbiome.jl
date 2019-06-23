@@ -11,6 +11,13 @@ makedocs(
     authors = "Kevin Bonham, PhD",
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true")
-    )
+)
 
-deploydocs(repo = "github.com/BioJulia/Microbiome.jl.git")
+deploydocs(
+    repo = "github.com/BioJulia/Microbiome.jl.git",
+    julia = "1.0",
+    osname = "linux",
+    target = "build",
+    deps = nothing,
+    make = nothing
+)

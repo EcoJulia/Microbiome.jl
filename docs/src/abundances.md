@@ -97,7 +97,7 @@ plot(
     plot(annotationbar(labels)),
     layout=grid(2,1, heights=[0.9,0.1]))
 
-savefig("abundanceplot-anotations.png"); nothing # hide
+savefig("abundanceplot-annotations.png"); nothing # hide
 ```
 
-![abundance plot with annotations](./abundanceplot.png)
+![abundance plot with annotations](./abundanceplot-annotations.png)
