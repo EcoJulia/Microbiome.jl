@@ -1,4 +1,6 @@
-# Microbiome.jl <small>For analysis of microbiome and microbial community data</small>
+# Microbiome.jl
+
+## For analysis of microbiome and microbial community data
 
 [![Latest Release](https://img.shields.io/github/release/BioJulia/Microbiome.jl.svg)](https://github.com/BioJulia/Microbiome.jl/releases/latest)
 [![Microbiome](http://pkg.julialang.org/badges/Microbiome_0.6.svg)](http://pkg.julialang.org/?pkg=Microbiome)

@@ -1,12 +1,11 @@
 # Working with Distances / Dissimilarity
 
-Quite often, it's useful to boil stuff down to distances between samples. For
-this, I'm using an interface with `Distances.jl` to generate a symetric
-`DistanceMatrix`, which also contains a vector for samples, and a field
-specifying which type of distance was used to calulate it. You can load one
-in manually, or generate it from an `AbundanceTable`.
+Quite often, it's useful to boil stuff down to distances between samples.
+`AbundanceTable`s can be used with the `pairwise()` function
+from [`Distances.jl`](https://github.com/JuliaStats/Distances.jl)
+to get a symetric distance matrix.
 
-```@repl 2
+```@example 2
 using Distances
 using Microbiome
 
@@ -14,77 +13,64 @@ abund = abundancetable([1  3  0;
                         4  8  3;
                         5  0  4]);
 
-dm = getdm(abund, BrayCurtis())
+dm = pairwise(BrayCurtis(), abund, dims=2)
 ```
 
-I've also implemented a method to do a principle coordinates analysis. If
-necessary, you can include `correct_neg=true` to use the correction method
-described in [Lingoes (1971)](http://dx.doi.org/10.1007/BF02291398)
+To plot this, use the `MDS` or `PCA` implementations
+from [MultivariateStats](https://github.com/JuliaStats/MultivariateStats.jl) [^1]
+and plotting functionality
+from [StatsPlots](https://github.com/JuliaPlots/StatsPlots.jl)[^2].
 
-```@repl 2
-p = pcoa(dm)
+```@example 2
+using MultivariateStats
+using StatsPlots
 
-eigenvalue(p, 2)
-principalcoord(p, 1)
-variance(p, [1,2])
+mds = fit(MDS, dm, distances=true)
+
+plot(mds)
+
+savefig("mds.png"); nothing # hide
 ```
 
-## Plotting
-
-**NOTE: The following functions are not currently working - I've moved them to a new package to simplify dependencies. I'm leaving the docs for now as a reference - see `Microbiome.jl` versions 0.2.1 and below for working versions**
-
-Some convenience plotting types are available using [`RecipesBase`](https://github.com/juliaplots/recipesbase.jl).
-
-```@repl 2
-using StatPlots
-
-srand(1) # hide
-abund = abundancetable(
-    rand(100, 10),
-    ["sample_$x" for x in 1:10],
-    ["feature_$x" for x in 1:100]);
-
-dm = getdm(abund, BrayCurtis());
-p = pcoa(dm, correct_neg=true);
-
-plot(p, title="Random PCoA")
-savefig("pcoplot.png"); nothing # hide
-```
-
-![pcoa plot](pcoplot.png)
+![mds plot](./mds.png)
 
 ### Optimal Leaf Ordering
 
-I've also provided a plotting recipe for making treeplots for `Hclust` objects
-from the [`Clustering.jl`](http://github.com/JuliaStats/Clustering.jl) package:
+I also wrote a plotting recipe for making treeplots for `Hclust` objects
+from the [`Clustering.jl`](http://github.com/JuliaStats/Clustering.jl) package,
+and the recipe for plotting was moved into StatsPlots:
 
-```@repl 2
+```@example 2
 using Clustering
 
 dm = [0. .1 .2
       .1 0. .15
       .2 .15 0.];
 
-h = hclust(dm, :single);
-h.labels = ["a", "b", "c"];
+h = hclust(dm, linkage=:single);
 
-hclustplot(h)
+plot(h)
 savefig("hclustplot1.png"); nothing # hide
 ```
 
-![hclust plot 1](hclustplot1.png)
+![hclust plot 1](./hclustplot1.png)
 
 Note that even though this is a valid tree, the leaf `a` is closer to leaf `c`,
 despite the fact that `c` is more similar to `b` than to `a`. This can be fixed
 with a method derived from the paper:
 
-[Bar-Joseph et. al. "Fast optimal leaf ordering for hierarchical clustering." _Bioinformatics_. (2001)](https://doi.org/10.1093/bioinformatics/17.suppl_1.S22)
+[Bar-Joseph et. al. "Fast optimal leaf ordering for hierarchical clustering." _Bioinformatics_. (2001)](https://doi.org/10.1093/bioinformatics/17.suppl_1.S22)[^3]
 
-```@repl 2
-optimalorder!(h, dm)
-hclustplot(h)
+```@example 2
+h2 = hclust(dm, linkage=:single, branchorder=:optimal);
+
+plot(h2)
 
 savefig("hclustplot2.png"); nothing # hide
 ```
 
-![hclust plot 1](hclustplot2.png)
+![hclust plot 1](./hclustplot2.png)
+
+[^1]: Requires https://github.com/JuliaStats/MultivariateStats.jl/pull/85
+[^2]: Requires https://github.com/JuliaPlots/StatsPlots.jl/pull/152
+[^3]: Requires https://github.com/JuliaStats/Clustering.jl/pull/170

@@ -4,8 +4,8 @@ os:
   - linux
   - osx
 julia:
-  - 1.0
   - 1.1
+  - 1.2
   - nightly
 notifications:
   email: false
@@ -24,9 +24,11 @@ matrix:
 #before_script: # homebrew for mac
 #  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
 
-# # uncomment the following lines to override the default test script
-# script:
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("Microbiome"); Pkg.test("Microbiome"; coverage=true)'
+# comment the following lines to use the default test script
+script:
+  - julia -e 'using Pkg.Registry; Registry.add(Registry.RegistrySpec(url = "https://github.com/BioJulia/BioJuliaRegistry.git"))'
+  - julia -e 'using Pkg.Registry; Registry.add(Registry.RegistrySpec(url = "https://github.com/JuliaRegistries/General.git"))'
+  - julia -e 'using Pkg; Pkg.build(); Pkg.test("Microbiome", coverage = true)'
 after_success:
   - julia --project=coverage/ -e 'using Pkg; Pkg.instantiate()'
   - julia --project=coverage/ coverage/coverage.jl
@@ -34,9 +36,11 @@ after_success:
 jobs:
   include:
     - stage: "Documentation"
-      julia: 1.0
+      julia: 1.1
       os: linux
       script:
+        - julia -e 'using Pkg.Registry; Registry.add(Registry.RegistrySpec(url = "https://github.com/BioJulia/BioJuliaRegistry.git"))'
+        - julia -e 'using Pkg.Registry; Registry.add(Registry.RegistrySpec(url = "https://github.com/JuliaRegistries/General.git"))'
         - julia --project=docs/ -e 'using Pkg; Pkg.instantiate();
                                     Pkg.develop(PackageSpec(path=pwd()))'
         - julia --project=docs/ docs/make.jl
