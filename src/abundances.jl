@@ -1,9 +1,9 @@
 # Methods for absolute and relative abundances
 
 abundancetable(df::DataFrame) = ComMatrix(
-    convert(Matrix{Float64}, df[2:end]),
-        string.(df[1]),
-        string.(names(df[2:end]))
+    convert(Matrix{Float64}, df[!,2:end]),
+        string.(df[!,1]),
+        string.(names(df)[2:end])
     )
 
 abundancetable(table::AbstractArray{T,2},
