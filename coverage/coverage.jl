@@ -1,3 +1,3 @@
 using Coverage
- cd(joinpath(@__DIR__, "..")) do
+cd(joinpath(@__DIR__, "..")) do
     Codecov.submit(Codecov.process_folder())
