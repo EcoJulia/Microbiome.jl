@@ -68,6 +68,7 @@ using Test
     a[randperm(100)[1:10]] .= rand(10)
 
     @test prevalence(a, 0.) == 0.1
+    @test prevalence((x % 10 == 0 ? rand() : 0. for x in 1:100), 0.) == 0.1
 end
 
 @testset "Distances" begin
