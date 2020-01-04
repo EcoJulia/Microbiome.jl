@@ -94,4 +94,4 @@ present(t::Float64, minabundance::Float64=0.0001) = t == 0 ? false : t >= minabu
 """
 Return the fraction of values that are greater than a minimum
 """
-prevalence(a::AbstractArray{<:Real}, minabundance::Float64=0.0001) = mean(x-> present(x, minabundance), a)
+prevalence(a, minabundance::Float64=0.0001) = mean(x-> present(x, minabundance), a)
