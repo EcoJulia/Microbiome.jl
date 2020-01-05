@@ -48,3 +48,9 @@ abund2 = filterabund(abund, 1)
 
 featurenames(abund2)
 ```
+
+## Methods
+
+```@autodocs
+Pages = ["abundances.jl"]
+```
