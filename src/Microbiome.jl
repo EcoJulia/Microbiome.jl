@@ -33,7 +33,6 @@ using Statistics
 using StatsBase
 using DataFrames
 
-import SpatialEcology: @forward_func
 import Base: getindex, setindex, length
 
 include("ecotranslations.jl")
