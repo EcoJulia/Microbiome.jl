@@ -19,5 +19,6 @@ dm = pairwise(BrayCurtis(), abund, dims=2)
 ## Methods
 
 ```@autodocs
+Modules = [Microbiome]
 Pages = ["distances.jl"]
 ```
