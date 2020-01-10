@@ -8,4 +8,4 @@ Microbiome = "3bd8f0ae-a0f2-5238-a5af-e1b399a4940c"
 SpatialEcology = "348f2d5d-71a3-5ad4-b565-8af070f99681"
 
 [compat]
-Documenter = "~0.22"
+Documenter = "0.24"

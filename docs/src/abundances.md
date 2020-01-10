@@ -21,7 +21,7 @@ Forgive the clutter... ComMatricies name rows as species (which is true in this
 case, but need not be), and columns are "sites" rather than samples. That will
 be fixed eventually.
 
-```@example 1
+```@repl 1
 samplenames(abund)
 featurenames(abund)
 sampletotals(abund) # this is column sums
@@ -31,7 +31,7 @@ featuretotals(abund) # this is row sums
 If you want relative abundance, you can do `relativeabundance(abund)` or
 `relativeabundance!(abund)`:
 
-```@example 1
+```@repl 1
 relativeabundance!(abund);
 
 sampletotals(abund)
@@ -42,7 +42,7 @@ function automatically generates an `n+1` row for `other` containing the
 remaining features. Note - these doesn't modify in-place, so you've gotta
 reassign if you want to update:
 
-```@example 1
+```@repl 1
 abund2 = filterabund(abund, 1);
 
 featurenames(abund2)

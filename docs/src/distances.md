@@ -5,6 +5,10 @@ Quite often, it's useful to boil stuff down to distances between samples.
 from [`Distances.jl`](https://github.com/JuliaStats/Distances.jl)
 to get a symetric distance matrix.
 
+
+At the moment,
+this only works if you're on SpatialEcology.jl's master branch.
+
 ```@example 2
 using Distances
 using Microbiome
