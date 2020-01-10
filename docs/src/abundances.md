@@ -6,9 +6,8 @@ names are also stored, and there's a convenience function if you want to convert
 a `DataFrame` to a `ComMatrix`, assuming the first column contains feature
 names:
 
-```@example 1
-using Microbiome
-using DataFrames
+```@repl 1
+using Microbiome, DataFrames;
 
 df = DataFrame(species=["E. coli", "B. fragilis", "L. casei"],
                       sample1=[1, 4, 5],
@@ -33,7 +32,7 @@ If you want relative abundance, you can do `relativeabundance(abund)` or
 `relativeabundance!(abund)`:
 
 ```@example 1
-relativeabundance!(abund)
+relativeabundance!(abund);
 
 sampletotals(abund)
 ```
@@ -44,7 +43,14 @@ remaining features. Note - these doesn't modify in-place, so you've gotta
 reassign if you want to update:
 
 ```@example 1
-abund2 = filterabund(abund, 1)
+abund2 = filterabund(abund, 1);
 
 featurenames(abund2)
+```
+
+## Methods
+
+```@autodocs
+Modules = [Microbiome]
+Pages = ["abundances.jl"]
 ```

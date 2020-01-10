@@ -15,3 +15,10 @@ abund = abundancetable([1  3  0;
 
 dm = pairwise(BrayCurtis(), abund, dims=2)
 ```
+
+## Methods
+
+```@autodocs
+Modules = [Microbiome]
+Pages = ["distances.jl"]
+```
