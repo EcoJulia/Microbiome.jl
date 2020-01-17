@@ -4,7 +4,7 @@ keywords = ["microbiology", "microbiome", "biology"]
 license = "MIT"
 desc = "Functions for working with microbial community data"
 authors = ["kescobo <kevbonham@gmail.com>"]
-version = "0.6.0"
+version = "0.6.1"
 
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
