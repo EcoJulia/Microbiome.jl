@@ -27,28 +27,21 @@ and are imported here.
 
 Install Microbiome from the Julia REPL:
 
-```
-pkg> add Microbiome
-```
-or
+Install Microbiome from the Julia REPL:
 
 ```julia
 julia> using Pkg
-julia> Pkg.add("Microbiome")
+
+julia> pkg"registry add https://github.com/BioJulia/BioJuliaRegistry.git" # note: this only needs to be done once
+
+julia> pkg"add Microbiome"
 ```
 
 If you are interested in the cutting edge of the development, please check out
 the master branch to try new features before release.
 
-```
-pkg> add Microbiome#master
-```
-
-or
-
 ```julia
-julia> using Pkg
-julia> Pkg.add("Microbiome#master")
+julia> pkg"add Microbiome#master"
 ```
 
 ## Companion Packages
