@@ -15,5 +15,6 @@ makedocs(
 
 deploydocs(
     repo = "github.com/BioJulia/Microbiome.jl.git",
-    push_preview=true
+    push_preview=true,
+    devbranch="main"
 )
