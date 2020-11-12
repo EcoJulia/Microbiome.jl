@@ -13,6 +13,7 @@
 
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![CI](https://github.com/BioJulia/Microbiome.jl/workflows/CI/badge.svg)](https://github.com/BioJulia/Microbiome.jl/actions?query=workflow%3ACI)
+[![codecov](https://codecov.io/gh/BioJulia/Microbiome.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/BioJulia/Microbiome.jl)
 
 [![Docs dev](https://img.shields.io/badge/docs-latest-blue.svg)](https://biojulia.net/Microbiome.jl/latest/)
 
