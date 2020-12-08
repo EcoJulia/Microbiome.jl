@@ -6,9 +6,9 @@ function shannon(v::AbstractVector{T}) where T<:Real
     return -sum([log(x^x) for x in relab])
 end
 
-function shannon(abt::AbstractComMatrix)
-    return shannon.(eachcol(occurrences(abt)))
-end
+# function shannon(abt::AbstractComMatrix)
+#     return shannon.(eachcol(occurrences(abt)))
+# end
 
 function ginisimpson(v::AbstractVector{T}) where T<:Real
     total = sum(v)
@@ -16,6 +16,6 @@ function ginisimpson(v::AbstractVector{T}) where T<:Real
     return 1 - sum([x^2 for x in relab])
 end
 
-function ginisimpson(abt::AbstractComMatrix)
-    return ginisimpson.(eachcol(occurrences(abt)))
-end
+# function ginisimpson(abt::AbstractComMatrix)
+#     return ginisimpson.(eachcol(occurrences(abt)))
+# end

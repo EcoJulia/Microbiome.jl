@@ -1,11 +1,8 @@
 [deps]
 Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-Microbiome = "3bd8f0ae-a0f2-5238-a5af-e1b399a4940c"
-SpatialEcology = "348f2d5d-71a3-5ad4-b565-8af070f99681"
 
 [compat]
 Documenter = "0.24"

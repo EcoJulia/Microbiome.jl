@@ -1,37 +1,33 @@
 module Microbiome
 
-export
-    # Functions
-    ## abundance
-    abundancetable,
-    filterabund,
-    relativeabundance,
-    relativeabundance!,
-    rownormalize,
-    rownormalize!,
-    colnormalize,
-    colnormalize!,
-    nfeatures,
-    getfeature,
-    featurenames,
-    featuretotals,
-    nsamples,
-    getsample,
-    samplenames,
-    sampletotals,
-    ## Diversity
-    ginisimpson,
-    shannon,
-    present,
-    prevalence
+# export
+#     # Functions
+#     ## abundance
+#     abundancetable,
+#     filterabund,
+#     relativeabundance,
+#     relativeabundance!,
+#     rownormalize,
+#     rownormalize!,
+#     colnormalize,
+#     colnormalize!,
+#     nfeatures,
+#     getfeature,
+#     featurenames,
+#     featuretotals,
+#     nsamples,
+#     getsample,
+#     samplenames,
+#     sampletotals,
+#     ## Diversity
+#     ginisimpson,
+#     shannon,
+#     present,
+#     prevalence
 
-
-using Reexport
-@reexport using SpatialEcology
-
+using EcoBase
 using Statistics
 using StatsBase
-using DataFrames
 
 import Base: getindex, setindex, length
 

@@ -6,11 +6,11 @@
 
 Convert DataFrame or matrix into a ComMatrix
 """
-abundancetable(df::DataFrame) = ComMatrix(
-    convert(Matrix{Float64}, df[!,2:end]),
-        string.(df[!,1]),
-        string.(names(df)[2:end])
-    )
+# abundancetable(df::DataFrame) = ComMatrix(
+#     convert(Matrix{Float64}, df[!,2:end]),
+#         string.(df[!,1]),
+#         string.(names(df)[2:end])
+#     )
 
 abundancetable(table::AbstractArray{T,2},
     site = ["sample_$x" for x in axes(table, 2)],
@@ -26,112 +26,112 @@ Filter an abundance table to the top `n` features accross all samples
 This function also adds a row for "other", which sums the abundances of the
 remaining features.
 """
-function filterabund(abun::AbstractComMatrix, n::Int=minimum(10, nfeatures(abun)))
-    # TODO: add prevalence filter
+# function filterabund(abun::AbstractComMatrix, n::Int=minimum(10, nfeatures(abun)))
+#     # TODO: add prevalence filter
 
-    totals = featuretotals(abun)
+#     totals = featuretotals(abun)
 
-    srt = sortperm(totals, rev=true)
+#     srt = sortperm(totals, rev=true)
 
-    newabun = getfeature(abun, srt[1:n])
+#     newabun = getfeature(abun, srt[1:n])
 
-    remainder = [sum(occurrences(abun)[srt[n+1:end], i]) for i in 1:size(abun, 2)]'
-    newabun = vcat(newabun, remainder)
-    newrows = cat(featurenames(abun)[srt[1:n]], ["other"], dims=1)
+#     remainder = [sum(occurrences(abun)[srt[n+1:end], i]) for i in 1:size(abun, 2)]'
+#     newabun = vcat(newabun, remainder)
+#     newrows = cat(featurenames(abun)[srt[1:n]], ["other"], dims=1)
 
-    return abundancetable(newabun, samplenames(abun), newrows)
-end
+#     return abundancetable(newabun, samplenames(abun), newrows)
+# end
 
-filterabund(df::DataFrame, n::Int=10) = filterabund(abundancetable(df), n)
+# filterabund(df::DataFrame, n::Int=10) = filterabund(abundancetable(df), n)
 
-"""
-    rownormalize!(abt::AbstractComMatrix)
+# """
+#     rownormalize!(abt::AbstractComMatrix)
 
-Normalize rows of a ComMatrix to the maximum of each row.
-"""
-function rownormalize!(abt::AbstractComMatrix)
-    for i in 1:size(abt, 1)
-        rowmax = maximum(occurrences(abt)[i,:])
-        for j in 1:size(abt, 2)
-            occurrences(abt)[i,j] /= rowmax
-        end
-    end
-end
+# Normalize rows of a ComMatrix to the maximum of each row.
+# """
+# function rownormalize!(abt::AbstractComMatrix)
+#     for i in 1:size(abt, 1)
+#         rowmax = maximum(occurrences(abt)[i,:])
+#         for j in 1:size(abt, 2)
+#             occurrences(abt)[i,j] /= rowmax
+#         end
+#     end
+# end
 
-"""
-    rownormalize(abt::AbstractComMatrix)
+# """
+#     rownormalize(abt::AbstractComMatrix)
 
-Return a copy of a ComMatrix
-normalized to the maximum of each row.
-"""
-function rownormalize(abt::AbstractComMatrix)
-    abt = deepcopy(abt)
-    rownormalize!(abt)
-    return abt
-end
-
-
-"""
-    colnormalize!(abt::AbstractComMatrix)
-
-Normalize rows of a ComMatrix to the maximum of each column.
-"""
-function colnormalize!(abt::AbstractComMatrix)
-    for j in 1:size(abt, 2)
-        colmax = maximum(occurrences(abt)[:,j])
-        for i in 1:size(abt, 1)
-            occurrences(abt)[i,j] /= colmax
-        end
-    end
-end
-
-"""
-    colnormalize(abt::AbstractComMatrix)
-
-Return a copy of a ComMatrix
-normalized to the maximum of each column.
-"""
-function colnormalize(abt::AbstractComMatrix)
-    abt = deepcopy(abt)
-    rownormalize!(abt)
-    return abt
-end
+# Return a copy of a ComMatrix
+# normalized to the maximum of each row.
+# """
+# function rownormalize(abt::AbstractComMatrix)
+#     abt = deepcopy(abt)
+#     rownormalize!(abt)
+#     return abt
+# end
 
 
-"""
-    relativeabundance!(a::AbstractComMatrix; kind::Symbol=:fraction)
+# """
+#     colnormalize!(abt::AbstractComMatrix)
 
-Normalize each column of a ComMatrix to the sum of the column.
+# Normalize rows of a ComMatrix to the maximum of each column.
+# """
+# function colnormalize!(abt::AbstractComMatrix)
+#     for j in 1:size(abt, 2)
+#         colmax = maximum(occurrences(abt)[:,j])
+#         for i in 1:size(abt, 1)
+#             occurrences(abt)[i,j] /= colmax
+#         end
+#     end
+# end
 
-By default, columns sum to 1.0.
-Use `kind=:percent` for columns to sum to 100.
-"""
-function relativeabundance!(a::AbstractComMatrix; kind::Symbol=:fraction)
-    in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
-    if eltype(a.occurrences) != Float64; a.occurrences = Float64.(a.occurrences) end
-    for i in 1:nsamples(a)
-        s = sum(getsample(a,i))
-        s == 0 && continue
-        for x in 1:nfeatures(a)
-            kind == :fraction ? occurrences(a)[x,i] /= s : occurrences(a)[x,i] /= (s / 100.)
-        end
-    end
-end
+# """
+#     colnormalize(abt::AbstractComMatrix)
 
-"""
-    relativeabundance!(a::AbstractComMatrix; kind::Symbol=:fraction)
+# Return a copy of a ComMatrix
+# normalized to the maximum of each column.
+# """
+# function colnormalize(abt::AbstractComMatrix)
+#     abt = deepcopy(abt)
+#     rownormalize!(abt)
+#     return abt
+# end
 
-Return a copy of a ComMatrix
-with columns normalized the sum of each column.
 
-By default, columns sum to 1.0.
-Use `kind=:percent` for columns to sum to 100.
-"""
-function relativeabundance(a::AbstractComMatrix; kind::Symbol=:fraction)
-    relab = deepcopy(a)
-    relativeabundance!(relab, kind=kind)
-    return relab
-end
+# """
+#     relativeabundance!(a::AbstractComMatrix; kind::Symbol=:fraction)
+
+# Normalize each column of a ComMatrix to the sum of the column.
+
+# By default, columns sum to 1.0.
+# Use `kind=:percent` for columns to sum to 100.
+# """
+# function relativeabundance!(a::AbstractComMatrix; kind::Symbol=:fraction)
+#     in(kind, [:percent, :fraction]) || error("Invalid kind: $kind")
+#     if eltype(a.occurrences) != Float64; a.occurrences = Float64.(a.occurrences) end
+#     for i in 1:nsamples(a)
+#         s = sum(getsample(a,i))
+#         s == 0 && continue
+#         for x in 1:nfeatures(a)
+#             kind == :fraction ? occurrences(a)[x,i] /= s : occurrences(a)[x,i] /= (s / 100.)
+#         end
+#     end
+# end
+
+# """
+#     relativeabundance!(a::AbstractComMatrix; kind::Symbol=:fraction)
+
+# Return a copy of a ComMatrix
+# with columns normalized the sum of each column.
+
+# By default, columns sum to 1.0.
+# Use `kind=:percent` for columns to sum to 100.
+# """
+# function relativeabundance(a::AbstractComMatrix; kind::Symbol=:fraction)
+#     relab = deepcopy(a)
+#     relativeabundance!(relab, kind=kind)
+#     return relab
+# end
 
 """
     present(t::Union{Float64, Missing}, minabundance::Float64=0.0001)
