@@ -1,6 +1,26 @@
 module Microbiome
 
-# export
+export nfeatures,
+       featurenames,
+       getfeature,
+       nsamples,
+       samplenames,
+       getsample,
+       AbstractFeature,
+       AbstractSample,
+       MicrobiomeSample,
+       Taxon,
+       GeneFunction,
+       TaxonomicProfile,
+       FunctionalProfile,
+       name,
+       level,
+       taxon,
+       hastaxon,
+       features,
+       samples,
+       abundancetable
+
 #     # Functions
 #     ## abundance
 #     abundancetable,
@@ -25,14 +45,20 @@ module Microbiome
 #     present,
 #     prevalence
 
-using EcoBase
 using Statistics
 using StatsBase
+using Tables
+using Dictionaries
+using SparseArrays
+using EcoBase
 
-import Base: getindex, setindex, length
+import EcoBase: AbstractThings, AbstractPlaces, AbstractAssemblage,
+                nthings, thingnames, thingoccurrences,
+                nplaces, placenames, placeoccurrences
 
-include("ecotranslations.jl")
-include("abundances.jl")
-include("distances.jl")
+include("profiles.jl")
+# include("tablesinterface.jl")
+# include("abundances.jl")
+# include("distances.jl")
 
 end  # module Microbiome

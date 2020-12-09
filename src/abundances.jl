@@ -1,31 +1,31 @@
 # Methods for absolute and relative abundances
 
-"""
-    abundancetable(df::DataFrame)
-    abundancetable(table::AbstractArray{T,2})
+# """
+#     abundancetable(df::DataFrame)
+#     abundancetable(table::AbstractArray{T,2})
 
-Convert DataFrame or matrix into a ComMatrix
-"""
-# abundancetable(df::DataFrame) = ComMatrix(
-#     convert(Matrix{Float64}, df[!,2:end]),
-#         string.(df[!,1]),
-#         string.(names(df)[2:end])
-#     )
+# Convert DataFrame or matrix into a ComMatrix
+# """
+# # abundancetable(df::DataFrame) = ComMatrix(
+# #     convert(Matrix{Float64}, df[!,2:end]),
+# #         string.(df[!,1]),
+# #         string.(names(df)[2:end])
+# #     )
 
-abundancetable(table::AbstractArray{T,2},
-    site = ["sample_$x" for x in axes(table, 2)],
-    species = ["feature_$x" for x in axes(table, 1)]
-    ) where T<:Real = ComMatrix(Float64.(table), species, site)
+# abundancetable(table::AbstractArray{T,2},
+#     site = ["sample_$x" for x in axes(table, 2)],
+#     species = ["feature_$x" for x in axes(table, 1)]
+#     ) where T<:Real = ComMatrix(Float64.(table), species, site)
 
 
-"""
-    filterabund(abun::AbstractComMatrix, n::Int=minimum(10, nfeatures(abun)))
+# """
+#     filterabund(abun::AbstractComMatrix, n::Int=minimum(10, nfeatures(abun)))
 
-Filter an abundance table to the top `n` features accross all samples
+# Filter an abundance table to the top `n` features accross all samples
 
-This function also adds a row for "other", which sums the abundances of the
-remaining features.
-"""
+# This function also adds a row for "other", which sums the abundances of the
+# remaining features.
+# """
 # function filterabund(abun::AbstractComMatrix, n::Int=minimum(10, nfeatures(abun)))
 #     # TODO: add prevalence filter
 
