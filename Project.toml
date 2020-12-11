@@ -7,6 +7,8 @@ authors = ["kescobo <kevbonham@gmail.com>"]
 version = "0.7.0-pre"
 
 [deps]
+AxisIndices = "f52c9ee2-1b1c-4fd8-8546-6350938c7f11"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dictionaries = "85a47980-9c8c-11e8-2b9f-f7ca1fa99fb4"
 EcoBase = "a58aae7d-b440-5a11-b283-399458f99aac"
 MultivariateStats = "6f286f6a-111f-5878-ab1e-185364afe411"

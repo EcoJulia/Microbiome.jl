@@ -1,99 +1,177 @@
 using Microbiome
-using DataFrames
 using Random
 using Test
+using SparseArrays
+using Tables
 
-@testset "Abundances" begin
-    # Constructors
-    M = rand(100, 10)
-    df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
 
-    a1 = abundancetable(M)
-    a2 = abundancetable(df)
-    @test typeof(a1) <:AbstractComMatrix
-    @test typeof(a2) <:AbstractComMatrix
+@testset "Abundance Tables" begin
+    clades = (:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain)
 
-    abund = abundancetable(
-        M, ["sample_$x" for x in 1:10],
-        ["feature_$x" for x in 1:100])
+    mss = [MicrobiomeSample("sample$i") for i in 1:5]
+    ms = first(mss)
+    @test name(ms) == "sample1"
 
-    @test a1.occurrences == a2.occurrences == abund.occurrences
-
-    # Normalization functions
-    relab_fract = relativeabundance(abund)
-    @test typeof(relab_fract) <: AbstractComMatrix
-
-    relab_perc = relativeabundance(abund, kind=:percent)
-    @test typeof(relab_perc) <: AbstractComMatrix
-
-    rnorm = rownormalize(abund)
-    cnorm = colnormalize(abund)
-
-    @test size(abund) == (nfeatures(abund), nsamples(abund))
-    @test size(relab_fract) == (nfeatures(relab_fract), nsamples(relab_fract))
-    @test size(relab_perc) == (nfeatures(relab_perc), nsamples(relab_perc))
-    @test size(rnorm) == (nfeatures(rnorm), nsamples(rnorm))
-    @test size(cnorm) == (nfeatures(cnorm), nsamples(cnorm))
-
-    for j in 1:10
-        @test sum(getsample(relab_fract, j)) ≈ 1
-        @test sum(getsample(relab_perc, j)) ≈ 100
-    end
-
-    for i in 1:nfeatures(rnorm)
-        @test maximum(getfeature(rnorm,i)) ≈ 1
-    end
-
-    for j in 1:nsamples(cnorm)
-        @test maximum(getsample(cnorm, j)) ≈ 1
-    end
-
-    # Filtering Functions
-    filt = filterabund(relab_fract, 5)
-    @test typeof(filt) <: AbstractComMatrix
-    @test typeof(filterabund(df, 5)) <: AbstractComMatrix
-
-    @test size(filt) == (6, 10)
+    txs = [Taxon("taxon$i", missing) for i in 1:10]
+    tx = first(txs)
+    @test name(tx) == "taxon1"
+    @test ismissing(clade(tx))
     for i in 1:10
-        @test sum(getsample(filt, i)) ≈ 1
+        @test Taxon("test", i-1) == Taxon("test", clades[i])
     end
 
-    @test featurenames(filt)[end] == "other"
 
-    @test present(0.1, 0.001)
-    @test !present(0.001, 0.1)
-    @test present(rand(), 0.)
+    gfs = [GeneFunction("gene$i", tx) for i in 1:10]
+    gf = first(gfs)
+    @test name(gf) == "gene1"
+    @test hastaxon(gf)
+    @test taxon(gf) == tx
 
-    a = zeros(100)
-    a[randperm(100)[1:10]] .= rand(10)
+    mat = spzeros(10,5)
+    for i in 1:5; mat[i,i] = 1.; end
+    
+    tp = TaxonomicProfile(mat, txs, mss)
+    @test nsamples(tp) == 5
+    @test nfeatures(tp) == 10
+    for (i, col) in enumerate(Tables.columns(tp))
+        if i == 1
+            @test col == txs
+        else 
+            @test col == mat[:, i-1]
+        end
+    end
+    for (i, row) in enumerate(Tables.rows(tp))
+        @test typeof(row) <: Microbiome.AbundanceTableRow
+        @test row.cols == (; :features => txs[i], (Symbol("sample$(j)") => mat[i, j] for j in 1:5)...)
+    end
+    @test tp[:, 1] == features(tp)
+    for i in 1:5
+        @test tp[:, Symbol("sample$i")] == mat[:, i]
+        @test Tuple(mat[i, :]) == abundances(tp[i, :])
+    end
 
-    @test prevalence(a, 0.) == 0.1
-end
+    tbl = Tables.columntable(tp)
+    @test tbl.features == features(tp)
+    @test tbl.sample1 == tp[:, :sample1]
 
-@testset "Distances" begin
-    # Constructors
-    Random.seed!(1)
-    M = rand(100, 10)
-    df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
-    abund = abundancetable(
-        M, ["sample_$x" for x in 1:10],
-        ["feature_$x" for x in 1:100])
+    fp = FunctionalProfile(mat, gfs, mss)
+    @test nsamples(fp) == 5
+    @test nfeatures(fp) == 10
+    for (i, col) in enumerate(Tables.columns(fp))
+        if i == 1
+            @test col == gfs
+        else 
+            @test col == mat[:, i-1]
+        end
+    end
+    for (i, row) in enumerate(Tables.rows(fp))
+        @test typeof(row) <: Microbiome.AbundanceTableRow
+        @test row.cols == (; :features => gfs[i], (Symbol("sample$(j)") => mat[i, j] for j in 1:5)...)
+    end
+    @test fp[:, 1] == features(fp)
+    for i in 1:5
+        @test fp[:, Symbol("sample$i")] == mat[:, i]
+        @test Tuple(mat[i, :]) == abundances(fp[i, :])
+    end
 
-    # Diversity indicies
-    R = 100
-    s1 = rand(R) # high diversity
-    s2 = [i % 10 == 0 ? s1[i] : 0 for i in 1:R] # low diversity
-    s3 = ones(R) # uniform
-    s4 = [1., zeros(R-1)...] # no diversity
+    tbl = Tables.columntable(fp)
+    @test tbl.features == features(fp)
+    @test tbl.sample1 == fp[:, :sample1]
 
-    @test shannon(s1) > shannon(s2)
-    @test shannon(s3) ≈ log(R)
-    @test shannon(s4) ≈ 0.
+end # Abundance Tables
 
-    @test ginisimpson(s1) > ginisimpson(s2)
-    @test ginisimpson(s3) ≈ 1. - 1/R
-    @test ginisimpson(s4) ≈ 0.
 
-    @test length(shannon(abund)) == 10
-    @test length(ginisimpson(abund)) == 10
-end
+# @testset "Abundances" begin
+#     # Constructors
+#     M = rand(100, 10)
+#     df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
+
+#     a1 = abundancetable(M)
+#     a2 = abundancetable(df)
+#     @test typeof(a1) <:AbstractComMatrix
+#     @test typeof(a2) <:AbstractComMatrix
+
+#     abund = abundancetable(
+#         M, ["sample_$x" for x in 1:10],
+#         ["feature_$x" for x in 1:100])
+
+#     @test a1.occurrences == a2.occurrences == abund.occurrences
+
+#     # Normalization functions
+#     relab_fract = relativeabundance(abund)
+#     @test typeof(relab_fract) <: AbstractComMatrix
+
+#     relab_perc = relativeabundance(abund, kind=:percent)
+#     @test typeof(relab_perc) <: AbstractComMatrix
+
+#     rnorm = rownormalize(abund)
+#     cnorm = colnormalize(abund)
+
+#     @test size(abund) == (nfeatures(abund), nsamples(abund))
+#     @test size(relab_fract) == (nfeatures(relab_fract), nsamples(relab_fract))
+#     @test size(relab_perc) == (nfeatures(relab_perc), nsamples(relab_perc))
+#     @test size(rnorm) == (nfeatures(rnorm), nsamples(rnorm))
+#     @test size(cnorm) == (nfeatures(cnorm), nsamples(cnorm))
+
+#     for j in 1:10
+#         @test sum(getsample(relab_fract, j)) ≈ 1
+#         @test sum(getsample(relab_perc, j)) ≈ 100
+#     end
+
+#     for i in 1:nfeatures(rnorm)
+#         @test maximum(getfeature(rnorm,i)) ≈ 1
+#     end
+
+#     for j in 1:nsamples(cnorm)
+#         @test maximum(getsample(cnorm, j)) ≈ 1
+#     end
+
+#     # Filtering Functions
+#     filt = filterabund(relab_fract, 5)
+#     @test typeof(filt) <: AbstractComMatrix
+#     @test typeof(filterabund(df, 5)) <: AbstractComMatrix
+
+#     @test size(filt) == (6, 10)
+#     for i in 1:10
+#         @test sum(getsample(filt, i)) ≈ 1
+#     end
+
+#     @test featurenames(filt)[end] == "other"
+
+#     @test present(0.1, 0.001)
+#     @test !present(0.001, 0.1)
+#     @test present(rand(), 0.)
+
+#     a = zeros(100)
+#     a[randperm(100)[1:10]] .= rand(10)
+
+#     @test prevalence(a, 0.) == 0.1
+# end
+
+# @testset "Distances" begin
+#     # Constructors
+#     Random.seed!(1)
+#     M = rand(100, 10)
+#     df = hcat(DataFrame(x=collect(1:100)), DataFrame(M))
+#     abund = abundancetable(
+#         M, ["sample_$x" for x in 1:10],
+#         ["feature_$x" for x in 1:100])
+
+#     # Diversity indicies
+#     R = 100
+#     s1 = rand(R) # high diversity
+#     s2 = [i % 10 == 0 ? s1[i] : 0 for i in 1:R] # low diversity
+#     s3 = ones(R) # uniform
+#     s4 = [1., zeros(R-1)...] # no diversity
+
+#     @test shannon(s1) > shannon(s2)
+#     @test shannon(s3) ≈ log(R)
+#     @test shannon(s4) ≈ 0.
+
+#     @test ginisimpson(s1) > ginisimpson(s2)
+#     @test ginisimpson(s3) ≈ 1. - 1/R
+#     @test ginisimpson(s4) ≈ 0.
+
+#     @test length(shannon(abund)) == 10
+#     @test length(ginisimpson(abund)) == 10
+# end

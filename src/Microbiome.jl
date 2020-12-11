@@ -14,12 +14,12 @@ export nfeatures,
        TaxonomicProfile,
        FunctionalProfile,
        name,
-       level,
+       clade,
        taxon,
        hastaxon,
        features,
        samples,
-       abundancetable
+       abundances
 
 #     # Functions
 #     ## abundance
