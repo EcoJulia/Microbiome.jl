@@ -51,6 +51,8 @@ using Tables
 using Dictionaries
 using SparseArrays
 using EcoBase
+using Distances
+using MultivariateStats
 
 import EcoBase: AbstractThings, AbstractPlaces, AbstractAssemblage,
                 nthings, thingnames, thingoccurrences,
@@ -59,6 +61,6 @@ import EcoBase: AbstractThings, AbstractPlaces, AbstractAssemblage,
 include("profiles.jl")
 # include("tablesinterface.jl")
 # include("abundances.jl")
-# include("distances.jl")
+include("distances.jl")
 
 end  # module Microbiome
