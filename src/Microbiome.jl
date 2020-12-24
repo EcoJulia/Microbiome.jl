@@ -11,8 +11,8 @@ export nfeatures,
        MicrobiomeSample,
        Taxon,
        GeneFunction,
-       TaxonomicProfile,
-       FunctionalProfile,
+       CommunityProfile,
+       featuretype,
        name,
        clade,
        taxon,
@@ -51,8 +51,11 @@ using Tables
 using Dictionaries
 using SparseArrays
 using EcoBase
+import EcoBase: asindices
 using Distances
 using MultivariateStats
+using AxisIndices
+using NamedDims
 
 import EcoBase: AbstractThings, AbstractPlaces, AbstractAssemblage,
                 nthings, thingnames, thingoccurrences,

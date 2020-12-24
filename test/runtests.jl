@@ -30,53 +30,30 @@ using Tables
     mat = spzeros(10,5)
     for i in 1:5; mat[i,i] = 1.; end
     
-    tp = TaxonomicProfile(mat, txs, mss)
-    @test nsamples(tp) == 5
-    @test nfeatures(tp) == 10
-    for (i, col) in enumerate(Tables.columns(tp))
+    comm = CommunityProfile(mat, txs, mss)
+    @test nsamples(comm) == 5
+    @test nfeatures(comm) == 10
+    for (i, col) in enumerate(Tables.columns(comm))
         if i == 1
             @test col == txs
         else 
             @test col == mat[:, i-1]
         end
     end
-    for (i, row) in enumerate(Tables.rows(tp))
+    for (i, row) in enumerate(Tables.rows(comm))
         @test typeof(row) <: Microbiome.AbundanceTableRow
         @test row.cols == (; :features => txs[i], (Symbol("sample$(j)") => mat[i, j] for j in 1:5)...)
     end
-    @test tp[:, 1] == features(tp)
+    @test comm[:, 1] == features(comm)
     for i in 1:5
-        @test tp[:, Symbol("sample$i")] == mat[:, i]
-        @test Tuple(mat[i, :]) == abundances(tp[i, :])
+        @test comm[:, Symbol("sample$i")] == mat[:, i]
+        @test Tuple(mat[i, :]) == abundances(comm[i, :])
     end
 
-    tbl = Tables.columntable(tp)
-    @test tbl.features == features(tp)
-    @test tbl.sample1 == tp[:, :sample1]
+    tbl = Tables.columntable(comm)
+    @test tbl.features == features(comm)
+    @test tbl.sample1 == comm[:, :sample1]
 
-    fp = FunctionalProfile(mat, gfs, mss)
-    @test nsamples(fp) == 5
-    @test nfeatures(fp) == 10
-    for (i, col) in enumerate(Tables.columns(fp))
-        if i == 1
-            @test col == gfs
-        else 
-            @test col == mat[:, i-1]
-        end
-    end
-    for (i, row) in enumerate(Tables.rows(fp))
-        @test typeof(row) <: Microbiome.AbundanceTableRow
-        @test row.cols == (; :features => gfs[i], (Symbol("sample$(j)") => mat[i, j] for j in 1:5)...)
-    end
-    @test fp[:, 1] == features(fp)
-    for i in 1:5
-        @test fp[:, Symbol("sample$i")] == mat[:, i]
-        @test Tuple(mat[i, :]) == abundances(fp[i, :])
-    end
-
-    tbl = Tables.columntable(fp)
-    @test tbl.features == features(fp)
-    @test tbl.sample1 == fp[:, :sample1]
 
 end # Abundance Tables
 

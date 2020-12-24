@@ -4,25 +4,28 @@
 
 ## -- Definitions and Constructors -- ##
 
-abstract type MicrobiomeFeatures <: AbstractThings end
-abstract type MicrobiomeSamples  <: AbstractPlaces{Nothing} end
-# abstract type AbstractAbundanceTable{D, T, P} <: AbstractAssemblage{D, T, P} where {D <: Real, 
-#                                                                             T <: MicrobiomeFeatures, 
-#                                                                             P <: MicrobiomeSamples} end
-abstract type AbstractAbundanceTable{D <: Real} end
+const abundances = EcoBase.occurrences
 
-const nfeatures = nthings
-const featurenames = thingnames
-const getfeature = thingoccurrences
+const nfeatures = EcoBase.nthings
+const featurenames = EcoBase.thingnames
+const getfeature = EcoBase.thingoccurrences
 # const featuretotals = speciestotals
 
-const nsamples = nplaces
-const samplenames = placenames
-const getsample = placeoccurrences
+const nsamples = EcoBase.nplaces
+const samplenames = EcoBase.placenames
+const getsample = EcoBase.placeoccurrences
 # const sampletotals = sitetotals
 
-abstract type AbstractFeature end
-abstract type AbstractSample end
+abstract type AbstractFeature <: AbstractThings end
+abstract type AbstractSample <: AbstractPlaces{Nothing} end
+
+featuretype(af::AbstractFeature) = error("No feature type defined for $(typeof(af))")
+
+abstract type AbstractAbundanceTable{T <: Real, 
+                                     F <: AbstractFeature, 
+                                     S <: AbstractSample} <: EcoBase.AbstractAssemblage{T, F, S}
+end
+
 
 struct MicrobiomeSample <: AbstractSample
     name::String
@@ -58,136 +61,102 @@ end
 Taxon(n::AbstractString, clade::Int) = 0 <= clade <= 9 ?
                                             Taxon(n, keys(_clades)[clade+1]) :
                                             error("Invalid clade $clade, must be one of $_clades")
+Taxon(n::AbstractString) = Taxon(n, missing)
+featuretype(::Taxon) = :taxon
 
 struct GeneFunction <: AbstractFeature
     name::String
     taxon::Union{Missing, Taxon}
 end
 
-function indexcols(fs::AbstractVector{<:AbstractSample})
-    return Dictionary((:features, (Symbol(name(f)) for f in fs)...), 1:(length(fs) + 1))
-end
+GeneFunction(n::AbstractString) = GeneFunction(n, missing)
+featuretype(::GeneFunction) = :genefunction
 
-mutable struct TaxonomicProfile{D} <: AbstractAbundanceTable{D}
-    features::AbstractVector{Taxon}
-    samples::AbstractVector{MicrobiomeSample}
-    colindex::Dictionary{Symbol, Int}
-    clades::AbstractVector{Union{Missing,Symbol}}
-    abundances::SparseMatrixCSC{D}
+mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
+    aa::NamedAxisArray
 
-    function TaxonomicProfile(tab, features, samples)
-        D = eltype(tab)
-        colindex = indexcols(samples)
-        clades = clade.(features)
-        return new{D}(features, samples, colindex, clades, tab)
+    function CommunityProfile(aa::NamedAxisArray)
+        @assert dimnames(aa) == (:features, :samples)
+        T = eltype(parent(aa))
+        F = eltype(keys(axes(aa, 1)))
+        S = eltype(keys(axes(aa, 2)))
+        return new{T, F, S}(aa)
     end
 end
 
-
-mutable struct FunctionalProfile{D} <: AbstractAbundanceTable{D}
-    features::AbstractVector{GeneFunction}
-    samples::AbstractVector{MicrobiomeSample}
-    colindex::Dictionary{Symbol, Int}
-    abundances::SparseMatrixCSC{D}
-    
-    function FunctionalProfile(tab, features, samples)
-        D = eltype(tab)
-        colindex = indexcols(samples)
-        return new{D}(features, samples, colindex, tab)
-    end
+function CommunityProfile(tab::SparseMatrixCSC{<:Real}, 
+                          features::AbstractVector{<:AbstractFeature},
+                          samples::AbstractVector{<:AbstractSample})
+    return CommunityProfile(NamedAxisArray(tab, features=features, samples=samples))
 end
 
-struct AbundanceTableRow{D} <: AbstractAbundanceTable{D}
-    cols::NamedTuple
-
-    function AbundanceTableRow(cols::NamedTuple)
-        D = typeof(cols[2])
-        return new{D}(cols)
-    end
-end
+featuretype(::AbstractAbundanceTable{T, F, S}) where {T, F <: Taxon, S} = :taxon
+featuretype(::AbstractAbundanceTable{T, F, S}) where {T, F <: GeneFunction, S} = :genefunction
 
 ## -- Convienience functions -- ##
 
 name(as::AbstractSample) = as.name
 name(af::AbstractFeature) = af.name
+Base.:(==)(s1::T, s2::T) where {T <: Union{AbstractSample, AbstractSample}} = name(s1) == name(s2)
+
+clade(::Missing) = missing
 clade(tax::Taxon) = tax.clade
 
 taxon(gf::GeneFunction) = gf.taxon
+clade(gf::GeneFunction) = clade(taxon(gf))
 hastaxon(gf::GeneFunction) = !ismissing(taxon(gf))
+hasclade(af::AbstractFeature) = !ismissing(clade(af))
 
-features(at::AbstractAbundanceTable) = at.features
-samples(at::AbstractAbundanceTable) = at.samples
-abundances(at::AbstractAbundanceTable) = at.abundances
-abundances(atr::AbundanceTableRow) = values(atr.cols)[2:end]
+features(at::AbstractAbundanceTable) = axes(at.aa, 1) |> keys
+samples(at::AbstractAbundanceTable) = axes(at.aa, 2) |> keys
+
+profiletype(at::AbstractAbundanceTable) = eltype(features(at))
+clades(at::AbstractAbundanceTable) = clade.(features(at))
 
 
-Base.size(at::AbstractAbundanceTable, dims...) = size(abundances(at), dims...)
+Base.size(at::AbstractAbundanceTable, dims...) = size(at.aa, dims...)
 nthings(at::AbstractAbundanceTable) = size(at, 1)
 nplaces(at::AbstractAbundanceTable) = size(at, 2)
 
 # -- Indexing -- #
 
-Base.getindex(at::AbstractAbundanceTable, ::Colon, i::Int) = i == 1 ? at.features : abundances(at)[:, i - 1]
-Base.getindex(at::AbstractAbundanceTable, ::Colon, n::Symbol) = n == :features ? at.features : abundances(at)[:, at.colindex[n] - 1]
-Base.getindex(atr::AbundanceTableRow, i::Union{Symbol, Int}) = atr.cols[i]
-
-function Base.getindex(at::AbstractAbundanceTable, ri::Int, ::Colon)
-    rowvals = abundances(at)[ri, :]
-    return AbundanceTableRow((; :features => features(at)[ri], (Symbol(n) => rowvals[i] for (i,n) in enumerate(name(s) for s in at.samples))...))
-end
-
-function Base.getindex(at::AbstractAbundanceTable, f::AbstractString, ::Colon)
-    rowidx = findfirst(r-> name(r) == f, features(at))
-    return at[rowidx, :]
-end
-
-Base.getindex(at::AbstractAbundanceTable, row::AbstractString, col::Union{Symbol, Int}) = at[row][col]
-Base.getindex(at::AbstractAbundanceTable, row::Int, col::Union{Symbol, Int}) = at[:, col][row]
-
-## -- Views -- ##
-## Basically lifted  all of this from SpatialEcology.jl,
-## Thanks Michael Borregaard!
-
-abstract type SubAbuncanceTable{D} <: AbstractAbundanceTable{D} end
-
-mutable struct SubTaxonomicProfile{D} <: SubAbuncanceTable{D}
-    features::AbstractVector{Taxon}
-    samples::AbstractVector{MicrobiomeSample}
-    colindex::Dictionary{Symbol, Int}
-    clades::AbstractVector{Union{Missing,Symbol}}
-    abundances::SparseMatrixCSC{D}
-end
-
-mutable struct SubFunctionalProfile{D} <: SubAbuncanceTable{D}
-    features::AbstractVector{GeneFunction}
-    samples::AbstractVector{MicrobiomeSample}
-    colindex::Dictionary{Symbol, Int}
-    abundances::SparseMatrixCSC{D}
-end
-
-## TODO
-function view(abt::TaxonomicProfile; features = 1:nfeatures(com), samples = 1:nsamples(com))
-    feat = EcoBase.asindices(sites, featurenames(abt))
-    samp = EcoBase.asindices(samples, samplenames(abt))
-    # SubComMatrix(view(abundances(atp), feat, samp), view(featurenames(abt), feat), view(samplenames(abt), samp)) #TODO change the order of these in the object to fit the array index order
+function Base.getindex(at::CommunityProfile, inds...)
+    idx = at.aa[inds...]
+    
+    # single value - return that value
+    ndims(idx) == 0 && return idx 
+    # another table - return a new CommunityProfile with that table
+    ndims(idx) == 2 && return CommunityProfile(idx)
+    # a row or a column, figure out which, and make it 2D
+    if ndims(idx) == 1
+        dn = dimnames(idx)[1]
+        # if it's a row...
+        if dn == :samples
+            return at[[inds[1]], inds[2]]
+        # if it's a column
+        elseif dn == :features
+            return at[inds[1], [inds[2]]]
+        else
+            error("invalid dimension name $dn")
+        end
+    end
 end
 
 ## -- EcoBase Translations -- ##
 
 EcoBase.thingnames(at::AbstractAbundanceTable) = name.(features(at))
 EcoBase.placenames(at::AbstractAbundanceTable) = name.(samples(at))
-EcoBase.occurrences(at::AbstractAbundanceTable) = abundances(at)
+EcoBase.occurrences(at::AbstractAbundanceTable) = parent(parent(at.aa)) # first parent is the unnamed AxisArray
 
-## -- Tables Interface -- ##
+# ## -- Tables Interface -- ##
 
 Tables.istable(::AbstractAbundanceTable) = true
 Tables.columnaccess(::AbstractAbundanceTable) = true
 Tables.rowaccess(::AbstractAbundanceTable) = true
 
-Tables.getcolumn(at::AbstractAbundanceTable, i::Union{Int, Symbol}) = at[:, i]
-Tables.getcolumn(atr::AbundanceTableRow, i::Union{Int, Symbol}) = atr[i]
-Tables.columnnames(at::AbstractAbundanceTable) = [:features, Symbol.(name.(samples(at)))...]
-Tables.columnnames(atr::AbundanceTableRow) = keys(atr.cols)
+Tables.getcolumn(at::AbstractAbundanceTable, i::Int) = i == 1 ? featurenames(at) : abundances(at[:, i-1])
+Tables.getcolumn(at::AbstractAbundanceTable, i::Symbol) = i == :features ? featurenames(at) : abundances(at[:, string(i)])
+Tables.columnnames(at::AbstractAbundanceTable) = [:features, Symbol.(samplenames(at))...]
 
 function Tables.schema(at::AbstractAbundanceTable)
     elt = eltype(abundances(at))
@@ -196,5 +165,11 @@ function Tables.schema(at::AbstractAbundanceTable)
 end
 
 
-Tables.columns(at::AbstractAbundanceTable) = (; (col => at[:, col] for col in Tables.columnnames(at))...)
-Tables.rows(at::AbstractAbundanceTable) = [at[i, :] for i in 1:nfeatures(at)]
+Tables.columns(at::AbstractAbundanceTable) = (; (col => Tables.getcolumn(at, col) for col in Tables.columnnames(at))...)
+
+function _makerow(row::AbstractAbundanceTable)
+    size(row, 1) == 1 || error("Can't make row from table of size $(size(row))")
+    NamedTuple{(:features, Symbol.(samplenames(row))...)}((name(features(row)[1]), abundances(row)...))
+end
+
+Tables.rows(at::AbstractAbundanceTable) = (_makerow(at[i, :]) for i in 1:nfeatures(at))
