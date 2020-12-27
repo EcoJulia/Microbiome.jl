@@ -1,77 +1,17 @@
-##################################
-# Profiles - types and functions #
-##################################
-
-## -- Definitions and Constructors -- ##
-
-const abundances = EcoBase.occurrences
-
-const nfeatures = EcoBase.nthings
-const featurenames = EcoBase.thingnames
-const getfeature = EcoBase.thingoccurrences
-# const featuretotals = speciestotals
-
-const nsamples = EcoBase.nplaces
-const samplenames = EcoBase.placenames
-const getsample = EcoBase.placeoccurrences
-# const sampletotals = sitetotals
-
-abstract type AbstractFeature <: AbstractThings end
-abstract type AbstractSample <: AbstractPlaces{Nothing} end
-
-featuretype(af::AbstractFeature) = error("No feature type defined for $(typeof(af))")
-
 abstract type AbstractAbundanceTable{T <: Real, 
                                      F <: AbstractFeature, 
                                      S <: AbstractSample} <: EcoBase.AbstractAssemblage{T, F, S}
 end
 
+"""
+    CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
 
-struct MicrobiomeSample <: AbstractSample
-    name::String
-    metadata::Dictionary{Symbol, T} where {T <: Any} # currently non-functional
-end
+An `AbstractAssemblage` from [EcoBase.jl](https://github.com/EcoJulia/EcoBase.jl)
+that uses an `AxisArray` of a `SparseMatrixCSC` under the hood.
 
-MicrobiomeSample(n::AbstractString) = MicrobiomeSample(n, Dictionary{Symbol, Any}())
-# Base.convert(::Type{MicrobiomeSample}, s::AbstractString) = MicrobiomeSample(s)
-
-const _clades = (
-    domain     = 0,
-    kingdom    = 1,
-    phylum     = 2,
-    class      = 3,
-    order      = 4,
-    family     = 5,
-    genus      = 6,
-    species    = 7,
-    subspecies = 8,
-    strain     = 9
-)
-
-struct Taxon <: AbstractFeature
-    name::String
-    clade::Union{Missing, Symbol}
-    
-    Taxon(s::AbstractString, ::Missing) = new(s, missing)
-    Taxon(s::AbstractString, clade::Symbol) = in(clade, keys(_clades)) ? 
-                                                        new(s, clade)  :
-                                                        error("Invalid clade $clade, must be one of $(keys(_clades))")
-end
-
-Taxon(n::AbstractString, clade::Int) = 0 <= clade <= 9 ?
-                                            Taxon(n, keys(_clades)[clade+1]) :
-                                            error("Invalid clade $clade, must be one of $_clades")
-Taxon(n::AbstractString) = Taxon(n, missing)
-featuretype(::Taxon) = :taxon
-
-struct GeneFunction <: AbstractFeature
-    name::String
-    taxon::Union{Missing, Taxon}
-end
-
-GeneFunction(n::AbstractString) = GeneFunction(n, missing)
-featuretype(::GeneFunction) = :genefunction
-
+`CommunityProfile`s are tables with `AbstractFeature`-indexed rows and
+`AbstractSample`-indexed columns. 
+"""
 mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
     aa::NamedAxisArray
 
@@ -90,22 +30,7 @@ function CommunityProfile(tab::SparseMatrixCSC{<:Real},
     return CommunityProfile(NamedAxisArray(tab, features=features, samples=samples))
 end
 
-featuretype(::AbstractAbundanceTable{T, F, S}) where {T, F <: Taxon, S} = :taxon
-featuretype(::AbstractAbundanceTable{T, F, S}) where {T, F <: GeneFunction, S} = :genefunction
-
 ## -- Convienience functions -- ##
-
-name(as::AbstractSample) = as.name
-name(af::AbstractFeature) = af.name
-Base.:(==)(s1::T, s2::T) where {T <: Union{AbstractSample, AbstractSample}} = name(s1) == name(s2)
-
-clade(::Missing) = missing
-clade(tax::Taxon) = tax.clade
-
-taxon(gf::GeneFunction) = gf.taxon
-clade(gf::GeneFunction) = clade(taxon(gf))
-hastaxon(gf::GeneFunction) = !ismissing(taxon(gf))
-hasclade(af::AbstractFeature) = !ismissing(clade(af))
 
 features(at::AbstractAbundanceTable) = axes(at.aa, 1) |> keys
 samples(at::AbstractAbundanceTable) = axes(at.aa, 2) |> keys
@@ -113,10 +38,7 @@ samples(at::AbstractAbundanceTable) = axes(at.aa, 2) |> keys
 profiletype(at::AbstractAbundanceTable) = eltype(features(at))
 clades(at::AbstractAbundanceTable) = clade.(features(at))
 
-
 Base.size(at::AbstractAbundanceTable, dims...) = size(at.aa, dims...)
-nthings(at::AbstractAbundanceTable) = size(at, 1)
-nplaces(at::AbstractAbundanceTable) = size(at, 2)
 
 # -- Indexing -- #
 
@@ -143,10 +65,19 @@ function Base.getindex(at::CommunityProfile, inds...)
 end
 
 ## -- EcoBase Translations -- ##
+# see src/ecobase.jl for Microbiome function names
+# thing => feature
+# place => sample
+# occurrences => abundances (or totals)
 
 EcoBase.thingnames(at::AbstractAbundanceTable) = name.(features(at))
 EcoBase.placenames(at::AbstractAbundanceTable) = name.(samples(at))
 EcoBase.occurrences(at::AbstractAbundanceTable) = parent(parent(at.aa)) # first parent is the unnamed AxisArray
+EcoBase.nthings(at::AbstractAbundanceTable) = size(at, 1)
+EcoBase.nplaces(at::AbstractAbundanceTable) = size(at, 2)
+# # todo
+# EcoBase.thingoccurrences(at::AbstractAbundanceTable, things) = nothing
+# EcoBase.placeoccurrences(at::AbstractAbundanceTable, places) = nothing
 
 # ## -- Tables Interface -- ##
 

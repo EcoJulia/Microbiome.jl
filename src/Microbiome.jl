@@ -1,25 +1,42 @@
 module Microbiome
 
-export nfeatures,
+# Samples and Features
+export MicrobiomeSample,
+       Taxon,
+       GeneFunction,
+       metadata,
+       set!,
+       unset!,
+       insert!,
+       delete!,
+       name,
+       clade,
+       hasclade,
+       taxon,
+       hastaxon
+
+# EcoBase Translations
+export abundances,
+       nfeatures,
        featurenames,
        getfeature,
        nsamples,
        samplenames,
        getsample,
        AbstractFeature,
-       AbstractSample,
-       MicrobiomeSample,
-       Taxon,
-       GeneFunction,
-       CommunityProfile,
+       AbstractSample
+    #    featureabundances,
+    #    sampleabundances
+
+# Profiles
+export CommunityProfile,
        featuretype,
-       name,
-       clade,
-       taxon,
-       hastaxon,
        features,
-       samples,
-       abundances
+       samples
+    #    featuretotals,
+    #    sampletotals
+   
+       
 
 #     # Functions
 #     ## abundance
@@ -51,16 +68,16 @@ using Tables
 using Dictionaries
 using SparseArrays
 using EcoBase
-import EcoBase: asindices
 using Distances
 using MultivariateStats
 using AxisIndices
 using NamedDims
+using Dictionaries
 
-import EcoBase: AbstractThings, AbstractPlaces, AbstractAssemblage,
-                nthings, thingnames, thingoccurrences,
-                nplaces, placenames, placeoccurrences
+import Dictionaries: set!, unset!, insert!, delete!
 
+include("ecobase.jl")
+include("samples_features.jl")
 include("profiles.jl")
 # include("tablesinterface.jl")
 # include("abundances.jl")

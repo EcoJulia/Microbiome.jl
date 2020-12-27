@@ -1,35 +1,90 @@
 using Microbiome
-using Random
 using Test
 using SparseArrays
 using Tables
+using Dictionaries
 
+@testset "Samples and Features" begin
+    @testset "MicriobiomeSamples and metadata" begin
+        ms = MicrobiomeSample("sample")
+        @test name(ms) == "sample"
+        @test isempty(metadata(ms))
+        @test metadata(ms) isa Dictionary
+        @test_throws Dictionaries.IndexError ms.thing = "metadata"
+        @test_throws Dictionaries.IndexError ms[:thing] = "metadata"
+        
+        @test insert!(ms, :thing, "metadata") isa MicrobiomeSample
+        @test ms.thing == ms[:thing] == "metadata"
+        @test let
+            ms.thing = "other metadata"
+            @test ms.thing == ms[:thing] == "other metadata"
+            ms[:thing] = "metadata"
+            ms.thing == ms[:thing] == "metadata"
+        end
+        @test_throws MethodError ms["thing"] = "metadata"
+        @test_throws Dictionaries.IndexError insert!(ms, :thing, "still other metadata")
+        @test_throws Dictionaries.IndexError delete!(ms, :thing2)
+        @test let
+            delete!(ms, :thing)
+            unset!(ms, :thing2)
+            true
+        end
+        @test let
+            set!(ms, :thing2, "metadata2")
+            ms.thing2 == "metadata2"
+        end
+    end
+    
+    @testset "Taxa" begin
+        clades = (:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain)
+        txm = Taxon("taxon", missing)
+        @test txm === Taxon("taxon")
+        @test ismissing(clade(txm))
+        @test !hasclade(txm)
 
-@testset "Abundance Tables" begin
-    clades = (:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain)
-
-    mss = [MicrobiomeSample("sample$i") for i in 1:5]
-    ms = first(mss)
-    @test name(ms) == "sample1"
-
-    txs = [Taxon("taxon$i", missing) for i in 1:10]
-    tx = first(txs)
-    @test name(tx) == "taxon1"
-    @test ismissing(clade(tx))
-    for i in 1:10
-        @test Taxon("test", i-1) == Taxon("test", clades[i])
+        for (i, c) in enumerate(clades)
+            tx = Taxon("taxon", c)
+            @test clade(tx) == c
+            @test tx === Taxon("taxon", i-1)
+            @test tx !== txm
+            @test tx == txm
+        end
+        
+        @test_throws ErrorException Taxon("taxon", :invalid)
+        @test_throws ErrorException Taxon("taxon", 10)
+        @test let tx = Taxon("taxon", :kingdom)
+            hasclade(tx)
+        end
     end
 
+    @testset "Gene Functions" begin
+        gfm = GeneFunction("gene", missing)
+        @test name(gfm) == "gene"
+        @test gfm === GeneFunction("gene")
+        @test ismissing(taxon(gfm))
+        @test !hastaxon(gfm)
 
-    gfs = [GeneFunction("gene$i", tx) for i in 1:10]
-    gf = first(gfs)
-    @test name(gf) == "gene1"
-    @test hastaxon(gf)
-    @test taxon(gf) == tx
+        gf1 = GeneFunction("gene", Taxon("sp1", :species))
+        gf2 = GeneFunction("gene", Taxon("sp1"))
+        @test name(gf1) == "gene"
+        
+        @test gf1 == gf2 == gfm
+        @test gf1 !== gf2
+        @test gf1 !== gfm
+        @test hastaxon(gf1)
+        @test !ismissing(taxon(gf1))
+        @test taxon(gf1) == taxon(gf2)
+    end
+end
 
+@testset "Profiles" begin
+    mss = [MicrobiomeSample("sample$i") for i in 1:5]
+    txs = [Taxon("taxon$i", clades[i]) for i in 1:9]
+    push!(txs, Taxon("taxon10", missing))
+    
     mat = spzeros(10,5)
     for i in 1:5; mat[i,i] = 1.; end
-    
+
     comm = CommunityProfile(mat, txs, mss)
     @test nsamples(comm) == 5
     @test nfeatures(comm) == 10
@@ -56,7 +111,6 @@ using Tables
 
 
 end # Abundance Tables
-
 
 # @testset "Abundances" begin
 #     # Constructors
