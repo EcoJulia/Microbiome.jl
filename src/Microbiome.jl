@@ -32,7 +32,8 @@ export abundances,
 export CommunityProfile,
        featuretype,
        features,
-       samples
+       samples,
+       clades
     #    featuretotals,
     #    sampletotals
    

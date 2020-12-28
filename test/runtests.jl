@@ -36,13 +36,13 @@ using Dictionaries
     end
     
     @testset "Taxa" begin
-        clades = (:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain)
+        _clades = (:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain)
         txm = Taxon("taxon", missing)
         @test txm === Taxon("taxon")
         @test ismissing(clade(txm))
         @test !hasclade(txm)
 
-        for (i, c) in enumerate(clades)
+        for (i, c) in enumerate(_clades)
             tx = Taxon("taxon", c)
             @test clade(tx) == c
             @test tx === Taxon("taxon", i-1)
@@ -78,8 +78,9 @@ using Dictionaries
 end
 
 @testset "Profiles" begin
+    _clades = (:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain)
     mss = [MicrobiomeSample("sample$i") for i in 1:5]
-    txs = [Taxon("taxon$i", clades[i]) for i in 1:9]
+    txs = [Taxon("taxon$i", _clades[i]) for i in 1:9]
     push!(txs, Taxon("taxon10", missing))
     
     mat = spzeros(10,5)
@@ -90,27 +91,29 @@ end
     @test nfeatures(comm) == 10
     for (i, col) in enumerate(Tables.columns(comm))
         if i == 1
-            @test col == txs
-        else 
-            @test col == mat[:, i-1]
+            @test col == name.(txs)
+        else
+            @test col ==  mat[:, [i-1]] 
         end
     end
     for (i, row) in enumerate(Tables.rows(comm))
-        @test typeof(row) <: Microbiome.AbundanceTableRow
-        @test row.cols == (; :features => txs[i], (Symbol("sample$(j)") => mat[i, j] for j in 1:5)...)
+        @test row == (; :features => name(txs[i]), (Symbol("sample$(j)") => mat[i, j] for j in 1:5)...)
     end
-    @test comm[:, 1] == features(comm)
+    @test features(comm) == txs
     for i in 1:5
-        @test comm[:, Symbol("sample$i")] == mat[:, i]
-        @test Tuple(mat[i, :]) == abundances(comm[i, :])
+        @test abundances(comm[:, "sample$i"]) == mat[:, [i]]
+        @test abundances(comm["taxon$i", :]) == mat[[i], :]
     end
 
     tbl = Tables.columntable(comm)
-    @test tbl.features == features(comm)
-    @test tbl.sample1 == comm[:, :sample1]
+    @test tbl.features == featurenames(comm)
+    @test keys(tbl) == (:features, Symbol.(samplenames(comm))...)
+    @test tbl.sample1 == abundances(comm[:, "sample1"])
+    
 
+end 
 
-end # Abundance Tables
+# Abundance Tables
 
 # @testset "Abundances" begin
 #     # Constructors
