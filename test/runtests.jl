@@ -1,8 +1,9 @@
 using Microbiome
 using Test
-using SparseArrays
-using Tables
-using Dictionaries
+using Microbiome.SparseArrays
+using Microbiome.Tables
+using Microbiome.Dictionaries
+import Microbiome.MultivariateStats: MDS
 
 @testset "Samples and Features" begin
     @testset "MicriobiomeSamples and metadata" begin
@@ -90,6 +91,7 @@ end
     comm = CommunityProfile(mat, txs, mss)
     
     @testset "Profile operations" begin
+        @test comm == CommunityProfile{Float64, Taxon, MicrobiomeSample}(mat, txs, mss)
         @test nsamples(comm) == 5
         @test nfeatures(comm) == 10
         @test size(comm) == (10, 5)
@@ -130,7 +132,7 @@ end
             @test abundances(comm[:, "sample$i"]) == mat[:, [i]]
             @test abundances(comm["taxon$i", :]) == mat[[i], :]
         end
-    
+
         for (i, col) in enumerate(Tables.columns(comm))
             if i == 1
                 @test col == name.(txs)
@@ -188,6 +190,9 @@ end
             ginisimpson!(c2, overwrite=true)
             true
         end
+
+        @test all(braycurtis(comm) .== [0 1 1 1 1; 1 0 1 1 1; 1 1 0 1 1; 1 1 1 0 1; 1 1 1 1 0])
+        @test pcoa(comm) isa MDS
     end
 
 end

@@ -109,8 +109,6 @@ function Base.getindex(at::CommunityProfile, inds...)
         # if it's a column
         elseif dn == :features
             return at[inds[1], [inds[2]]]
-        else
-            error("invalid dimension name $dn")
         end
     end
 end
@@ -157,7 +155,9 @@ Tables.columnaccess(::AbstractAbundanceTable) = true
 Tables.rowaccess(::AbstractAbundanceTable) = true
 
 Tables.getcolumn(at::AbstractAbundanceTable, i::Int) = i == 1 ? featurenames(at) : abundances(at[:, i-1])
-Tables.getcolumn(at::AbstractAbundanceTable, i::Symbol) = i == :features ? featurenames(at) : abundances(at[:, string(i)])
+Tables.getcolumn(at::AbstractAbundanceTable, i::AbstractString) = i == "features" ? featurenames(at) : abundances(at[:, i])
+Tables.getcolumn(at::AbstractAbundanceTable, i::Symbol) = Tables.getcolumn(at, string(i))
+
 Tables.columnnames(at::AbstractAbundanceTable) = [:features, Symbol.(samplenames(at))...]
 
 function Tables.schema(at::AbstractAbundanceTable)
