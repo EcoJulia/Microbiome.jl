@@ -72,7 +72,6 @@ import Dictionaries: set!, unset!, insert!, delete!
 include("ecobase.jl")
 include("samples_features.jl")
 include("profiles.jl")
-include("abundances.jl")
-include("distances.jl")
+include("diversity.jl")
 
 end  # module Microbiome

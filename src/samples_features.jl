@@ -2,8 +2,23 @@
 _restricted_fields(::AbstractSample) = (:name, :metadata)
 
 # Samples should at minimum have name and metadata
+
+"""
+    name(t::Union{AbstractSample, AbstractFeature})
+
+Get the `name` field from an `AbstractSample` or `AbstractFeature`.
+"""
 name(as::AbstractSample) = as.name
+
+"""
+    metadata(t::AbstractSample)
+
+Get the `metadata` field from an `AbstractSample`.
+Note that this is not a copy, so modifications to the returned value
+will update the parent `AbstractSample` as well.
+"""
 metadata(as::AbstractSample) = as.metadata
+
 name(as::AbstractFeature) = as.name
 
 # Allows Strings to be used to index (since `Thing("name", missing)` will be == `Thing("name", something)`)
@@ -127,6 +142,7 @@ ERROR: IndexError("Index doesn't exist: occupation")
 
 julia> unset!(ms, :occupation)
 MicrobiomeSample("sample1", {:gender │ "nonbinary", :age │ 5840})
+```
 """
 struct MicrobiomeSample <: AbstractSample
     name::String
@@ -184,8 +200,20 @@ Taxon(n::AbstractString, clade::Int) = 0 <= clade <= 9 ?
                                             error("Invalid clade $clade, must be one of $_clades")
 Taxon(n::AbstractString) = Taxon(n, missing)
 
+"""
+    clade(t::Union{Taxon, missing})
+
+Get the `clade` field from an `Taxon`.
+Returns `missing` if the clade is not set.
+"""
 clade(t::Taxon) = t.clade
 clade(::Missing) = missing
+
+"""
+    hasclade(t::Taxon)::Bool
+
+Pretty self-explanatory.
+"""
 hasclade(t::Taxon) = !ismissing(clade(t))
 
 
@@ -203,5 +231,17 @@ end
 GeneFunction(n::AbstractString) = GeneFunction(n, missing)
 GeneFunction(n::AbstractString, t::AbstractString) = GeneFunction(n, Taxon(t))
 
+"""
+    taxon(t::Union{GeneFunction, missing})
+
+Get the `taxon` field from a `GeneFunction`.
+Returns `missing` if the taxon is not set.
+"""
 taxon(gf::GeneFunction) = gf.taxon
+
+"""
+    hastaxon(t::GeneFunction)::Bool
+
+Pretty self-explanatory.
+"""
 hastaxon(gf::GeneFunction) = !ismissing(taxon(gf))

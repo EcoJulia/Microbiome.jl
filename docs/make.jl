@@ -1,14 +1,15 @@
-using Documenter, Microbiome
+using Documenter, Microbiome, Microbiome.Dictionaries
 
 makedocs(
     sitename = "Microbiome.jl",
     pages = [
         "Home" => "index.md",
-        "Microbial Abundances" => "abundances.md",
-        "Distances & Dissimilarity" => "distances.md",
+        "Samples and features" => "samples_features.md",
+        "Profiles and Communities" => "profiles.md",
+        "Diversity measures" => "diversity.md",
         "Contributing" => "contributing.md"
     ],
-    authors = "Kevin Bonham, PhD",
+    authors = "Kevin Bonham, PhD <kbonham@wellesley.edu",
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true")
 )
