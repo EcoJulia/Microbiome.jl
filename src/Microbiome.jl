@@ -33,36 +33,28 @@ export CommunityProfile,
        featuretype,
        features,
        samples,
-       clades
-    #    featuretotals,
-    #    sampletotals
+       clades,
+       profiletype,
+       featuretotals,
+       sampletotals
    
+# Abundances
+export present,
+       prevalence,
+       relativeabundance!,
+       relativeabundance       
+#     filterabund
+
+# Diversity
+export ginisimpson,
+       shannon,
+       ginisimpson!,
+       shannon!,
+       present,
+       prevalence,
+       braycurtis,
+       pcoa
        
-
-#     # Functions
-#     ## abundance
-#     abundancetable,
-#     filterabund,
-#     relativeabundance,
-#     relativeabundance!,
-#     rownormalize,
-#     rownormalize!,
-#     colnormalize,
-#     colnormalize!,
-#     nfeatures,
-#     getfeature,
-#     featurenames,
-#     featuretotals,
-#     nsamples,
-#     getsample,
-#     samplenames,
-#     sampletotals,
-#     ## Diversity
-#     ginisimpson,
-#     shannon,
-#     present,
-#     prevalence
-
 using Statistics
 using StatsBase
 using Tables
@@ -80,8 +72,7 @@ import Dictionaries: set!, unset!, insert!, delete!
 include("ecobase.jl")
 include("samples_features.jl")
 include("profiles.jl")
-# include("tablesinterface.jl")
-# include("abundances.jl")
+include("abundances.jl")
 include("distances.jl")
 
 end  # module Microbiome

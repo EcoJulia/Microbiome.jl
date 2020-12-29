@@ -10,7 +10,42 @@ An `AbstractAssemblage` from [EcoBase.jl](https://github.com/EcoJulia/EcoBase.jl
 that uses an `AxisArray` of a `SparseMatrixCSC` under the hood.
 
 `CommunityProfile`s are tables with `AbstractFeature`-indexed rows and
-`AbstractSample`-indexed columns. 
+`AbstractSample`-indexed columns.
+Note - we can use the `name` of samples and features to index.
+
+```jldoctest community
+julia> txs = [Taxon("taxon\$i") for i in 1:10];
+
+julia> mss = [MicrobiomeSample("sample\$i") for i in 1:5];
+
+julia> mat = spzeros(10,5);
+
+julia> for i in 1:5; mat[i,i] = 1.; end
+
+julia> comm = CommunityProfile(mat, txs, mss)
+CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 things in 5 places
+
+Thing names:
+taxon1, taxon2, taxon3...taxon9, taxon10
+
+Place names:
+sample1, sample2, sample3, sample4, sample5
+
+julia> comm["taxon1", "sample1"]
+1.0
+
+julia> comm[:,["sample1", "sample5"]]
+CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 things in 2 places
+
+Thing names:
+taxon1, taxon2, taxon3...taxon9, taxon10
+
+Place names:
+sample1, sample5
+
+julia> comm[Taxon("taxon3", :kingdom), "sample1"]
+0.0
+```
 """
 mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
     aa::NamedAxisArray
@@ -30,9 +65,25 @@ function CommunityProfile(tab::SparseMatrixCSC{<:Real},
     return CommunityProfile(NamedAxisArray(tab, features=features, samples=samples))
 end
 
+function CommunityProfile{T, F, S}(tab::SparseMatrixCSC{<:T},
+                                   features::AbstractVector{F}, 
+                                   samples::AbstractVector{S}) where {T, F, S}
+    return CommunityProfile(tab, features, samples)
+end
 ## -- Convienience functions -- ##
 
+"""
+    features(at::AbstractAbundanceTable)
+
+Returns features in `at`. To get featurenames instead, use [`featurenames`](@ref).
+"""
 features(at::AbstractAbundanceTable) = axes(at.aa, 1) |> keys
+
+"""
+    samples(at::AbstractAbundanceTable)
+
+Returns samples in `at`. To get samplenames instead, use [`samplenames`](@ref).
+"""
 samples(at::AbstractAbundanceTable) = axes(at.aa, 2) |> keys
 
 profiletype(at::AbstractAbundanceTable) = eltype(features(at))
@@ -64,6 +115,8 @@ function Base.getindex(at::CommunityProfile, inds...)
     end
 end
 
+
+
 ## -- EcoBase Translations -- ##
 # see src/ecobase.jl for Microbiome function names
 # thing => feature
@@ -78,6 +131,24 @@ EcoBase.nplaces(at::AbstractAbundanceTable) = size(at, 2)
 # # todo
 # EcoBase.thingoccurrences(at::AbstractAbundanceTable, things) = nothing
 # EcoBase.placeoccurrences(at::AbstractAbundanceTable, places) = nothing
+
+"""
+    featuretotals(at::AbstractAbundanceTable)
+
+Returns sum of each row (feature) in `at`.
+Note, return value is a nfeatures x 1 `Matrix`, not a `Vector`.
+If you need 1D `Vector`, use `vec(featuretotals(at))`.
+"""
+featuretotals(at::AbstractAbundanceTable) = sum(abundances(at), dims=2)
+
+"""
+    sampletotals(at::AbstractAbundanceTable)
+
+Returns sum of each row (feature) in `at`.
+Note, return value is a 1 x nsamples `Matrix`, not a `Vector`.
+If you need 1D `Vector`, use `vec(sampletotals(at))`.
+"""
+sampletotals(at::AbstractAbundanceTable) = sum(abundances(at), dims=1)
 
 # ## -- Tables Interface -- ##
 

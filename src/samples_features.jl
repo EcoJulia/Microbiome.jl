@@ -58,6 +58,9 @@ function delete!(as::AbstractSample, prop::Symbol)
     return as
 end
 
+Base.keys(as::AbstractSample) = keys(metadata(as))
+Base.haskey(as::AbstractSample, key::Symbol) = in(key, keys(as))
+
 """
     MicrobiomeSample(name::String, metadata::Dictionary{Symbol, T}) <: AbstractSample
     MicrobiomeSample(name::String)
