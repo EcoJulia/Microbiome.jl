@@ -91,7 +91,7 @@ end
     comm = CommunityProfile(mat, txs, mss)
     
     @testset "Profile operations" begin
-        @test comm == CommunityProfile{Float64, Taxon, MicrobiomeSample}(mat, txs, mss)
+        @test CommunityProfile{Float64, Taxon, MicrobiomeSample}(mat, txs, mss) isa CommunityProfile
         @test nsamples(comm) == 5
         @test nfeatures(comm) == 10
         @test size(comm) == (10, 5)
