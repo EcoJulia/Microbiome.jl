@@ -56,16 +56,14 @@ export ginisimpson,
        pcoa
        
 using Statistics
-using StatsBase
-using Tables
-using Dictionaries
 using SparseArrays
 using EcoBase
+using AxisIndices
+using Dictionaries
+using NamedDims
+using Tables
 using Distances
 using MultivariateStats
-using AxisIndices
-using NamedDims
-using Dictionaries
 
 import Dictionaries: set!, unset!, insert!, delete!
 
