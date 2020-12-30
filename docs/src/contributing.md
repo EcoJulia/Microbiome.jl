@@ -10,7 +10,7 @@ request.
 If you're interested in adding functionality to Microbiome.jl, please feel free
 to open an issue or a pull request (PR) against the `master` branch. If you're
 not yet ready for that, you can also ask questions/start a discussion in the
-[Bio.jl](https://gitter.im/BioJulia/Bio.jl) gitter channel. 
+`#biology` channel on slack, or [`#ecology` stream on zulip](https://julialang.zulipchat.com/#narrow/stream/252417-Ecology). 
 
 Work-in-progress PRs are fine, as discussion about approach and code review
 can happen in the PR.

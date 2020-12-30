@@ -1,42 +1,77 @@
 module Microbiome
 
-export
-    # Functions
-    ## abundance
-    abundancetable,
-    filterabund,
-    relativeabundance,
-    relativeabundance!,
-    rownormalize,
-    rownormalize!,
-    colnormalize,
-    colnormalize!,
-    nfeatures,
-    getfeature,
-    featurenames,
-    featuretotals,
-    nsamples,
-    getsample,
-    samplenames,
-    sampletotals,
-    ## Diversity
-    ginisimpson,
-    shannon,
-    present,
-    prevalence
+# Samples and Features
+export MicrobiomeSample,
+       Taxon,
+       GeneFunction,
+       metadata,
+       set!,
+       unset!,
+       insert!,
+       delete!,
+       name,
+       clade,
+       hasclade,
+       taxon,
+       hastaxon
 
+# EcoBase Translations
+export abundances,
+       nfeatures,
+       featurenames,
+       getfeature,
+       nsamples,
+       samplenames,
+       getsample,
+       AbstractFeature,
+       AbstractSample
+    #    featureabundances,
+    #    sampleabundances
 
-using Reexport
-@reexport using SpatialEcology
+# Profiles
+export CommunityProfile,
+       featuretype,
+       features,
+       samples,
+       clades,
+       profiletype,
+       featuretotals,
+       sampletotals
+   
+# Abundances
+export present,
+       prevalence,
+       relativeabundance!,
+       relativeabundance       
+#     filterabund
 
+# Diversity
+export ginisimpson,
+       shannon,
+       ginisimpson!,
+       shannon!,
+       present,
+       prevalence,
+       braycurtis,
+       pcoa
+       
 using Statistics
 using StatsBase
-using DataFrames
+using Tables
+using Dictionaries
+using SparseArrays
+using EcoBase
+using Distances
+using MultivariateStats
+using AxisIndices
+using NamedDims
+using Dictionaries
 
-import Base: getindex, setindex, length
+import Dictionaries: set!, unset!, insert!, delete!
 
-include("ecotranslations.jl")
-include("abundances.jl")
-include("distances.jl")
+include("ecobase.jl")
+include("samples_features.jl")
+include("profiles.jl")
+include("diversity.jl")
 
 end  # module Microbiome
