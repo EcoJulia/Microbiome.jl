@@ -15,24 +15,28 @@ pull request.
 [I don't want to read this whole thing, I just have a question!!!](#i-dont-want-to-read-this-whole-thing-i-just-have-a-question)
 
 [What should I know about BioJulia before I get started?](#what-should-i-know-about-biojulia-before-i-get-started)
-  - [BioJulia Package Maintainers](#biojulia-package-maintainers)
-  - [BioJulia Administrators](#biojulia-administrators)
-  - [Etiquette and conduct](#etiquette-and-conduct)
-  - [Package Conventions](#package-conventions)
+
+- [BioJulia Package Maintainers](#biojulia-package-maintainers)
+- [BioJulia Administrators](#biojulia-administrators)
+- [Etiquette and conduct](#etiquette-and-conduct)
+- [Package Conventions](#package-conventions)
 
 [How Can I Contribute?](#how-can-i-contribute)
-  - [Reporting Bugs](#reporting-bugs)
-  - [Suggesting an Enhancement](#suggest-an-enhancement)
-  - [Making Pull Requests](#pull-requests)
-  - [Become a BioJulia package maintainer](#become-a-biojulia-package-maintainer)
+
+- [Reporting Bugs](#reporting-bugs)
+- [Suggesting an Enhancement](#suggest-an-enhancement)
+- [Making Pull Requests](#pull-requests)
+- [Become a BioJulia package maintainer](#become-a-biojulia-package-maintainer)
 
 [Styleguides](#styleguides)
-  - [Git Commit Messages](#git-commit-messages)
-  - [Additional julia style suggestions](#additional-julia-style-suggestions)
-  - [Documentation Styleguide](#documentation-styleguide)
+
+- [Git Commit Messages](#git-commit-messages)
+- [Additional julia style suggestions](#additional-julia-style-suggestions)
+- [Documentation Styleguide](#documentation-styleguide)
 
 [Additional notes](#additional-notes)
-  - [A suggested branching model](#a-suggested-branching-model)
+
+- [A suggested branching model](#a-suggested-branching-model)
 
 ## I don't want to read this whole thing I just have a question!!!
 
