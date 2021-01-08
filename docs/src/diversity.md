@@ -25,5 +25,7 @@ using the `fit(MDS, ...)` from `MultivariateStats.jl` under the hood.
 
 ```@docs
 braycurtis
+jaccard
+hellinger
 pcoa
 ```
