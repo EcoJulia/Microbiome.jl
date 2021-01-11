@@ -53,6 +53,8 @@ export ginisimpson,
        present,
        prevalence,
        braycurtis,
+       jaccard,
+       hellinger,
        pcoa
        
 using Statistics

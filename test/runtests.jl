@@ -192,6 +192,8 @@ end
         end
 
         @test all(braycurtis(comm) .== [0 1 1 1 1; 1 0 1 1 1; 1 1 0 1 1; 1 1 1 0 1; 1 1 1 1 0])
+        @test all(jaccard(comm) .== [0 1 1 1 1; 1 0 1 1 1; 1 1 0 1 1; 1 1 1 0 1; 1 1 1 1 0])
+        @test all(hellinger(comm) .== [0 1 1 1 1; 1 0 1 1 1; 1 1 0 1 1; 1 1 1 0 1; 1 1 1 1 0])
         @test pcoa(comm) isa MDS
     end
 

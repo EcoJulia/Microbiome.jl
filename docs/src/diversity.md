@@ -16,7 +16,7 @@ Quite often, it's useful to boil stuff down to distances between samples.
 from [`Distances.jl`](https://github.com/JuliaStats/Distances.jl)
 to get a symetric distance matrix.
 
-Right now, only Bray-Curtis is implemented, because it's the only one I use,
+Right now, only Bray-Curtis, Jaccard, and Hellinger are implemented, 
 but it would be straightforward to add any others.
 Open an issue if you want them!
 
@@ -25,5 +25,7 @@ using the `fit(MDS, ...)` from `MultivariateStats.jl` under the hood.
 
 ```@docs
 braycurtis
+jaccard
+hellinger
 pcoa
 ```

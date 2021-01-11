@@ -4,7 +4,7 @@ keywords = ["microbiology", "microbiome", "biology"]
 license = "MIT"
 desc = "Functions and types for working with microbial community data"
 authors = ["@kescobo <kevbonham@gmail.com>"]
-version = "0.7.0"
+version = "0.7.1"
 
 [deps]
 AxisIndices = "f52c9ee2-1b1c-4fd8-8546-6350938c7f11"
