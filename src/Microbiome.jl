@@ -36,7 +36,8 @@ export CommunityProfile,
        clades,
        profiletype,
        featuretotals,
-       sampletotals
+       sampletotals,
+       commjoin
    
 # Abundances
 export present,
@@ -73,5 +74,6 @@ include("ecobase.jl")
 include("samples_features.jl")
 include("profiles.jl")
 include("diversity.jl")
+include("comm_joins.jl")
 
 end  # module Microbiome

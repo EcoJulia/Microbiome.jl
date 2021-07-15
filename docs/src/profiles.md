@@ -6,6 +6,7 @@ samples
 features
 samplenames
 featurenames
+commjoin
 relativeabundance
 relativeabundance!
 present

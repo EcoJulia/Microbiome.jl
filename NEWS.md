@@ -1,5 +1,9 @@
 # News for Microbiome.jl
 
+## Unreleased
+
+- Add `commjoin` function to merge the contents of multiple `CommunityProfile`s ([#58](https://github.com/BioJulia/Microbiome.jl/pull/58))
+
 ## v0.7.0 Major overhaul
 
 Lots of breaking changes in this one, including

@@ -125,6 +125,13 @@ end
         end
 
         @test_throws ArgumentError relativeabundance!(comm, kind=:invalid)
+
+        @test_throws ErrorException commjoin(comm, comm)
+        let c3 = commjoin(comm[:,1:2], comm[:, 3:4], comm[:, 5])
+            @test abundances(c3) == abundances(comm)
+            @test samples(c3) == samples(comm)
+            @test features(c3) == features(comm)
+        end
     end
     
     @testset "Indexing and Tables integration" begin
