@@ -50,7 +50,7 @@ taxon1, taxon2, taxon3...taxon19, taxon20
 
 Place names:
 sample1, sample2, sample3...sample14, sample15
-````
+```
 """
 function commjoin(c1::CommunityProfile, comms::CommunityProfile...)
     length(intersect(samplenames(c1), samplenames.(comms)...)) == 0 || error("Duplicate sample names detected: $(intersect(samplenames(c1), samplenames.(comms)...))")
