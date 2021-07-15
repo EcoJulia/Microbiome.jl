@@ -43,7 +43,8 @@ export CommunityProfile,
 export present,
        prevalence,
        relativeabundance!,
-       relativeabundance       
+       relativeabundance,
+       prevalence_filter
 #     filterabund
 
 # Diversity

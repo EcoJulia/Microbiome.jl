@@ -5,9 +5,9 @@ Join multiple `CommunityProfile`s, creating a new `CommunityProfile`.
 For now, sample names cannot overlap in any of the input profiles.
 
 ```jldoctest
-julia> mss = [MicrobiomeSample("sample\$i") for i in 1:15];
+julia> mss = [MicrobiomeSample(string("sample",i)) for i in 1:15];
 
-julia> txs = [Taxon("taxon\$i") for i in 1:20];
+julia> txs = [Taxon(string("taxon",i)) for i in 1:20];
 
 julia> cm1 = CommunityProfile(spzeros(10,5), txs[1:10], mss[1:5])
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 things in 5 places

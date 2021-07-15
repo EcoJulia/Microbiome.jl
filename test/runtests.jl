@@ -132,6 +132,19 @@ end
             @test samples(c3) == samples(comm)
             @test features(c3) == features(comm)
         end
+
+        filtertest = CommunityProfile(sparse(Float64[3 2 1 # 0.66, assuming minabundance 2
+                                              2 2 2 # 1.0
+                                              0 0 1 # 0.0
+                                              2 0 0 # 0.33
+                                       ]),
+                               [Taxon(string(i)) for i in 1:4],
+                               [MicrobiomeSample(string(i)) for i in 1:3]); 
+        @test size(prevalence_filter(filtertest)) == (4,3)
+        @test size(prevalence_filter(filtertest, minabundance=2)) == (3,3)
+        @test size(prevalence_filter(filtertest, minabundance=2, minprevalence=0.4)) == (2,3)
+        @test all(<=(1.0), abundances(prevalence_filter(filtertest, renorm=true)))
+        @test all(x-> isapprox(x, 1.0, atol=1e-8), sum(abundances(prevalence_filter(filtertest, renorm=true)), dims=1))
     end
     
     @testset "Indexing and Tables integration" begin

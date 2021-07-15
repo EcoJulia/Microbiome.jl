@@ -225,8 +225,8 @@ end
 
 Like [`relativeabundance!`](@ref), but does not mutate original.
 """
-function relativeabundance(at::T, kind::Symbol=:fraction) where T <: AbstractAbundanceTable
-    comm = T(float.(abundances(at)), deepcopy(features(at)), deepcopy(samples(at)))
+function relativeabundance(at::AbstractAbundanceTable, kind::Symbol=:fraction)
+    comm = typeof(at)(float.(abundances(at)), deepcopy(features(at)), deepcopy(samples(at)))
     relativeabundance!(comm)
 end
 
@@ -272,4 +272,54 @@ prevalence(a, minabundance::Real=0.0) = mean(x-> present(x, minabundance), (y fo
 
 function prevalence(at::AbstractAbundanceTable, minabundance::Real=0.0)
     mean(x-> present(x, minabundance), abundances(at), dims=2)
+end
+
+"""
+    prevalence_filter(comm::AbstractAbundanceTable; minabundance=0.0; minprevalence=0.05, renorm=false)
+
+Return a filtered `CommunityProfile` where features with prevalence lower than `minprevalence` are removed.
+By default, a feature is considered "present" if > 0, but this can be changed by setting `minabundance`.
+
+Optionally, set `renorm = true` to calculate relative abundances after low prevalence features are removed.
+
+```jldoctest
+julia> comm = CommunityProfile(sparse([3 0 1 # 0.33, assuming minabundance 2
+                                       2 2 2 # 1.0
+                                       0 0 1 # 0.0
+                                       2 0 0 # 0.33
+                                       ]),
+                               [Taxon(string(i)) for i in 1:4],
+                               [MicrobiomeSample(string(i)) for i in 1:3]);
+
+julia> prevalence_filter(comm, minabundance=2, minprevalence=0.3) 
+CommunityProfile{Int64, Taxon, MicrobiomeSample} with 3 things in 3 places
+
+Thing names:
+1, 2, 4
+
+Place names:
+1, 2, 3
+
+julia> prevalence_filter(comm, minabundance=2, minprevalence=0.4)
+CommunityProfile{Int64, Taxon, MicrobiomeSample} with 1 things in 3 places
+
+Thing names:
+2
+
+Place names:
+1, 2, 3
+
+julia> prevalence_filter(comm, minabundance=3, minprevalence=0.3)
+CommunityProfile{Int64, Taxon, MicrobiomeSample} with 1 things in 3 places
+
+Thing names:
+1
+
+Place names:
+1, 2, 3
+```
+"""
+function prevalence_filter(comm::AbstractAbundanceTable; minabundance=0.0, minprevalence=0.05, renorm=false)
+    comm = comm[vec(prevalence(comm, minabundance) .>= minprevalence), :]
+    return renorm ? relativeabundance(comm) : comm
 end
