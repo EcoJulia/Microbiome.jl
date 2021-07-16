@@ -11,4 +11,5 @@ relativeabundance
 relativeabundance!
 present
 prevalence
+prevalence_filter
 ```

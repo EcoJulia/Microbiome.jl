@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add `commjoin` function to merge the contents of multiple `CommunityProfile`s ([#58](https://github.com/BioJulia/Microbiome.jl/pull/58))
+- Add `prevalence_filter` function to select features that are present at some minumum prevalence
 
 ## v0.7.0 Major overhaul
 
