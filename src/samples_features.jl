@@ -75,6 +75,7 @@ end
 
 Base.keys(as::AbstractSample) = keys(metadata(as))
 Base.haskey(as::AbstractSample, key::Symbol) = in(key, keys(as))
+Base.get(as::AbstractSample, key::Symbol, default) = get(metadata(as), key, default)
 
 """
     MicrobiomeSample(name::String, metadata::Dictionary{Symbol, T}) <: AbstractSample

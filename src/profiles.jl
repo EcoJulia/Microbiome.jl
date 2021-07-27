@@ -323,3 +323,24 @@ function prevalence_filter(comm::AbstractAbundanceTable; minabundance=0.0, minpr
     comm = comm[vec(prevalence(comm, minabundance) .>= minprevalence), :]
     return renorm ? relativeabundance(comm) : comm
 end
+
+
+## Metadata
+
+"""
+    metadata(cp::CommunityProfile)
+
+Returns iterator of `NamedTuple` per sample, where keys are `:sample`
+and each metadata key found in `cp`.
+Samples without given metadata are filled with `missing`.
+
+Returned values can be passed to any Tables.rowtable - compliant type,
+eg `DataFrame`.
+"""
+function metadata(cp::CommunityProfile)
+    ss = samples(cp)
+    cols = unique(reduce(hcat, collect.(keys.(metadata.(samples(cp))))))
+    return (merge((; sample=name(s)), 
+                     NamedTuple(c => get(s, c, missing) for c in cols)
+                    ) for s in ss)
+end
