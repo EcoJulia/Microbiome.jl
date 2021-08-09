@@ -37,7 +37,8 @@ export CommunityProfile,
        profiletype,
        featuretotals,
        sampletotals,
-       commjoin
+       commjoin,
+       metadata
    
 # Abundances
 export present,
