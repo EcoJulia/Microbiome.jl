@@ -340,7 +340,7 @@ eg `DataFrame`.
 function metadata(cp::CommunityProfile)
     ss = samples(cp)
     cols = unique(reduce(hcat, collect.(keys.(metadata.(samples(cp))))))
-    return (merge((; sample=name(s)), 
+    return Tables.rowtable(merge((; sample=name(s)), 
                      NamedTuple(c => get(s, c, missing) for c in cols)
                     ) for s in ss)
 end
