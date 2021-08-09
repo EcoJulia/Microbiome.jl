@@ -145,6 +145,19 @@ end
         @test size(prevalence_filter(filtertest, minabundance=2, minprevalence=0.4)) == (2,3)
         @test all(<=(1.0), abundances(prevalence_filter(filtertest, renorm=true)))
         @test all(x-> isapprox(x, 1.0, atol=1e-8), sum(abundances(prevalence_filter(filtertest, renorm=true)), dims=1))
+
+        s1 = MicrobiomeSample("sample1", Dictionary(Dict(:age=> 37, :name=>"kevin", :something=>1.0)))
+        s2 = MicrobiomeSample("sample2", Dictionary(Dict(:age=> 37, :name=>"kevin", :something_else=>2.0)))
+
+        md1, md2 = metadata(CommunityProfile(sparse([1 1; 2 2; 3 3]), [Taxon(string(i)) for i in 1:3], [s1, s2]))
+        
+        @test all(row-> row[:age] == 37, [md1, md2])
+        @test all(row-> row[:name] == "kevin", [md1, md2])
+        @test md1[:something] == 1.0
+        @test ismissing(md2[:something])
+        @test md2[:something_else] == 2.0
+        @test ismissing(md1[:something_else])
+
     end
     
     @testset "Indexing and Tables integration" begin
