@@ -126,9 +126,16 @@ EcoBase.placenames(at::AbstractAbundanceTable) = name.(samples(at))
 EcoBase.occurrences(at::AbstractAbundanceTable) = parent(parent(at.aa)) # first parent is the unnamed AxisArray
 EcoBase.nthings(at::AbstractAbundanceTable) = size(at, 1)
 EcoBase.nplaces(at::AbstractAbundanceTable) = size(at, 2)
-# # todo
+## todo
 # EcoBase.thingoccurrences(at::AbstractAbundanceTable, things) = nothing
 # EcoBase.placeoccurrences(at::AbstractAbundanceTable, places) = nothing
+
+# for custom printing
+EcoBase.thingkind(asm::AbstractAbundanceTable) = "sample"
+EcoBase.placekind(asm::AbstractAbundanceTable) = "feature"
+## not needed for now
+# EcoBase.thingkindplural(asm::AbstractAbundanceTable) = "$(thingkind(asm))s"
+# EcoBase.placekindplural(asm::AbstractAbundanceTable) = "$(placekind(asm))s"
 
 """
     featuretotals(at::AbstractAbundanceTable)
