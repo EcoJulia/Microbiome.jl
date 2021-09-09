@@ -10,45 +10,45 @@ julia> mss = [MicrobiomeSample(string("sample",i)) for i in 1:15];
 julia> txs = [Taxon(string("taxon",i)) for i in 1:20];
 
 julia> cm1 = CommunityProfile(spzeros(10,5), txs[1:10], mss[1:5])
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 things in 5 places
+CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 5 samples
 
-Thing names:
+Feature names:
 taxon1, taxon2, taxon3...taxon9, taxon10
 
-Place names:
+Sample names:
 sample1, sample2, sample3, sample4, sample5
 
 
 
 julia> cm2 = CommunityProfile(spzeros(10,5), txs[6:15], mss[6:10])
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 things in 5 places
+CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 5 samples
 
-Thing names:
+Feature names:
 taxon6, taxon7, taxon8...taxon14, taxon15
 
-Place names:
+Sample names:
 sample6, sample7, sample8, sample9, sample10
 
 
 
 julia> cm3 = CommunityProfile(spzeros(10,5), txs[11:20], mss[11:15])
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 things in 5 places
+CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 5 samples
 
-Thing names:
+Feature names:
 taxon11, taxon12, taxon13...taxon19, taxon20
 
-Place names:
+Sample names:
 sample11, sample12, sample13, sample14, sample15
 
 
 
 julia> commjoin(cm1, cm2, cm3)
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 20 things in 15 places
+CommunityProfile{Float64, Taxon, MicrobiomeSample} with 20 features in 15 samples
 
-Thing names:
+Feature names:
 taxon1, taxon2, taxon3...taxon19, taxon20
 
-Place names:
+Sample names:
 sample1, sample2, sample3...sample14, sample15
 ```
 """
