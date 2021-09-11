@@ -23,24 +23,24 @@ julia> mat = spzeros(10,5);
 julia> for i in 1:5; mat[i,i] = 1.; end
 
 julia> comm = CommunityProfile(mat, txs, mss)
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 things in 5 places
+CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 5 samples
 
-Thing names:
+Feature names:
 taxon1, taxon2, taxon3...taxon9, taxon10
 
-Place names:
+Sample names:
 sample1, sample2, sample3, sample4, sample5
 
 julia> comm["taxon1", "sample1"]
 1.0
 
 julia> comm[:,["sample1", "sample5"]]
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 things in 2 places
+CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 2 samples
 
-Thing names:
+Feature names:
 taxon1, taxon2, taxon3...taxon9, taxon10
 
-Place names:
+Sample names:
 sample1, sample5
 
 julia> comm[Taxon("taxon3", :kingdom), "sample1"]
@@ -126,9 +126,16 @@ EcoBase.placenames(at::AbstractAbundanceTable) = name.(samples(at))
 EcoBase.occurrences(at::AbstractAbundanceTable) = parent(parent(at.aa)) # first parent is the unnamed AxisArray
 EcoBase.nthings(at::AbstractAbundanceTable) = size(at, 1)
 EcoBase.nplaces(at::AbstractAbundanceTable) = size(at, 2)
-# # todo
+## todo
 # EcoBase.thingoccurrences(at::AbstractAbundanceTable, things) = nothing
 # EcoBase.placeoccurrences(at::AbstractAbundanceTable, places) = nothing
+
+# for custom printing
+EcoBase.thingkind(asm::AbstractAbundanceTable) = "feature"
+EcoBase.placekind(asm::AbstractAbundanceTable) = "sample"
+## not needed for now
+# EcoBase.thingkindplural(asm::AbstractAbundanceTable) = "$(thingkind(asm))s"
+# EcoBase.placekindplural(asm::AbstractAbundanceTable) = "$(placekind(asm))s"
 
 """
     featuretotals(at::AbstractAbundanceTable)
@@ -292,30 +299,30 @@ julia> comm = CommunityProfile(sparse([3 0 1 # 0.33, assuming minabundance 2
                                [MicrobiomeSample(string(i)) for i in 1:3]);
 
 julia> prevalence_filter(comm, minabundance=2, minprevalence=0.3) 
-CommunityProfile{Int64, Taxon, MicrobiomeSample} with 3 things in 3 places
+CommunityProfile{Int64, Taxon, MicrobiomeSample} with 3 features in 3 samples
 
-Thing names:
+Feature names:
 1, 2, 4
 
-Place names:
+Sample names:
 1, 2, 3
 
 julia> prevalence_filter(comm, minabundance=2, minprevalence=0.4)
-CommunityProfile{Int64, Taxon, MicrobiomeSample} with 1 things in 3 places
+CommunityProfile{Int64, Taxon, MicrobiomeSample} with 1 features in 3 samples
 
-Thing names:
+Feature names:
 2
 
-Place names:
+Sample names:
 1, 2, 3
 
 julia> prevalence_filter(comm, minabundance=3, minprevalence=0.3)
-CommunityProfile{Int64, Taxon, MicrobiomeSample} with 1 things in 3 places
+CommunityProfile{Int64, Taxon, MicrobiomeSample} with 1 features in 3 samples
 
-Thing names:
+Feature names:
 1
 
-Place names:
+Sample names:
 1, 2, 3
 ```
 """

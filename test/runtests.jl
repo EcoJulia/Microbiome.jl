@@ -91,6 +91,7 @@ end
     comm = CommunityProfile(mat, txs, mss)
     
     @testset "Profile operations" begin
+        @test repr(comm) == "CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 5 samples\n\nFeature names:\ntaxon1, taxon2, taxon3...taxon9, taxon10\n\nSample names:\nsample1, sample2, sample3, sample4, sample5\n\n"
         @test CommunityProfile{Float64, Taxon, MicrobiomeSample}(mat, txs, mss) isa CommunityProfile
         @test nsamples(comm) == 5
         @test nfeatures(comm) == 10
