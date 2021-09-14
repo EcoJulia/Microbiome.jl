@@ -351,3 +351,10 @@ function metadata(cp::CommunityProfile)
                      NamedTuple(c => get(s, c, missing) for c in cols)
                     ) for s in ss)
 end
+
+function add_metadata!(cp::CommunityProfile, col::Symbol, metadata::AbstractDict; overwrite=false)
+    sample = samples(cp)
+    for (key,value) in metadata
+        get
+    end
+end
