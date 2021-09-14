@@ -85,14 +85,23 @@ end
     push!(txs, Taxon("taxon10", missing))
     
     mat = spzeros(10,5)
-    for i in 1:5; mat[i,i] = 1.; end
-    for i in 1:5; mat[i+5,i] = 0.6; end
+    dmat = zeros(10,5)
+    for i in 1:5; 
+        mat[i,i] = 1.
+        dmat[i,i] = 1.
+    end
+    for i in 1:5
+        mat[i+5,i] = 0.6
+        dmat[i+5,i] = 0.6
+    end
 
     comm = CommunityProfile(mat, txs, mss)
-    
+
     @testset "Profile operations" begin
         @test repr(comm) == "CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 5 samples\n\nFeature names:\ntaxon1, taxon2, taxon3...taxon9, taxon10\n\nSample names:\nsample1, sample2, sample3, sample4, sample5\n\n"
         @test CommunityProfile{Float64, Taxon, MicrobiomeSample}(mat, txs, mss) isa CommunityProfile
+        @test comm == CommunityProfile(dmat, txs, mss)
+        
         @test nsamples(comm) == 5
         @test nfeatures(comm) == 10
         @test size(comm) == (10, 5)
