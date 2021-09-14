@@ -148,7 +148,7 @@ end
         @test all(x-> isapprox(x, 1.0, atol=1e-8), sum(abundances(prevalence_filter(filtertest, renorm=true)), dims=1))
 
         s1 = MicrobiomeSample("sample1", Dictionary(Dict(:age=> 37, :name=>"kevin", :something=>1.0)))
-        s2 = MicrobiomeSample("sample2", Dictionary(Dict(:age=> 37, :name=>"kevin", :something_else=>2.0)))
+        s2 = MicrobiomeSample("sample2", Dictionary(Dict(:age=> 37, :name=>"kevin", :something_else=>2.0, :still_other=>"boo")))
 
         md1, md2 = metadata(CommunityProfile(sparse([1 1; 2 2; 3 3]), [Taxon(string(i)) for i in 1:3], [s1, s2]))
         
