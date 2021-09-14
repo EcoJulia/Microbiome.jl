@@ -359,9 +359,9 @@ function metadata(cp::CommunityProfile)
                     ) for s in ss)
 end
 
-function add_metadata!(cp::CommunityProfile, col::Symbol, metadata::AbstractDict; overwrite=false)
-    sample = samples(cp)
-    for (key,value) in metadata
-        get
+function add_metadata!(cp::CommunityProfile, sample::AbstractString, md::AbstractDict; overwrite=false)
+    s = samples(cp, sample)
+    for (key,value) in md
+        overwrite ? set!(s, key, value) : insert!(s, key, value)
     end
 end
