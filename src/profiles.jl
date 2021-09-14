@@ -361,6 +361,10 @@ end
 
 function add_metadata!(cp::CommunityProfile, sample::AbstractString, md::Union{AbstractDict,NamedTuple}; overwrite=false)
     s = samples(cp, sample)
+    if !overwrite
+        length(keys(md) ∪ keys(metadata(s))) == 0 || throw(IndexError("Adding this metadata would overwrite existing values. Use `overwrite=true` to proceed anyway"))
+    end
+    
     for key in keys(md)
         value = md[key]
         overwrite ? set!(s, key, value) : insert!(s, key, value)
