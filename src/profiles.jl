@@ -86,6 +86,13 @@ Returns samples in `at`. To get samplenames instead, use [`samplenames`](@ref).
 """
 samples(at::AbstractAbundanceTable) = axes(at.aa, 2) |> keys
 
+"""
+    samples(at::AbstractAbundanceTable, name::AbstractString)
+
+Returns sample in `at` with name `name`.
+"""
+samples(at::AbstractAbundanceTable, name::AbstractString) = samples(at)[axes(at.aa, 2)[name]]
+
 profiletype(at::AbstractAbundanceTable) = eltype(features(at))
 clades(at::AbstractAbundanceTable) = clade.(features(at))
 
