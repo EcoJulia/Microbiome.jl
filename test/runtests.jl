@@ -163,6 +163,10 @@ end
             @test_throws IndexError add_metadata!(c4, "sample1", Dict(:something=>3.0))
             add_metadata!(c4, "sample1", Dict(:something=>3.0), overwrite=true)
             @test first(metadata(c4))[:something] == 3
+            
+            @test_throws IndexError add_metadata!(c4, "sample1", (; something=4.0))
+            add_metadata!(c4, "sample1", (; something=4.0), overwrite=true)
+            @test first(metadata(c4))[:something] == 4
         end
     end
     
