@@ -70,7 +70,19 @@ function CommunityProfile{T, F, S}(tab::SparseMatrixCSC{<:T},
                                    samples::AbstractVector{S}) where {T, F, S}
     return CommunityProfile(tab, features, samples)
 end
+
+function CommunityProfile(tab::AbstractMatrix,
+                          features::AbstractVector{<:AbstractFeature},
+                          samples::AbstractVector{<:AbstractSample})
+    return CommunityProfile(sparse(tab), features, samples)
+end
 ## -- Convienience functions -- ##
+
+function ==(p1::CommunityProfile, p2::CommunityProfile)
+    return abundances(p1) == abundances(p2) && 
+           samples(p1)    == samples(p2) &&
+           features(p1)   == features(p2)
+end
 
 """
     features(at::AbstractAbundanceTable)

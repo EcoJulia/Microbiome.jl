@@ -72,6 +72,7 @@ using Distances
 using MultivariateStats
 
 import Dictionaries: set!, unset!, insert!, delete!
+import Base: ==
 
 include("ecobase.jl")
 include("samples_features.jl")
