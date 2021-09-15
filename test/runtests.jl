@@ -167,6 +167,16 @@ end
             @test_throws IndexError add_metadata!(c4, "sample1", (; something=4.0))
             add_metadata!(c4, "sample1", (; something=4.0), overwrite=true)
             @test first(metadata(c4))[:something] == 4
+
+            tbl = [(sample="sample1", something=5,  newthing="bar"),
+                   (sample="sample2", something=10, newthing="baz"),
+                   (sample="sample3", something=42, newthing="fuz")]
+            @test_throws IndexError add_metadata!(c4, :sample, tbl, overwrite=true) # for sample that doesn't exist
+            @test_throws IndexError add_metadata!(c4, :sample, tbl[1:2])            # for metadata that already exists
+            add_metadata!(c4, :sample, tbl[1:2]; overwrite = true)
+            @test first(metadata(c4))[:something] == 5
+            @test first(metadata(c4))[:newthing] == "bar"
+
         end
     end
     

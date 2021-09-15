@@ -369,4 +369,22 @@ function add_metadata!(cp::CommunityProfile, sample::AbstractString, md::Union{A
         value = md[key]
         overwrite ? set!(s, key, value) : insert!(s, key, value)
     end
+    return nothing
+end
+
+function add_metadata!(cp::CommunityProfile, samplecol::Symbol, md; overwrite = false)
+    Tables.istable(md) || throw(ArgumentError("Metadata must be a Tables.table"))
+    for row in Tables.rows(md)
+        row[samplecol] in samplenames(cp) || throw(IndexError("Sample '$(row[samplecol])' not found in CommunityProfile"))
+        sample = samples(cp, row[samplecol])
+        if !overwrite
+            any(k-> haskey(sample, k), Tables.columnnames(row)) && throw(IndexError("Adding this metadata would overwrite existing values. Use `overwrite=true` to proceed anyway"))
+        end
+    end
+
+    for row in Tables.rows(md)
+        rowmd = Dict(col=> row[col] for col in Tables.columnnames(row) if col != samplecol)
+        add_metadata!(cp, row[samplecol], rowmd; overwrite)
+    end
+    return nothing
 end
