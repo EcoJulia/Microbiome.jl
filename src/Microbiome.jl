@@ -38,7 +38,8 @@ export CommunityProfile,
        featuretotals,
        sampletotals,
        commjoin,
-       metadata
+       metadata,
+       add_metadata!
    
 # Abundances
 export present,

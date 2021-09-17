@@ -98,6 +98,13 @@ Returns samples in `at`. To get samplenames instead, use [`samplenames`](@ref).
 """
 samples(at::AbstractAbundanceTable) = axes(at.aa, 2) |> keys
 
+"""
+    samples(at::AbstractAbundanceTable, name::AbstractString)
+
+Returns sample in `at` with name `name`.
+"""
+samples(at::AbstractAbundanceTable, name::AbstractString) = samples(at)[axes(at.aa, 2)[name]]
+
 profiletype(at::AbstractAbundanceTable) = eltype(features(at))
 clades(at::AbstractAbundanceTable) = clade.(features(at))
 
@@ -355,11 +362,103 @@ Samples without given metadata are filled with `missing`.
 
 Returned values can be passed to any Tables.rowtable - compliant type,
 eg `DataFrame`.
+```
 """
 function metadata(cp::CommunityProfile)
     ss = samples(cp)
-    cols = unique(reduce(hcat, collect.(keys.(metadata.(samples(cp))))))
+    cols = unique(reduce(vcat, collect.(keys.(metadata.(samples(cp))))))
     return Tables.rowtable(merge((; sample=name(s)), 
                      NamedTuple(c => get(s, c, missing) for c in cols)
                     ) for s in ss)
+end
+
+"""
+    add_metadata!(cp::CommunityProfile, samplename::AbstractString, md::Union{AbstractDict,NamedTuple}; overwrite=false)
+
+Add metadata (in the form of an `AbstractDict` or `NamedTuple`) to the `MicrobiomeSample` in `cp` with name `samplename`.
+For `AbstractDict`s, all keys must be `Symbol`s. 
+
+The function will fail if any of the keys in `md` already exist in the `MicrobiomeSample`,
+unless `overwrite=true` is used.
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> metadata(comm)
+3-element Vector{NamedTuple{(:sample,), Tuple{String}}}:
+ (sample = "sample1",)
+ (sample = "sample2",)
+ (sample = "sample3",)
+
+julia> add_metadata!(comm, "sample1", Dict(:subjectname=>"kevin", :age=>37))
+
+julia> metadata(comm)
+3-element Vector{NamedTuple{(:sample, :subjectname, :age), T} where T<:Tuple}:
+ (sample = "sample1", subjectname = "kevin", age = 37)
+ (sample = "sample2", subjectname = missing, age = missing)
+ (sample = "sample3", subjectname = missing, age = missing)
+"""
+function add_metadata!(cp::CommunityProfile, samplename::AbstractString, md::Union{AbstractDict,NamedTuple}; overwrite=false)
+    s = samples(cp, samplename)
+    if !overwrite
+        length(keys(md) ∩ keys(metadata(s))) == 0 || throw(IndexError("Adding this metadata would overwrite existing values. Use `overwrite=true` to proceed anyway"))
+    end
+    
+    for key in keys(md)
+        value = md[key]
+        overwrite ? set!(s, key, value) : insert!(s, key, value)
+    end
+    return nothing
+end
+
+"""
+    add_metadata!(cp::CommunityProfile, samplecol::Symbol, md; overwrite=false)
+
+Add metadata (in the form of a `Tables.jl` table) a `CommunityProfile`.
+One column (`samplecol`) should contain sample names that exist in `cp`,
+and other columns should contain metadata that will be added to the metadata of each sample.
+
+The function will fail if any of the column names in `md` already exist as metadata in any of the `MicrobiomeSample`s,
+unless `overwrite=true` is used.
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> metadata(comm)
+3-element Vector{NamedTuple{(:sample,), Tuple{String}}}:
+ (sample = "sample1",)
+ (sample = "sample2",)
+ (sample = "sample3",)
+
+julia> md_table = [(id="sample1", something=5,  newthing="bar"),
+                   (id="sample2", something=10, newthing="baz"),
+                   (id="sample3", something=42, newthing="fuz")];
+
+julia> add_metadata!(comm, :id, md_table)
+
+julia> metadata(comm)
+3-element Vector{NamedTuple{(:sample, :something, :newthing), Tuple{String, Int6
+4, String}}}:
+ (sample = "sample1", something = 5, newthing = "bar")
+ (sample = "sample2", something = 10, newthing = "baz")
+ (sample = "sample3", something = 42, newthing = "fuz")
+ ```
+"""
+function add_metadata!(cp::CommunityProfile, samplecol::Symbol, md; overwrite = false)
+    Tables.istable(md) || throw(ArgumentError("Metadata must be a Tables.table"))
+    for row in Tables.rows(md)
+        row[samplecol] in samplenames(cp) || throw(IndexError("Sample '$(row[samplecol])' not found in CommunityProfile"))
+        sample = samples(cp, row[samplecol])
+        if !overwrite
+            any(k-> haskey(sample, k), Tables.columnnames(row)) && throw(IndexError("Adding this metadata would overwrite existing values. Use `overwrite=true` to proceed anyway"))
+        end
+    end
+
+    for row in Tables.rows(md)
+        rowmd = Dict(col=> row[col] for col in Tables.columnnames(row) if col != samplecol)
+        add_metadata!(cp, row[samplecol], rowmd; overwrite)
+    end
+    return nothing
 end

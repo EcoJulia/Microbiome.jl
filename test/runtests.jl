@@ -157,17 +157,36 @@ end
         @test all(x-> isapprox(x, 1.0, atol=1e-8), sum(abundances(prevalence_filter(filtertest, renorm=true)), dims=1))
 
         s1 = MicrobiomeSample("sample1", Dictionary(Dict(:age=> 37, :name=>"kevin", :something=>1.0)))
-        s2 = MicrobiomeSample("sample2", Dictionary(Dict(:age=> 37, :name=>"kevin", :something_else=>2.0)))
+        s2 = MicrobiomeSample("sample2", Dictionary(Dict(:age=> 37, :name=>"kevin", :something_else=>2.0, :still_other=>"boo")))
 
-        md1, md2 = metadata(CommunityProfile(sparse([1 1; 2 2; 3 3]), [Taxon(string(i)) for i in 1:3], [s1, s2]))
-        
-        @test all(row-> row[:age] == 37, [md1, md2])
-        @test all(row-> row[:name] == "kevin", [md1, md2])
-        @test md1[:something] == 1.0
-        @test ismissing(md2[:something])
-        @test md2[:something_else] == 2.0
-        @test ismissing(md1[:something_else])
+        let c4 = CommunityProfile(sparse([1 1; 2 2; 3 3]), [Taxon(string(i)) for i in 1:3], [s1, s2])
+            md1, md2 = metadata(c4)
+            
+            @test all(row-> row[:age] == 37, [md1, md2])
+            @test all(row-> row[:name] == "kevin", [md1, md2])
+            @test md1[:something] == 1.0
+            @test ismissing(md2[:something])
+            @test md2[:something_else] == 2.0
+            @test ismissing(md1[:something_else])
 
+            @test_throws IndexError add_metadata!(c4, "sample1", Dict(:something=>3.0))
+            add_metadata!(c4, "sample1", Dict(:something=>3.0), overwrite=true)
+            @test first(metadata(c4))[:something] == 3
+            
+            @test_throws IndexError add_metadata!(c4, "sample1", (; something=4.0))
+            add_metadata!(c4, "sample1", (; something=4.0), overwrite=true)
+            @test first(metadata(c4))[:something] == 4
+
+            tbl = [(sample="sample1", something=5,  newthing="bar"),
+                   (sample="sample2", something=10, newthing="baz"),
+                   (sample="sample3", something=42, newthing="fuz")]
+            @test_throws IndexError add_metadata!(c4, :sample, tbl, overwrite=true) # for sample that doesn't exist
+            @test_throws IndexError add_metadata!(c4, :sample, tbl[1:2])            # for metadata that already exists
+            add_metadata!(c4, :sample, tbl[1:2]; overwrite = true)
+            @test first(metadata(c4))[:something] == 5
+            @test first(metadata(c4))[:newthing] == "bar"
+
+        end
     end
     
     @testset "Indexing and Tables integration" begin
