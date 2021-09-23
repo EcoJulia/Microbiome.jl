@@ -79,7 +79,7 @@ import Microbiome.MultivariateStats: MDS
 end
 
 @testset "Profiles" begin
-    _clades = (:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies)
+    _clades = Tuple(keys(Microbiome._clades))[1:9]
     mss = [MicrobiomeSample("sample$i") for i in 1:5]
     txs = [Taxon("taxon$i", _clades[i]) for i in 1:9]
     push!(txs, Taxon("taxon10", missing))
@@ -111,6 +111,12 @@ end
         @test featuretotals(comm) == reshape([1.0, 1.0, 1.0, 1.0, 1.0, 0.6, 0.6, 0.6, 0.6, 0.6], 10, 1)
         @test features(comm) == txs
         @test samples(comm) == mss
+
+        @test size(cladefilter(comm, :species), 1) == 1
+        @test size(cladefilter(comm, :genus; keepempty=true), 1) == 2
+
+        @test size(cladefilter(comm, 5), 1) == 1
+        @test size(cladefilter(comm, 6; keepempty=true), 1) == 2
 
         @test present(0.1)
         @test !present(0.1, 0.2)
