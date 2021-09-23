@@ -354,28 +354,28 @@ end
 ## Metadata
 
 """
-    metadata(cp::CommunityProfile)
+    metadata(commp::CommunityProfile)
 
 Returns iterator of `NamedTuple` per sample, where keys are `:sample`
-and each metadata key found in `cp`.
+and each metadata key found in `commp`.
 Samples without given metadata are filled with `missing`.
 
 Returned values can be passed to any Tables.rowtable - compliant type,
 eg `DataFrame`.
 ```
 """
-function metadata(cp::CommunityProfile)
-    ss = samples(cp)
-    cols = unique(reduce(vcat, collect.(keys.(metadata.(samples(cp))))))
+function metadata(commp::CommunityProfile)
+    ss = samples(commp)
+    cols = unique(reduce(vcat, collect.(keys.(metadata.(samples(commp))))))
     return Tables.rowtable(merge((; sample=name(s)), 
                      NamedTuple(c => get(s, c, missing) for c in cols)
                     ) for s in ss)
 end
 
 """
-    add_metadata!(cp::CommunityProfile, samplename::AbstractString, md::Union{AbstractDict,NamedTuple}; overwrite=false)
+    add_metadata!(commp::CommunityProfile, samplename::AbstractString, md::Union{AbstractDict,NamedTuple}; overwrite=false)
 
-Add metadata (in the form of an `AbstractDict` or `NamedTuple`) to the `MicrobiomeSample` in `cp` with name `samplename`.
+Add metadata (in the form of an `AbstractDict` or `NamedTuple`) to the `MicrobiomeSample` in `commp` with name `samplename`.
 For `AbstractDict`s, all keys must be `Symbol`s. 
 
 The function will fail if any of the keys in `md` already exist in the `MicrobiomeSample`,
@@ -399,8 +399,8 @@ julia> metadata(comm)
  (sample = "sample2", subjectname = missing, age = missing)
  (sample = "sample3", subjectname = missing, age = missing)
 """
-function add_metadata!(cp::CommunityProfile, samplename::AbstractString, md::Union{AbstractDict,NamedTuple}; overwrite=false)
-    s = samples(cp, samplename)
+function add_metadata!(commp::CommunityProfile, samplename::AbstractString, md::Union{AbstractDict,NamedTuple}; overwrite=false)
+    s = samples(commp, samplename)
     if !overwrite
         length(keys(md) ∩ keys(metadata(s))) == 0 || throw(IndexError("Adding this metadata would overwrite existing values. Use `overwrite=true` to proceed anyway"))
     end
@@ -413,10 +413,10 @@ function add_metadata!(cp::CommunityProfile, samplename::AbstractString, md::Uni
 end
 
 """
-    add_metadata!(cp::CommunityProfile, samplecol::Symbol, md; overwrite=false)
+    add_metadata!(commp::CommunityProfile, samplecol::Symbol, md; overwrite=false)
 
 Add metadata (in the form of a `Tables.jl` table) a `CommunityProfile`.
-One column (`samplecol`) should contain sample names that exist in `cp`,
+One column (`samplecol`) should contain sample names that exist in `commp`,
 and other columns should contain metadata that will be added to the metadata of each sample.
 
 The function will fail if any of the column names in `md` already exist as metadata in any of the `MicrobiomeSample`s,
@@ -446,11 +446,11 @@ julia> metadata(comm)
  (sample = "sample3", something = 42, newthing = "fuz")
  ```
 """
-function add_metadata!(cp::CommunityProfile, samplecol::Symbol, md; overwrite = false)
+function add_metadata!(commp::CommunityProfile, samplecol::Symbol, md; overwrite = false)
     Tables.istable(md) || throw(ArgumentError("Metadata must be a Tables.table"))
     for row in Tables.rows(md)
-        row[samplecol] in samplenames(cp) || throw(IndexError("Sample '$(row[samplecol])' not found in CommunityProfile"))
-        sample = samples(cp, row[samplecol])
+        row[samplecol] in samplenames(commp) || throw(IndexError("Sample '$(row[samplecol])' not found in CommunityProfile"))
+        sample = samples(commp, row[samplecol])
         if !overwrite
             any(k-> haskey(sample, k), Tables.columnnames(row)) && throw(IndexError("Adding this metadata would overwrite existing values. Use `overwrite=true` to proceed anyway"))
         end
@@ -458,7 +458,39 @@ function add_metadata!(cp::CommunityProfile, samplecol::Symbol, md; overwrite = 
 
     for row in Tables.rows(md)
         rowmd = Dict(col=> row[col] for col in Tables.columnnames(row) if col != samplecol)
-        add_metadata!(cp, row[samplecol], rowmd; overwrite)
+        add_metadata!(commp, row[samplecol], rowmd; overwrite)
     end
     return nothing
 end
+
+function set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
+    sample = samples(commp, sample)
+    prop in _restricted_fields(sample) && error("Cannot set! $prop for $(typeof(sample)).")
+    set!(sample.metadata, prop, val)
+    return sample
+end
+
+function unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
+    sample = samples(commp, sample)
+    prop in _restricted_fields(sample) && error("Cannot unset! $prop for $(typeof(sample)).")
+    unset!(sample.metadata, prop)
+    return sample
+end
+
+function insert!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
+    sample = samples(commp, sample)
+    prop in _restricted_fields(sample) && error("Cannot insert! $prop for $(typeof(sample)).")
+    insert!(sample.metadata, prop, val)
+    return sample
+end
+
+function delete!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
+    sample = samples(commp, sample)
+    prop in _restricted_fields(sample) && error("Cannot delete! $prop for $(typeof(sample)).")
+    delete!(sample.metadata, prop)
+    return sample
+end
+
+Base.keys(commp::CommunityProfile, sample::AbstractString) = keys(metadata(samples(commp, sample)))
+Base.haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol) = in(key, keys(samples(commp, sample)))
+Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default) = get(metadata(samples(commp, sample)), key, default)

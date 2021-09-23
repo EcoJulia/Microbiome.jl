@@ -155,12 +155,37 @@ end
         @test size(prevalence_filter(filtertest, minabundance=2, minprevalence=0.4)) == (2,3)
         @test all(<=(1.0), abundances(prevalence_filter(filtertest, renorm=true)))
         @test all(x-> isapprox(x, 1.0, atol=1e-8), sum(abundances(prevalence_filter(filtertest, renorm=true)), dims=1))
+    end
 
+    @testset "Profile Metadata" begin
         s1 = MicrobiomeSample("sample1", Dictionary(Dict(:age=> 37, :name=>"kevin", :something=>1.0)))
         s2 = MicrobiomeSample("sample2", Dictionary(Dict(:age=> 37, :name=>"kevin", :something_else=>2.0, :still_other=>"boo")))
 
-        let c4 = CommunityProfile(sparse([1 1; 2 2; 3 3]), [Taxon(string(i)) for i in 1:3], [s1, s2])
+        @testset "Single sample" begin
+            c4 = CommunityProfile(sparse([1 1; 2 2; 3 3]), [Taxon(string(i)) for i in 1:3], [s1, s2])
             md1, md2 = metadata(c4)
+
+            @test_throws Dictionaries.IndexError insert!(c4, "sample1", :something, 3.0)
+            @test_throws Dictionaries.IndexError delete!(c4, "sample1", :something_else)
+
+            @test delete!(c4, "sample1", :something) isa MicrobiomeSample
+            @test !haskey(c4, "sample1", :something)
+            @test get(c4, "sample1", :something_else, 42) == 42
+            @test insert!(c4, "sample1", :something, 3.0) isa MicrobiomeSample
+            @test get(c4, "sample1", :something, 42) == 3.0
+            set!(c4, "sample1", :something, 1.0)
+            @test first(metadata(c4))[:something] == 1.0
+            @test haskey(c4, "sample1", :something)
+            @test unset!(c4, "sample1", :something) isa MicrobiomeSample
+            @test !haskey(c4, "sample1", :something)
+            set!(c4, "sample1", :something, 1.0)
+
+            @test collect(keys(c4, "sample1")) == [:age, :name, :something]
+        end
+
+        @testset "Whole community" begin
+            c5 = CommunityProfile(sparse([1 1; 2 2; 3 3]), [Taxon(string(i)) for i in 1:3], [s1, s2])
+            md1, md2 = metadata(c5)
             
             @test all(row-> row[:age] == 37, [md1, md2])
             @test all(row-> row[:name] == "kevin", [md1, md2])
@@ -169,23 +194,22 @@ end
             @test md2[:something_else] == 2.0
             @test ismissing(md1[:something_else])
 
-            @test_throws IndexError add_metadata!(c4, "sample1", Dict(:something=>3.0))
-            add_metadata!(c4, "sample1", Dict(:something=>3.0), overwrite=true)
-            @test first(metadata(c4))[:something] == 3
+            @test_throws IndexError add_metadata!(c5, "sample1", Dict(:something=>3.0))
+            add_metadata!(c5, "sample1", Dict(:something=>3.0), overwrite=true)
+            @test first(metadata(c5))[:something] == 3
             
-            @test_throws IndexError add_metadata!(c4, "sample1", (; something=4.0))
-            add_metadata!(c4, "sample1", (; something=4.0), overwrite=true)
-            @test first(metadata(c4))[:something] == 4
+            @test_throws IndexError add_metadata!(c5, "sample1", (; something=4.0))
+            add_metadata!(c5, "sample1", (; something=4.0), overwrite=true)
+            @test first(metadata(c5))[:something] == 4
 
             tbl = [(sample="sample1", something=5,  newthing="bar"),
                    (sample="sample2", something=10, newthing="baz"),
                    (sample="sample3", something=42, newthing="fuz")]
-            @test_throws IndexError add_metadata!(c4, :sample, tbl, overwrite=true) # for sample that doesn't exist
-            @test_throws IndexError add_metadata!(c4, :sample, tbl[1:2])            # for metadata that already exists
-            add_metadata!(c4, :sample, tbl[1:2]; overwrite = true)
-            @test first(metadata(c4))[:something] == 5
-            @test first(metadata(c4))[:newthing] == "bar"
-
+            @test_throws IndexError add_metadata!(c5, :sample, tbl, overwrite=true) # for sample that doesn't exist
+            @test_throws IndexError add_metadata!(c5, :sample, tbl[1:2])            # for metadata that already exists
+            add_metadata!(c5, :sample, tbl[1:2]; overwrite = true)
+            @test first(metadata(c5))[:something] == 5
+            @test first(metadata(c5))[:newthing] == "bar"
         end
     end
     
