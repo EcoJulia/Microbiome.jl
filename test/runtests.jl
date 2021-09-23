@@ -168,12 +168,19 @@ end
             @test_throws Dictionaries.IndexError insert!(c4, "sample1", :something, 3.0)
             @test_throws Dictionaries.IndexError delete!(c4, "sample1", :something_else)
 
-            @test set!(c4, "sample1", :something, 3.0) isa MicrobiomeSample
-            @test first(metadata(c4))[:something] == 3
+            @test delete!(c4, "sample1", :something) isa MicrobiomeSample
+            @test !haskey(c4, "sample1", :something)
+            @test get(c4, "sample1", :something_else, 42) == 42
+            @test insert!(c4, "sample1", :something, 3.0) isa MicrobiomeSample
+            @test get(c4, "sample1", :something, 42) == 3.0
+            set!(c4, "sample1", :something, 1.0)
+            @test first(metadata(c4))[:something] == 1.0
             @test haskey(c4, "sample1", :something)
             @test unset!(c4, "sample1", :something) isa MicrobiomeSample
             @test !haskey(c4, "sample1", :something)
             set!(c4, "sample1", :something, 1.0)
+
+            @test collect(keys(c4, "sample1")) == [:age, :name, :something]
         end
 
         @testset "Whole community" begin

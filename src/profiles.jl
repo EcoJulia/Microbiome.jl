@@ -493,4 +493,4 @@ end
 
 Base.keys(commp::CommunityProfile, sample::AbstractString) = keys(metadata(samples(commp, sample)))
 Base.haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol) = in(key, keys(samples(commp, sample)))
-Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default) = get(metadata(samples(commp, sample), key, default))
+Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default) = get(metadata(samples(commp, sample)), key, default)
