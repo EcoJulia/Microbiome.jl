@@ -64,6 +64,7 @@ import Microbiome.MultivariateStats: MDS
         @test gfm === GeneFunction("gene")
         @test ismissing(taxon(gfm))
         @test !hastaxon(gfm)
+        @test !hasclade(gfm)
 
         gf1 = GeneFunction("gene", Taxon("sp1", :species))
         gf2 = GeneFunction("gene", Taxon("sp1"))
@@ -75,6 +76,8 @@ import Microbiome.MultivariateStats: MDS
         @test hastaxon(gf1)
         @test !ismissing(taxon(gf1))
         @test taxon(gf1) == taxon(gf2)
+        @test hasclade(gf1)
+        @test clade(gf1) == :species
     end
 end
 
