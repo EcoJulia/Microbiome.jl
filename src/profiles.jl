@@ -387,9 +387,11 @@ julia> features(cladefilter(comm, :genus; keepempty = true))
 """
 function cladefilter(comm::AbstractAbundanceTable, cl::Symbol; keepempty=false)
     in(cl, keys(_clades)) ||  error("Invalid clade $cl, must be one of $(keys(_clades))")
-    ridx = keepempty ? findall(c-> ismissing(c) || c == cl, clades(comm)) : findall(c-> !ismissing(c) && c == cl, clades(comm))
-    isempty(ridx) && error("No rows with clade $cl found, can't return empty profile")
-    return copy(comm[ridx, :])
+    if keepempty
+        return filter(f-> !hasclade(f) || clade(f) == cl, comm)
+    else
+        return filter(f-> hasclade(f) && clade(f) == cl, comm)
+    end
 end
 
 function cladefilter(comm::AbstractAbundanceTable, clade::Int; keepempty=false)
