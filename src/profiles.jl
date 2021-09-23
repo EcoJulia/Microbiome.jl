@@ -463,3 +463,34 @@ function add_metadata!(commp::CommunityProfile, samplecol::Symbol, md; overwrite
     return nothing
 end
 
+function set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
+    sample = samples(commp, sample)
+    prop in _restricted_fields(sample) && error("Cannot set! $prop for $(typeof(sample)).")
+    set!(sample.metadata, prop, val)
+    return sample
+end
+
+function unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
+    sample = samples(commp, sample)
+    prop in _restricted_fields(sample) && error("Cannot unset! $prop for $(typeof(sample)).")
+    unset!(sample.metadata, prop)
+    return sample
+end
+
+function insert!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
+    sample = samples(commp, sample)
+    prop in _restricted_fields(sample) && error("Cannot insert! $prop for $(typeof(sample)).")
+    insert!(sample.metadata, prop, val)
+    return sample
+end
+
+function delete!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
+    sample = samples(commp, sample)
+    prop in _restricted_fields(sample) && error("Cannot delete! $prop for $(typeof(sample)).")
+    delete!(sample.metadata, prop)
+    return sample
+end
+
+Base.keys(commp::CommunityProfile, sample::AbstractString) = keys(metadata(samples(commp, sample)))
+Base.haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol) = in(key, keys(samples(commp, sample)))
+Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default) = get(metadata(samples(commp, sample), key, default))
