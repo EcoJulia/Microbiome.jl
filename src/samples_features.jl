@@ -246,3 +246,18 @@ taxon(gf::GeneFunction) = gf.taxon
 Pretty self-explanatory.
 """
 hastaxon(gf::GeneFunction) = !ismissing(taxon(gf))
+
+"""
+    clade(gf::GeneFunction)
+
+Get the `clade` field from the Taxon, if `gf` has one.
+Returns `missing` if the taxon or clade is not set.
+"""
+clade(gf::GeneFunction) = clade(taxon(gf))
+
+"""
+    hasclade(t::GeneFunction)::Bool
+
+Pretty self-explanatory.
+"""
+hasclade(gf::GeneFunction) = hastaxon(gf) && !ismissing(clade(gf))

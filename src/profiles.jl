@@ -110,6 +110,8 @@ clades(at::AbstractAbundanceTable) = clade.(features(at))
 
 Base.size(at::AbstractAbundanceTable, dims...) = size(at.aa, dims...)
 
+Base.copy(at::AbstractAbundanceTable) = typeof(at)(copy(abundances(at)), copy(features(at)), deepcopy(samples(at)))
+
 # -- Indexing -- #
 
 function Base.getindex(at::CommunityProfile, inds...)
@@ -348,6 +350,51 @@ Sample names:
 function prevalence_filter(comm::AbstractAbundanceTable; minabundance=0.0, minprevalence=0.05, renorm=false)
     comm = comm[vec(prevalence(comm, minabundance) .>= minprevalence), :]
     return renorm ? relativeabundance(comm) : comm
+end
+
+"""
+    cladefilter(comm::AbstractAbundanceTable, cl::Union{Symbol, Int}; keepempty=false)
+
+Return a copy of `comm`, where only rows that have `clade(feature) == cl` are kept.
+Use `keepempty = true` to also keep features that don't have a `clade` (eg "UNIDENTIFIED").
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> features(comm)
+10-element Vector{Taxon}:
+ Taxon("taxon1", :domain)
+ Taxon("taxon2", :kingdom)
+ Taxon("taxon3", :phylum)
+ Taxon("taxon4", :class)
+ Taxon("taxon5", :order)
+ Taxon("taxon6", :family)
+ Taxon("taxon7", :genus)
+ Taxon("taxon8", :species)
+ Taxon("taxon9", :subspecies)
+ Taxon("taxon10", missing)
+
+julia> features(cladefilter(comm, :species))
+ 1-element Vector{Taxon}:
+  Taxon("taxon8", :species)
+
+julia> features(cladefilter(comm, :genus; keepempty = true))
+  2-element Vector{Taxon}:
+   Taxon("taxon7", :genus)
+   Taxon("taxon10", missing)
+```
+"""
+function cladefilter(comm::AbstractAbundanceTable, cl::Symbol; keepempty=false)
+    in(cl, keys(_clades)) ||  error("Invalid clade $cl, must be one of $(keys(_clades))")
+    ridx = keepempty ? findall(c-> ismissing(c) || c == cl, clades(comm)) : findall(c-> !ismissing(c) && c == cl, clades(comm))
+    isempty(ridx) && error("No rows with clade $cl found, can't return empty profile")
+    return copy(comm[ridx, :])
+end
+
+function cladefilter(comm::AbstractAbundanceTable, clade::Int; keepempty=false)
+    0 <= clade <= 9 ||  error("Invalid clade $clade, must be one of $_clades")
+    return cladefilter(comm, keys(_clades)[clade+1]; keepempty)
 end
 
 
