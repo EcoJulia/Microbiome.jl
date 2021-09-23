@@ -352,6 +352,18 @@ function prevalence_filter(comm::AbstractAbundanceTable; minabundance=0.0, minpr
     return renorm ? relativeabundance(comm) : comm
 end
 
+function cladefilter(comm::AbstractAbundanceTable, clade::Symbol; keepempty=false)
+    in(clade, keys(_clades)) ||  error("Invalid clade $clade, must be one of $(keys(_clades))")
+    ridx = findall(c-> c == clade, clades(comm))
+    isempty(ridx) && error("No rows with clade $clade found, can't return empty profile")
+    return copy(comm[ridx, :])
+end
+
+function cladefilter(comm::AbstractAbundanceTable, clade::Int)
+    0 <= clade <= 9 ||  error("Invalid clade $clade, must be one of $_clades")
+    return cladefilter(comm, keys(_clades)[clade+1])
+end
+
 
 ## Metadata
 
