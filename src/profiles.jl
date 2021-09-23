@@ -110,6 +110,8 @@ clades(at::AbstractAbundanceTable) = clade.(features(at))
 
 Base.size(at::AbstractAbundanceTable, dims...) = size(at.aa, dims...)
 
+Base.copy(at::AbstractAbundanceTable) = typeof(at)(copy(abundances(at)), copy(features(at)), deepcopy(samples(at)))
+
 # -- Indexing -- #
 
 function Base.getindex(at::CommunityProfile, inds...)
