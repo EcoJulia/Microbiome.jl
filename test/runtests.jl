@@ -124,6 +124,8 @@ end
         @test_throws ErrorException cladefilter(comm, 10)
         @test_throws ErrorException cladefilter(cladefilter(comm, :species), :genus) # will be empty
 
+        @test filter(f-> hasclade(f) && clade(f) == :species, comm) == cladefilter(comm, :species)
+
         @test present(0.1)
         @test !present(0.1, 0.2)
         @test_throws DomainError present(-0.1)

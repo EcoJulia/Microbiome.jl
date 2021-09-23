@@ -541,3 +541,32 @@ end
 Base.keys(commp::CommunityProfile, sample::AbstractString) = keys(metadata(samples(commp, sample)))
 Base.haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol) = in(key, keys(samples(commp, sample)))
 Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default) = get(metadata(samples(commp, sample)), key, default)
+
+
+"""
+    filter(f, comm::CommunityProfile)
+
+Apply `f` to the features of `comm`,
+and return a copy where `f(feature)` is `true`.
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> features(comm)
+3-element Vector{GeneFunction}:
+ GeneFunction("gene1", Taxon("tax1", :species))
+ GeneFunction("gene1", Taxon("tax2", :genus))
+ GeneFunction("gene2", missing)
+
+julia> features(filter(hastaxon, comm))
+2-element Vector{GeneFunction}:
+ GeneFunction("gene1", Taxon("tax1", :species))
+ GeneFunction("gene1", Taxon("tax2", :genus))
+```
+"""
+function Base.filter(f::Function, commp::CommunityProfile)
+    ridx = findall(f, features(commp))
+    isempty(ridx) && error("Can't return empty profile")
+    return copy(commp[ridx, :])
+end
