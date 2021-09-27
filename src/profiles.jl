@@ -512,6 +512,21 @@ function add_metadata!(commp::CommunityProfile, samplecol::Symbol, md; overwrite
     return nothing
 end
 
+"""
+    set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
+
+Update or insert a value `val` to the `sample` in the CommunityProfile `commp` using a Symbol `prop`. 
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> set!(comm, "sample1", :something, 1.0)
+
+julia> first(metadata(comm))[:something]
+1.0
+ ```
+"""
 function set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
     sample = samples(commp, sample)
     prop in _restricted_fields(sample) && error("Cannot set! $prop for $(typeof(sample)).")
@@ -519,6 +534,21 @@ function set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val
     return sample
 end
 
+"""
+    unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
+
+Delete a `sample` from CommunityProfile `commp` using the Symbol `prop` if it exists, or throw an error otherwise.
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> unset!(comm, "sample1", :something) 
+
+julia> !haskey(comm, "sample1", :something)
+true
+ ```
+"""
 function unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
     sample = samples(commp, sample)
     prop in _restricted_fields(sample) && error("Cannot unset! $prop for $(typeof(sample)).")
@@ -526,6 +556,21 @@ function unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
     return sample
 end
 
+"""
+    insert!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
+
+Insert a value `val` to the `sample` in a CommunityProfile `commp` using a Symbol `prop`.
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> insert!(comm, "sample1", :something, 3.0) 
+
+julia> get(comm, "sample1", :something, 3.0)
+3.0
+ ```
+"""
 function insert!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
     sample = samples(commp, sample)
     prop in _restricted_fields(sample) && error("Cannot insert! $prop for $(typeof(sample)).")
@@ -533,6 +578,21 @@ function insert!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, 
     return sample
 end
 
+"""
+    delete!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
+
+Delete a `sample` from CommunityProfile `commp` using the Symbol `prop` if it exists, or throw an error otherwise.
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> delete!(comm, "sample1", :something) 
+
+julia> !haskey(comm, "sample1", :something)
+true
+ ```
+"""
 function delete!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
     sample = samples(commp, sample)
     prop in _restricted_fields(sample) && error("Cannot delete! $prop for $(typeof(sample)).")
@@ -540,8 +600,66 @@ function delete!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
     return sample
 end
 
+"""
+    keys(commp::CommunityProfile, sample::AbstractString)
+
+Return an iterator over all keys of samples in a CommunityProfile. collect(keys(a)) returns an array of keys. When the keys are stored internally in a hash table, as is
+the case for `Dict`, the order in which they are returned may vary. But `keys(a)` and `values(a)` both iterate a and return the elements in the same order.
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> add_metadata!(comm, "sample1", Dict(:subjectname=>"kevin", :age=>37))
+
+julia> collect(keys(comm, "sample1"))
+2-element Vector{Symbol}:
+ :subjectname
+ :age
+ ```
+"""
 Base.keys(commp::CommunityProfile, sample::AbstractString) = keys(metadata(samples(commp, sample)))
+
+"""
+    haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol)
+
+Determine whether a `sample` in a CommunityProfile has a mapping for a given `key`. Use !haskey to determine whether a `sample` in a CommunityProfile doesn't have a mapping for a given `key`
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> set!(comm, "sample1", :something, 1.0)
+
+julia> haskey(comm, "sample1", :something)
+true
+
+julia> delete!(comm, "sample1", :something) 
+
+julia> !haskey(comm, "sample1", :something)
+true
+ ```
+"""
 Base.haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol) = in(key, keys(samples(commp, sample)))
+
+"""
+    get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default)
+
+Return the value stored for the given `key`, or the given default value if no mapping for the key is present.
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> get(comm, "sample1", :something, 42)
+42 
+
+julia> insert!(comm, "sample1", :something, 3.0) 
+
+julia> get(comm, "sample1", :something, 42)
+3.0
+ ```
+"""
 Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default) = get(metadata(samples(commp, sample)), key, default)
 
 
