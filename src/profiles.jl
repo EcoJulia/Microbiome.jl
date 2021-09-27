@@ -516,6 +516,7 @@ end
     set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
 
 Update or insert a value `val` to the `sample` in the CommunityProfile `commp` using a Symbol `prop`. 
+If you want an error to be thrown if the value does not exist, use [`insert!`](@ref).
 
 Examples
 ≡≡≡≡≡≡≡≡≡≡
@@ -537,7 +538,8 @@ end
 """
     unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
 
-Delete a `sample` from CommunityProfile `commp` using the Symbol `prop` if it exists, or throw an error otherwise.
+Delete a `sample` from CommunityProfile `commp` using the Symbol `prop`. 
+If you want an error to be thrown if the value does not exist, use [`delete!`](@ref).
 
 Examples
 ≡≡≡≡≡≡≡≡≡≡
@@ -559,7 +561,10 @@ end
 """
     insert!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
 
-Insert a value `val` to the `sample` in a CommunityProfile `commp` using a Symbol `prop`.
+Insert a value `val` to the `sample` in a CommunityProfile `commp` using a Symbol `prop`, 
+and it will throw an error if `prop` exists. 
+If you don't want an error to be thrown if the value does not exist, use [`set!`](@ref).
+
 
 Examples
 ≡≡≡≡≡≡≡≡≡≡
@@ -582,6 +587,7 @@ end
     delete!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
 
 Delete a `sample` from CommunityProfile `commp` using the Symbol `prop` if it exists, or throw an error otherwise.
+If you don't want an error to be thrown if the value does not exist, use [`unset!`](@ref).
 
 Examples
 ≡≡≡≡≡≡≡≡≡≡
@@ -603,8 +609,9 @@ end
 """
     keys(commp::CommunityProfile, sample::AbstractString)
 
-Return an iterator over all keys of samples in a CommunityProfile. collect(keys(a)) returns an array of keys. When the keys are stored internally in a hash table, as is
-the case for `Dict`, the order in which they are returned may vary. But `keys(a)` and `values(a)` both iterate a and return the elements in the same order.
+Return an iterator over all keys of samples in a CommunityProfile. collect(keys(a)) returns an array of keys. 
+When the keys are stored internally in a hash table, as is the case for `Dict`, the order in which they are returned may vary. 
+But `keys(a)` and `values(a)` both iterate a and return the elements in the same order.
 
 Examples
 ≡≡≡≡≡≡≡≡≡≡
@@ -616,14 +623,15 @@ julia> collect(keys(comm, "sample1"))
 2-element Vector{Symbol}:
  :subjectname
  :age
- ```
+```
 """
 Base.keys(commp::CommunityProfile, sample::AbstractString) = keys(metadata(samples(commp, sample)))
 
 """
     haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol)
 
-Determine whether a `sample` in a CommunityProfile has a mapping for a given `key`. Use !haskey to determine whether a `sample` in a CommunityProfile doesn't have a mapping for a given `key`
+Determine whether a `sample` in a CommunityProfile has a mapping for a given `key`. 
+Use !haskey to determine whether a `sample` in a CommunityProfile doesn't have a mapping for a given `key`
 
 Examples
 ≡≡≡≡≡≡≡≡≡≡
