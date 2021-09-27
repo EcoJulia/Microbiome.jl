@@ -49,32 +49,157 @@ function Base.setproperty!(as::AbstractSample, prop::Symbol, val)
     return as
 end
 
+"""
+    set!(as::AbstractSample, prop::Symbol, val)
+
+Update or insert a value `val` to the metadata of sample `as` using a Symbol `prop`. 
+If you want an error to be thrown if the value already exists, use [`insert!`](@ref).
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> set!(ms, :thing1, "metadata1")
+
+julia> ms.thing1
+"metadata1"
+```
+"""
 function set!(as::AbstractSample, prop::Symbol, val)
     prop in _restricted_fields(as) && error("Cannot set! $prop for $(typeof(as)).")
     set!(as.metadata, prop, val)
     return as
 end
 
+"""
+    unset!(as::AbstractSample, prop::Symbol)
+
+Delete a metadata entry of sample `as` using the Symbol `prop`. 
+If you want an error to be thrown if the value does not exist, use [`delete!`](@ref).
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> unset!(ms, :thing1)
+
+julia> !haskey(ms, :thing1)
+true
+```
+"""
 function unset!(as::AbstractSample, prop::Symbol)
     prop in _restricted_fields(as) && error("Cannot unset! $prop for $(typeof(as)).")
     unset!(as.metadata, prop)
     return as
 end
 
+"""
+    insert!(as::AbstractSample, prop::Symbol, val)
+
+Insert a value `val` to the metadata of sample `as` using a Symbol `prop`, 
+and it will throw an error if `prop` exists. 
+If you don't want an error to be thrown if the value does not exist, use [`set!`](@ref).
+
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> insert!(ms, :thing, "metadata")
+
+julia> ms.thing
+"metadata"
+```
+"""
 function insert!(as::AbstractSample, prop::Symbol, val)
     prop in _restricted_fields(as) && error("Cannot insert! $prop for $(typeof(as)).")
     insert!(as.metadata, prop, val)
     return as
 end
 
+"""
+    delete!(as::AbstractSample, prop::Symbol)
+
+Delete a metadata entry of sample `as` using the Symbol `prop` if it exists, or throw an error otherwise.
+If you don't want an error to be thrown if the value does not exist, use [`unset!`](@ref).
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> delete!(ms, :thing) 
+
+julia> !haskey(ms, :thing)
+true
+ ```
+"""
 function delete!(as::AbstractSample, prop::Symbol)
     prop in _restricted_fields(as) && error("Cannot delete! $prop for $(typeof(as)).")
     delete!(as.metadata, prop)
     return as
 end
 
+"""
+    keys(as::AbstractSample)
+
+Return an iterator over all keys of the metadata attached to sample `as`. 
+`collect(keys(as))` returns an array of keys. 
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> ms = MicrobiomeSample("sample1", Dictionary([:thing1, :thing2], ["metadata1", "metadata2"]))
+
+julia> collect(keys(ms))
+2-element Vector{Symbol}:
+ :thing1
+ :thing2
+```
+"""
 Base.keys(as::AbstractSample) = keys(metadata(as))
+
+"""
+    haskey(as::AbstractSample, key::Symbol)
+
+Determine whether the metadata of sample `as` has a mapping for a given `key`. 
+Use `!haskey` to determine whether a sample `as` in a CommunityProfile doesn't have a mapping for a given `key`
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> set!(ms, :thing1, "metadata1")
+
+julia> haskey(ms, :thing1)
+true
+
+julia> delete!(ms, :thing1, "metadata1")
+
+julia> !haskey(ms, :thing1)
+true
+```
+"""
 Base.haskey(as::AbstractSample, key::Symbol) = in(key, keys(as))
+
+"""
+    get(as::AbstractSample, key::Symbol, default)
+
+Return the value of the metadata in the sample `as` stored for the given `key`, or the given `default` value if no mapping for the key is present.
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> get(ms, :thing1, 42)
+42 
+
+julia> insert!(ms, :thing1, 3.0) 
+
+julia> get(ms, :thing1, 42)
+3.0
+```
+"""
 Base.get(as::AbstractSample, key::Symbol, default) = get(metadata(as), key, default)
 
 """
