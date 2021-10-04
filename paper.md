@@ -8,7 +8,7 @@ tags:
 authors:
   - name: Annelle Abatoni Kayisire^[co-first author] # note this makes a footnote saying 'co-first author'
     affiliation: 1
-  - name: Anika Luo^[co-first author] # note this makes a footnote saying 'co-first author'
+  - name: Anika S. Luo^[co-first author] # note this makes a footnote saying 'co-first author'
     affiliation: 1
   - name: Vanja Klepac-Ceraj
     affiliation: 1
