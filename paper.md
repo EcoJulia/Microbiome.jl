@@ -6,13 +6,13 @@ tags:
   - microbiome
   - microbial communities
 authors:
-  - name: Annelle Abatoni Kayisire^[co-first author] # note this makes a footnote saying 'co-first author'
-    affiliation: 1
-  - name: Anika Luo^[co-first author] # note this makes a footnote saying 'co-first author'
-    affiliation: 1
-  - name: Vanja Klepac-Ceraj
-    affiliation: 1
   - name: Kevin S. Bonham^[Corresponding author]
+    affiliation: 1
+  - name: Annelle Abatoni Kayisire
+    affiliation: 1
+  - name: Anika Luo
+    affiliation: 1
+  - name: Vanja Klepac-Ceraj^[Corresponding author]
     affiliation: 1
 affiliations:
  - name: Department of Biological Sciences, Wellesley College
