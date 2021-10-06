@@ -189,6 +189,7 @@ end
         @test filter(hastaxon, strat)         |> nfeatures == 2
         @test filter(!hastaxon, strat)        |> nfeatures == 2
         @test strat["gene1", :]               |> nfeatures == 3
+        @test strat[["gene1", "gene2"], :]    |> nfeatures == 4
         @test strat[GeneFunction("gene1"), :] |> nfeatures == 1
     end
 

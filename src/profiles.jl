@@ -146,6 +146,12 @@ function Base.getindex(at::CommunityProfile{<:Real, <:GeneFunction, <:AbstractSa
     _index_profile(at, idx, (rowind, colind))
 end
 
+function Base.getindex(at::CommunityProfile{<:Real, <:GeneFunction, <:AbstractSample}, rowind::AbstractVector{<:AbstractString}, colind) 
+    rows = findall(fn-> any(==(fn), rowind), featurenames(at))
+    idx = at.aa[rows, colind]
+
+    _index_profile(at, idx, (rowind, colind))
+end
 
 
 ## -- EcoBase Translations -- ##
