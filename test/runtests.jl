@@ -70,9 +70,11 @@ import Microbiome.MultivariateStats: MDS
         gf2 = GeneFunction("gene", Taxon("sp1"))
         @test name(gf1) == "gene"
         
-        @test gf1 == gf2 == gfm
+        @test gf1 == gf2
+        @test gf1 != gfm
+        @test gf1 === GeneFunction("gene", Taxon("sp1", :species))
+        @test gf2 === GeneFunction("gene", Taxon("sp1"))
         @test gf1 !== gf2
-        @test gf1 !== gfm
         @test hastaxon(gf1)
         @test !ismissing(taxon(gf1))
         @test taxon(gf1) == taxon(gf2)
@@ -169,7 +171,27 @@ end
         @test size(prevalence_filter(filtertest, minabundance=2, minprevalence=0.4)) == (2,3)
         @test all(<=(1.0), abundances(prevalence_filter(filtertest, renorm=true)))
         @test all(x-> isapprox(x, 1.0, atol=1e-8), sum(abundances(prevalence_filter(filtertest, renorm=true)), dims=1))
+    end 
+
+    @testset "Stratified gene functions operations" begin
+        strat = CommunityProfile(sparse(Float64[3 2 1 
+                                                2 2 2
+                                                0 0 1
+                                                0 1 0
+                                        ]),
+                                        [GeneFunction("gene1"),
+                                         GeneFunction("gene1", "species1"),
+                                         GeneFunction("gene1", "species2"),
+                                         GeneFunction("gene2")
+                                         ],
+                                        [MicrobiomeSample(string(i)) for i in 1:3]);
+        
+        @test filter(hastaxon, strat)         |> nfeatures == 2
+        @test filter(!hastaxon, strat)        |> nfeatures == 2
+        @test strat["gene1", :]               |> nfeatures == 3
+        @test strat[GeneFunction("gene1"), :] |> nfeatures == 1
     end
+
 
     @testset "Profile Metadata" begin
         s1 = MicrobiomeSample("sample1", Dictionary(Dict(:age=> 37, :name=>"kevin", :something=>1.0)))
