@@ -114,9 +114,7 @@ Base.copy(at::AbstractAbundanceTable) = typeof(at)(copy(abundances(at)), copy(fe
 
 # -- Indexing -- #
 
-function Base.getindex(at::CommunityProfile, inds...)
-    idx = at.aa[inds...]
-    
+function _index_profile(at, idx, inds)
     # single value - return that value
     ndims(idx) == 0 && return idx 
     # another table - return a new CommunityProfile with that table
@@ -134,6 +132,26 @@ function Base.getindex(at::CommunityProfile, inds...)
     end
 end
 
+function Base.getindex(at::CommunityProfile, inds...)
+    idx = at.aa[inds...]
+    
+    _index_profile(at, idx, inds)
+end
+
+## Special lookup for gene function comm profiles
+function Base.getindex(at::CommunityProfile{<:Real, <:GeneFunction, <:AbstractSample}, rowind::AbstractString, colind) 
+    rows = findall(==(rowind), featurenames(at))
+    idx = at.aa[rows, colind]
+
+    _index_profile(at, idx, (rowind, colind))
+end
+
+function Base.getindex(at::CommunityProfile{<:Real, <:GeneFunction, <:AbstractSample}, rowind::AbstractVector{<:AbstractString}, colind) 
+    rows = findall(fn-> any(==(fn), rowind), featurenames(at))
+    idx = at.aa[rows, colind]
+
+    _index_profile(at, idx, (rowind, colind))
+end
 
 
 ## -- EcoBase Translations -- ##
