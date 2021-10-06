@@ -386,3 +386,15 @@ clade(gf::GeneFunction) = clade(taxon(gf))
 Pretty self-explanatory.
 """
 hasclade(gf::GeneFunction) = hastaxon(gf) && !ismissing(clade(gf))
+
+
+# override equality for GeneFunction
+function Base.:(==)(gf1::GeneFunction, gf2::GeneFunction)
+    if all(!hastaxon, (gf1, gf2)) # if gf doesn't have taxon, check that names match
+        return name(gf1) == name(gf2)
+    elseif !all(hastaxon, (gf1, gf2)) # if one gf has taxon and other doesn't, return false
+        return false
+    else # if both have taxa, check that names of gf and taxa match
+        return name(gf1) == name(gf2) && taxon(gf1) == taxon(gf2)
+    end
+end
