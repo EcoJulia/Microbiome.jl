@@ -217,8 +217,17 @@ Tables.columns(at::AbstractAbundanceTable) = (; (col => Tables.getcolumn(at, col
 
 function _makerow(row::AbstractAbundanceTable)
     size(row, 1) == 1 || error("Can't make row from table of size $(size(row))")
-    NamedTuple{(:features, Symbol.(samplenames(row))...)}((name(features(row)[1]), abundances(row)...))
+    NamedTuple{(:features, Symbol.(samplenames(row))...)}((first(featurenames(row)), abundances(row)...))
 end
+
+function _makerow(row::CommunityProfile{<:Real, <:GeneFunction, <:AbstractSample})
+    size(row, 1) == 1 || error("Can't make row from table of size $(size(row))")
+    gf = first(features(row))
+    n = name(gf)
+    hastaxon(gf) && (n *= string('|', name(taxon(gf))))
+    NamedTuple{(:features, Symbol.(samplenames(row))...)}((n, abundances(row)...))
+end
+
 
 Tables.rows(at::AbstractAbundanceTable) = (_makerow(at[i, :]) for i in 1:nfeatures(at))
 
