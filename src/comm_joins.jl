@@ -58,12 +58,12 @@ function commjoin(c1::CommunityProfile, comms::CommunityProfile...)
     all_samples = vcat(samples(c1), samples.(comms)...)
     sample_dict = dictionary(zip(name.(all_samples), eachindex(all_samples)))
     all_features = unique(vcat(features(c1), features.(comms)...))
-    feature_dict = dictionary(zip(name.(all_features), eachindex(all_features)))
+    feature_dict = dictionary(zip(all_features, eachindex(all_features)))
 
     mat = spzeros(length(all_features), length(all_samples))
     for comm in (c1, comms...)
         for sample in samplenames(comm)
-            for feature in featurenames(comm)
+            for feature in features(comm)
                 mat[feature_dict[feature], sample_dict[sample]] = comm[feature, sample]
             end
         end
