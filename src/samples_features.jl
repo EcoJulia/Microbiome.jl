@@ -21,11 +21,8 @@ metadata(as::AbstractSample) = as.metadata
 
 name(as::AbstractFeature) = as.name
 
-# Allows Strings to be used to index (since `Thing("name", missing)` will be == `Thing("name", something)`)
 Base.String(as::AbstractSample) = name(as)
 Base.String(af::AbstractFeature) = name(af)
-
-Base.:(==)(s1::T, s2::T) where {T <: Union{AbstractSample, AbstractFeature}} = name(s1) == name(s2)
 
 ## getters and setters for metadata ##
 function Base.getindex(as::AbstractSample, prop::Symbol)
@@ -326,6 +323,9 @@ Taxon(n::AbstractString, clade::Int) = 0 <= clade <= 9 ?
                                             error("Invalid clade $clade, must be one of $_clades")
 Taxon(n::AbstractString) = Taxon(n, missing)
 
+Base.String(t::Taxon) = hasclade(t) ? string(first(string(clade(t))), "__", name(t)) : name(t)
+
+
 """
     clade(t::Union{Taxon, missing})
 
@@ -386,15 +386,3 @@ clade(gf::GeneFunction) = clade(taxon(gf))
 Pretty self-explanatory.
 """
 hasclade(gf::GeneFunction) = hastaxon(gf) && !ismissing(clade(gf))
-
-
-# override equality for GeneFunction
-function Base.:(==)(gf1::GeneFunction, gf2::GeneFunction)
-    if all(!hastaxon, (gf1, gf2)) # if gf doesn't have taxon, check that names match
-        return name(gf1) == name(gf2)
-    elseif !all(hastaxon, (gf1, gf2)) # if one gf has taxon and other doesn't, return false
-        return false
-    else # if both have taxa, check that names of gf and taxa match
-        return name(gf1) == name(gf2) && taxon(gf1) == taxon(gf2)
-    end
-end
