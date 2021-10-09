@@ -103,7 +103,12 @@ samples(at::AbstractAbundanceTable) = axes(at.aa, 2) |> keys
 
 Returns sample in `at` with name `name`.
 """
-samples(at::AbstractAbundanceTable, name::AbstractString) = samples(at)[axes(at.aa, 2)[name]]
+function samples(at::AbstractAbundanceTable, name::AbstractString)
+    idx = findall(==(name), samplenames(at))
+    length(idx) == 0 && throw(IndexError("No samples called $name"))
+    length(idx) > 1 && throw(IndexError("More than one sample matches name $name"))
+    return samples(at)[axes(at.aa, 2)][first(idx)]
+end
 
 profiletype(at::AbstractAbundanceTable) = eltype(features(at))
 clades(at::AbstractAbundanceTable) = clade.(features(at))

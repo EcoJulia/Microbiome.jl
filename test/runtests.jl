@@ -48,7 +48,6 @@ import Microbiome.MultivariateStats: MDS
             @test clade(tx) == c
             @test tx === Taxon("taxon", i-1)
             @test tx !== txm
-            @test tx == txm
         end
         
         @test_throws ErrorException Taxon("taxon", :invalid)
@@ -70,14 +69,14 @@ import Microbiome.MultivariateStats: MDS
         gf2 = GeneFunction("gene", Taxon("sp1"))
         @test name(gf1) == "gene"
         
-        @test gf1 == gf2
         @test gf1 != gfm
         @test gf1 === GeneFunction("gene", Taxon("sp1", :species))
         @test gf2 === GeneFunction("gene", Taxon("sp1"))
         @test gf1 !== gf2
         @test hastaxon(gf1)
         @test !ismissing(taxon(gf1))
-        @test taxon(gf1) == taxon(gf2)
+        @test taxon(gf1) == Taxon("sp1", :species)
+        @test taxon(gf1) != taxon(gf2)
         @test hasclade(gf1)
         @test clade(gf1) == :species
     end
@@ -126,7 +125,7 @@ end
         @test_throws ErrorException cladefilter(comm, 10)
         @test_throws ErrorException cladefilter(cladefilter(comm, :species), :genus) # will be empty
 
-        @test filter(f-> hasclade(f) && clade(f) == :species, comm) == cladefilter(comm, :species)
+        @test featurenames(filter(f-> hasclade(f) && clade(f) == :species, comm)) == featurenames(cladefilter(comm, :species))
 
         @test present(0.1)
         @test !present(0.1, 0.2)
@@ -251,7 +250,7 @@ end
     end
     
     @testset "Indexing and Tables integration" begin
-        for i in 1:5
+        for i in 2:5
             @test abundances(comm[:, "sample$i"]) == mat[:, [i]]
             @test abundances(comm["taxon$i", :]) == mat[[i], :]
         end
