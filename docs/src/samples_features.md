@@ -31,6 +31,22 @@ julia> s3 = MicrobiomeSample("sample3", Dictionary([:gender, :age], ["female", 2
 MicrobiomeSample("sample3", {:gender = "female", :age = 23})
 ```
 
+To change or add metadata, you can use the [same syntax](https://github.com/andyferris/Dictionaries.jl#accessing-dictionaries)
+as working with a [`Dictionary`] directly,
+though note that this is a bit different from the `Dict` type in base julia:
+
+```jldoctest sample-types
+julia> insert!(s1, :age, 50)
+MicrobiomeSample("sample1", {:age = 50})
+
+julia> set!(s3, :gender, "nonbinary")
+MicrobiomeSample("sample3", {:gender = "nonbinary", :age = 23})
+
+julia> delete!(s3, :gender)
+MicrobiomeSample("sample3", {:age = 23})
+```
+
+
 ```@docs
 MicrobiomeSample
 ```

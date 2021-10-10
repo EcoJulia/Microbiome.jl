@@ -233,40 +233,15 @@ julia> ms2 = MicrobiomeSample("sample2")
 MicrobiomeSample("sample2", {})
 ```
 
-Adding or changing metadata follows the same rules as for the normal `Dictionary` type.
-
-- to change a value use `setproperty` or `setindex`.
-  Note that this will fail if the key does not already exist.
-- to add or remove a value with validation that it does or does not exist already,
-  use `insert!` and `delete!` respectively.
-- to add or remove a value without validation ("upsert"),
-  use `set!` and `unset!` respectively.
+or using keyword arguments.
 
 ```jldoctest MicrobiomeSample
-julia> ms
-MicrobiomeSample("sample1", {:gender │ "female", :age │ 180})
-
-julia> ms.age = 16 * 365 # or `ms[:age] = 16 * 365`
-5840
-
-julia> set!(ms, :gender, "nonbinary")
-MicrobiomeSample("sample1", {:gender │ "nonbinary", :age │ 5840})
-
-julia> insert!(ms, :occupation, "clerk")
-MicrobiomeSample("sample1", {:gender │ "nonbinary", :age │ 5840, :occupation │ "clerk"})
-
-julia> insert!(ms, :occupation, "bagger")
-ERROR: IndexError("Dictionary already contains index: occupation")
-
-julia> delete!(ms, :occupation)
-MicrobiomeSample("sample1", {:gender │ "nonbinary", :age │ 5840})
-
-julia> delete!(ms, :occupation)
-ERROR: IndexError("Index doesn't exist: occupation")
-
-julia> unset!(ms, :occupation)
-MicrobiomeSample("sample1", {:gender │ "nonbinary", :age │ 5840})
+julia> ms3 = MicrobiomeSample("sample3"; age=20)
+MicrobiomeSample("sample2", {:age | 20})
 ```
+
+Adding or changing metadata follows [the same rules](https://github.com/andyferris/Dictionaries.jl#accessing-dictionaries) as for the normal `Dictionary`.
+
 """
 struct MicrobiomeSample <: AbstractSample
     name::String
