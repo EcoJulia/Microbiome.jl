@@ -250,10 +250,13 @@ end
     end
     
     @testset "Indexing and Tables integration" begin
-        for i in 2:5
+        for i in 1:5
             @test abundances(comm[:, "sample$i"]) == mat[:, [i]]
             @test abundances(comm["taxon$i", :]) == mat[[i], :]
         end
+
+        @test abundances(comm[r"taxon1", :]) == abundances(comm[["taxon1", "taxon10"], :]) == abundances(comm[[1,10], :])
+        @test abundances(comm[:, r"sample[13]"]) == abundances(comm[:,["sample1", "sample3"]]) == abundances(comm[:, [1,3]])
 
         for (i, col) in enumerate(Tables.columns(comm))
             if i == 1

@@ -9,7 +9,7 @@ and contains some number of `AbstractFeature`s, such as taxa or gene functions.
 
 At its most basic, an `AbstractSample` simply encodes a `name`
 (which should be a unique identifier), and a place to hold metadata.
-The concrete type `MicrobiomeSample` is implemented with these two fields,
+The concrete type [`MicrobiomeSample`](@ref) is implemented with these two fields,
 the latter of which is a `Dictionary` from [`Dictionaries.jl`](https://github.com/andyferris/Dictionaries.jl).
 
 ```@docs
@@ -19,7 +19,7 @@ MicrobiomeSample
 ## Feature Types
 
 `AbstractFeature` types also have a `name`, but other fields are optional.
-`Microbiome.jl` defines two concrete `AbstractFeature` types, `Taxon` and `GeneFunction`.
+`Microbiome.jl` defines two concrete `AbstractFeature` types, [`Taxon`](@ref) and [`GeneFunction`](@ref).
 
 ```@docs
 Taxon

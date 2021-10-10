@@ -137,19 +137,16 @@ function _index_profile(at, idx, inds)
     end
 end
 
-function _toinds(arr, inds::AbstractVector{<: Union{AbstractString, Regex}})
+function _toinds(arr, inds::AbstractVector{Regex})
     return findall(a-> any(ind-> contains(a, ind), inds), arr)
 end
 
-# fall back ↑
-_toinds(arr, ind::Union{AbstractString, Regex}) = _toinds(arr, [ind])
-
-function _toinds(arr, inds::AbstractVector{<: Union{AbstractSample, AbstractFeature}})
+function _toinds(arr, inds::AbstractVector{<: Union{AbstractSample, AbstractFeature, AbstractString}})
     return findall(a-> any(==(a), inds), arr)
 end
 
 # fall back ↑
-_toinds(arr, ind::Union{AbstractSample, AbstractFeature}) = _toinds(arr, [ind])
+_toinds(arr, ind::Union{AbstractSample, AbstractFeature, AbstractString, Regex}) = _toinds(arr, [ind])
 
 # if inds are integers, just return them
 _toinds(_, ind::Int) = ind
