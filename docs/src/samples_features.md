@@ -56,6 +56,12 @@ MicrobiomeSample
 `AbstractFeature` types also have a `name`, but other fields are optional.
 `Microbiome.jl` defines two concrete `AbstractFeature` types, [`Taxon`](@ref) and [`GeneFunction`](@ref).
 
+
+### Taxon
+
+The `Taxon` type contains a name and a rank (eg `:phylum`).
+For compatibility with other tools, converting a `Taxon` to a `String`
+
 ```@docs
 Taxon
 GeneFunction
@@ -66,8 +72,8 @@ GeneFunction
 ```@docs
 metadata
 name
-clade
-hasclade
+rank
+hasrank
 taxon
 hastaxon
 ```

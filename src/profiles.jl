@@ -111,7 +111,7 @@ function samples(at::AbstractAbundanceTable, name::AbstractString)
 end
 
 profiletype(at::AbstractAbundanceTable) = eltype(features(at))
-clades(at::AbstractAbundanceTable) = clade.(features(at))
+ranks(at::AbstractAbundanceTable) = taxrank.(features(at))
 
 Base.size(at::AbstractAbundanceTable, dims...) = size(at.aa, dims...)
 
@@ -404,10 +404,10 @@ function prevalence_filter(comm::AbstractAbundanceTable; minabundance=0.0, minpr
 end
 
 """
-    cladefilter(comm::AbstractAbundanceTable, cl::Union{Symbol, Int}; keepempty=false)
+    rankfilter(comm::AbstractAbundanceTable, cl::Union{Symbol, Int}; keepempty=false)
 
-Return a copy of `comm`, where only rows that have `clade(feature) == cl` are kept.
-Use `keepempty = true` to also keep features that don't have a `clade` (eg "UNIDENTIFIED").
+Return a copy of `comm`, where only rows that have `taxrank(feature) == cl` are kept.
+Use `keepempty = true` to also keep features that don't have a `rank` (eg "UNIDENTIFIED").
 
 Examples
 ≡≡≡≡≡≡≡≡≡≡
@@ -426,28 +426,28 @@ julia> features(comm)
  Taxon("taxon9", :subspecies)
  Taxon("taxon10", missing)
 
-julia> features(cladefilter(comm, :species))
+julia> features(rankfilter(comm, :species))
  1-element Vector{Taxon}:
   Taxon("taxon8", :species)
 
-julia> features(cladefilter(comm, :genus; keepempty = true))
+julia> features(rankfilter(comm, :genus; keepempty = true))
   2-element Vector{Taxon}:
    Taxon("taxon7", :genus)
    Taxon("taxon10", missing)
 ```
 """
-function cladefilter(comm::AbstractAbundanceTable, cl::Symbol; keepempty=false)
-    in(cl, keys(_clades)) ||  error("Invalid clade $cl, must be one of $(keys(_clades))")
+function rankfilter(comm::AbstractAbundanceTable, cl::Symbol; keepempty=false)
+    in(cl, keys(_ranks)) ||  error("Invalid rank $cl, must be one of $(keys(_ranks))")
     if keepempty
-        return filter(f-> !hasclade(f) || clade(f) == cl, comm)
+        return filter(f-> !hasrank(f) || taxrank(f) == cl, comm)
     else
-        return filter(f-> hasclade(f) && clade(f) == cl, comm)
+        return filter(f-> hasrank(f) && taxrank(f) == cl, comm)
     end
 end
 
-function cladefilter(comm::AbstractAbundanceTable, clade::Int; keepempty=false)
-    0 <= clade <= 9 ||  error("Invalid clade $clade, must be one of $_clades")
-    return cladefilter(comm, keys(_clades)[clade+1]; keepempty)
+function rankfilter(comm::AbstractAbundanceTable, rank::Int; keepempty=false)
+    0 <= rank <= 9 ||  error("Invalid rank $rank, must be one of $_ranks")
+    return rankfilter(comm, keys(_ranks)[rank+1]; keepempty)
 end
 
 

@@ -42,15 +42,15 @@ import Microbiome.MultivariateStats: MDS
     end
     
     @testset "Taxa" begin
-        _clades = (:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain)
+        _ranks = (:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain)
         txm = Taxon("taxon", missing)
         @test txm === Taxon("taxon")
-        @test ismissing(clade(txm))
-        @test !hasclade(txm)
+        @test ismissing(taxrank(txm))
+        @test !hasrank(txm)
 
-        for (i, c) in enumerate(_clades)
+        for (i, c) in enumerate(_ranks)
             tx = Taxon("taxon", c)
-            @test clade(tx) == c
+            @test taxrank(tx) == c
             @test tx === Taxon("taxon", i-1)
             @test tx !== txm
         end
@@ -58,7 +58,7 @@ import Microbiome.MultivariateStats: MDS
         @test_throws ErrorException Taxon("taxon", :invalid)
         @test_throws ErrorException Taxon("taxon", 10)
         @test let tx = Taxon("taxon", :kingdom)
-            hasclade(tx)
+            hasrank(tx)
         end
     end
 
@@ -68,7 +68,7 @@ import Microbiome.MultivariateStats: MDS
         @test gfm === GeneFunction("gene")
         @test ismissing(taxon(gfm))
         @test !hastaxon(gfm)
-        @test !hasclade(gfm)
+        @test !hasrank(gfm)
 
         gf1 = GeneFunction("gene", Taxon("sp1", :species))
         gf2 = GeneFunction("gene", Taxon("sp1"))
@@ -82,15 +82,15 @@ import Microbiome.MultivariateStats: MDS
         @test !ismissing(taxon(gf1))
         @test taxon(gf1) == Taxon("sp1", :species)
         @test taxon(gf1) != taxon(gf2)
-        @test hasclade(gf1)
-        @test clade(gf1) == :species
+        @test hasrank(gf1)
+        @test taxrank(gf1) == :species
     end
 end
 
 @testset "Profiles" begin
-    _clades = Tuple(keys(Microbiome._clades))[1:9]
+    _ranks = Tuple(keys(Microbiome._ranks))[1:9]
     mss = [MicrobiomeSample("sample$i") for i in 1:5]
-    txs = [Taxon("taxon$i", _clades[i]) for i in 1:9]
+    txs = [Taxon("taxon$i", _ranks[i]) for i in 1:9]
     push!(txs, Taxon("taxon10", missing))
     
     mat = spzeros(10,5)
@@ -115,22 +115,22 @@ end
         @test nfeatures(comm) == 10
         @test size(comm) == (10, 5)
         @test profiletype(comm) == Taxon
-        @test clades(comm)[1:9] == [_clades...]
+        @test ranks(comm)[1:9] == [_ranks...]
         @test sampletotals(comm) == [1.6 1.6 1.6 1.6 1.6]
         @test featuretotals(comm) == reshape([1.0, 1.0, 1.0, 1.0, 1.0, 0.6, 0.6, 0.6, 0.6, 0.6], 10, 1)
         @test features(comm) == txs
         @test samples(comm) == mss
 
-        @test size(cladefilter(comm, :species), 1) == 1
-        @test size(cladefilter(comm, :genus; keepempty=true), 1) == 2
+        @test size(rankfilter(comm, :species), 1) == 1
+        @test size(rankfilter(comm, :genus; keepempty=true), 1) == 2
 
-        @test size(cladefilter(comm, 5), 1) == 1
-        @test size(cladefilter(comm, 6; keepempty=true), 1) == 2
-        @test_throws ErrorException cladefilter(comm, :foo)
-        @test_throws ErrorException cladefilter(comm, 10)
-        @test_throws ErrorException cladefilter(cladefilter(comm, :species), :genus) # will be empty
+        @test size(rankfilter(comm, 5), 1) == 1
+        @test size(rankfilter(comm, 6; keepempty=true), 1) == 2
+        @test_throws ErrorException rankfilter(comm, :foo)
+        @test_throws ErrorException rankfilter(comm, 10)
+        @test_throws ErrorException rankfilter(rankfilter(comm, :species), :genus) # will be empty
 
-        @test featurenames(filter(f-> hasclade(f) && clade(f) == :species, comm)) == featurenames(cladefilter(comm, :species))
+        @test featurenames(filter(f-> hasrank(f) && taxrank(f) == :species, comm)) == featurenames(rankfilter(comm, :species))
 
         @test present(0.1)
         @test !present(0.1, 0.2)

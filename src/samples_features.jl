@@ -248,10 +248,9 @@ struct MicrobiomeSample <: AbstractSample
     metadata::Dictionary{Symbol, T} where {T <: Any} # currently non-functional
 end
 
-MicrobiomeSample(n::AbstractString) = MicrobiomeSample(n, Dictionary{Symbol, Any}())
-MicrobiomeSample(n::AbstractString; kwargs...) = MicrobiomeSample(n, dictionary(kwargs))
+MicrobiomeSample(n::AbstractString; kwargs...) = isempty(kwargs) ? MicrobiomeSample(n, Dictionary{Symbol, Any}()) : MicrobiomeSample(n, dictionary(kwargs))
 
-const _clades = (
+const _ranks = (
     domain     = 0,
     kingdom    = 1,
     phylum     = 2,
@@ -264,11 +263,24 @@ const _clades = (
     strain     = 9
 )
 
+const _shortranks = (
+    d = :domain,
+    k = :kingdom,
+    p = :phylum,
+    c = :class,
+    o = :order,
+    f = :family,
+    g = :genus,
+    s = :species,
+    t = :subspecies,
+    u = missing
+)
+
 """
-    Taxon(name::String, clade::Union{Missing, Symbol, Int}) <: AbstractFeature
+    Taxon(name::String, rank::Union{Missing, Symbol, Int}) <: AbstractFeature
     Taxon(name::String)
 
-Microbial taxon with a name and a clade that can be one of 
+Microbial taxon with a name and a rank that can be one of 
 
 0. `:domain`
 1. `:kingom`
@@ -286,37 +298,48 @@ or `missing`. Contructors can also use numbers 0-9, or pass a string alone
 """
 struct Taxon <: AbstractFeature
     name::String
-    clade::Union{Missing, Symbol}
+    rank::Union{Missing, Symbol}
     
     Taxon(s::AbstractString, ::Missing) = new(s, missing)
-    Taxon(s::AbstractString, clade::Symbol) = in(clade, keys(_clades)) ? 
-                                                        new(s, clade)  :
-                                                        error("Invalid clade $clade, must be one of $(keys(_clades))")
+    Taxon(s::AbstractString, rank::Symbol) = in(rank, keys(_ranks)) ? 
+                                                        new(s, rank)  :
+                                                        error("Invalid rank $rank, must be one of $(keys(_ranks))")
 end
 
-Taxon(n::AbstractString, clade::Int) = 0 <= clade <= 9 ?
-                                            Taxon(n, keys(_clades)[clade+1]) :
-                                            error("Invalid clade $clade, must be one of $_clades")
+Taxon(n::AbstractString, rank::Int) = 0 <= rank <= 9 ?
+                                            Taxon(n, keys(_ranks)[rank+1]) :
+                                            error("Invalid rank $rank, must be one of $_ranks")
 Taxon(n::AbstractString) = Taxon(n, missing)
 
-Base.String(t::Taxon) = hasclade(t) ? string(first(string(clade(t))), "__", name(t)) : name(t)
+function Base.String(t::Taxon)
+    if hasrank(t)
+        return taxrank(t) == :strain ? string("t__", name(t)) : string(first(string(taxrank(t))), "__", name(t))
+    else
+        return name(t)
+    end
+end
 
+function taxon(n::AbstractString)
+    m = match(r"^([dkpcofgst])__(.+)", n)
+    isnothing(m) && return Taxon(n)
+    return Taxon(string(m.captures[2], _shortranks[Symbol(m.captures[1])]))
+end
 
 """
-    clade(t::Union{Taxon, missing})
+    taxrank(t::Union{Taxon, missing})
 
-Get the `clade` field from an `Taxon`.
-Returns `missing` if the clade is not set.
+Get the `rank` field from an `Taxon`.
+Returns `missing` if the rank is not set.
 """
-clade(t::Taxon) = t.clade
-clade(::Missing) = missing
+taxrank(t::Taxon) = t.rank
+taxrank(::Missing) = missing
 
 """
-    hasclade(t::Taxon)::Bool
+    hasrank(t::Taxon)::Bool
 
 Pretty self-explanatory.
 """
-hasclade(t::Taxon) = !ismissing(clade(t))
+hasrank(t::Taxon) = !ismissing(taxrank(t))
 
 
 """
@@ -334,7 +357,7 @@ GeneFunction(n::AbstractString) = GeneFunction(n, missing)
 GeneFunction(n::AbstractString, t::AbstractString) = GeneFunction(n, Taxon(t))
 
 """
-    taxon(t::Union{GeneFunction, missing})
+    taxon(t::GeneFunction)
 
 Get the `taxon` field from a `GeneFunction`.
 Returns `missing` if the taxon is not set.
@@ -349,16 +372,16 @@ Pretty self-explanatory.
 hastaxon(gf::GeneFunction) = !ismissing(taxon(gf))
 
 """
-    clade(gf::GeneFunction)
+    taxrank(gf::GeneFunction)
 
-Get the `clade` field from the Taxon, if `gf` has one.
-Returns `missing` if the taxon or clade is not set.
+Get the `rank` field from the Taxon, if `gf` has one.
+Returns `missing` if the taxon or rank is not set.
 """
-clade(gf::GeneFunction) = clade(taxon(gf))
+taxrank(gf::GeneFunction) = taxrank(taxon(gf))
 
 """
-    hasclade(t::GeneFunction)::Bool
+    hasrank(t::GeneFunction)::Bool
 
 Pretty self-explanatory.
 """
-hasclade(gf::GeneFunction) = hastaxon(gf) && !ismissing(clade(gf))
+hasrank(gf::GeneFunction) = hastaxon(gf) && !ismissing(taxrank(gf))
