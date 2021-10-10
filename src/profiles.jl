@@ -103,7 +103,12 @@ samples(at::AbstractAbundanceTable) = axes(at.aa, 2) |> keys
 
 Returns sample in `at` with name `name`.
 """
-samples(at::AbstractAbundanceTable, name::AbstractString) = samples(at)[axes(at.aa, 2)[name]]
+function samples(at::AbstractAbundanceTable, name::AbstractString)
+    idx = findall(==(name), samplenames(at))
+    length(idx) == 0 && throw(IndexError("No samples called $name"))
+    length(idx) > 1 && throw(IndexError("More than one sample matches name $name"))
+    return samples(at)[axes(at.aa, 2)][first(idx)]
+end
 
 profiletype(at::AbstractAbundanceTable) = eltype(features(at))
 clades(at::AbstractAbundanceTable) = clade.(features(at))
@@ -132,27 +137,46 @@ function _index_profile(at, idx, inds)
     end
 end
 
+function _toinds(arr, inds::AbstractVector{Regex})
+    return findall(a-> any(ind-> contains(a, ind), inds), arr)
+end
+
+function _toinds(arr, inds::AbstractVector{<: Union{AbstractSample, AbstractFeature, AbstractString}})
+    return findall(a-> any(==(a), inds), arr)
+end
+
+# fall back ↑
+_toinds(arr, ind::Union{AbstractSample, AbstractFeature, AbstractString, Regex}) = _toinds(arr, [ind])
+
+# if inds are integers, just return them
+_toinds(_, ind::Int) = ind
+_toinds(_, inds::AbstractVector{Int}) = inds
+
 function Base.getindex(at::CommunityProfile, inds...)
     idx = at.aa[inds...]
     
     _index_profile(at, idx, inds)
 end
 
-## Special lookup for gene function comm profiles
-function Base.getindex(at::CommunityProfile{<:Real, <:GeneFunction, <:AbstractSample}, rowind::AbstractString, colind) 
-    rows = findall(==(rowind), featurenames(at))
+function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex}, colind)
+    rows = _toinds(featurenames(at), rowind)
     idx = at.aa[rows, colind]
 
-    _index_profile(at, idx, (rowind, colind))
+    _index_profile(at, idx, (rows, colind))
 end
 
-function Base.getindex(at::CommunityProfile{<:Real, <:GeneFunction, <:AbstractSample}, rowind::AbstractVector{<:AbstractString}, colind) 
-    rows = findall(fn-> any(==(fn), rowind), featurenames(at))
-    idx = at.aa[rows, colind]
+function Base.getindex(at::CommunityProfile, rowind, colind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex})
+    cols = _toinds(samplenames(at), colind)
+    idx = at.aa[rowind, cols]
 
-    _index_profile(at, idx, (rowind, colind))
+    _index_profile(at, idx, (rowind, cols))
 end
 
+function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex},
+                                             colind::Union{S, AbstractVector{<:S}} where S<:Union{AbstractString,Regex})
+    rows = _toinds(featurenames(at), rowind)
+    at[rows, colind]
+end
 
 ## -- EcoBase Translations -- ##
 # see src/ecobase.jl for Microbiome function names
