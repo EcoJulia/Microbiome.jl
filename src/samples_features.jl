@@ -201,6 +201,7 @@ Base.get(as::AbstractSample, key::Symbol, default) = get(metadata(as), key, defa
 
 """
     MicrobiomeSample(name::String, metadata::Dictionary{Symbol, T}) <: AbstractSample
+    MicrobiomeSample(name::String; kwargs...)
     MicrobiomeSample(name::String)
 
 Microbiome sample type that includes a name and a [`Dictionary`](https://github.com/andyferris/Dictionaries.jl)
@@ -273,7 +274,7 @@ struct MicrobiomeSample <: AbstractSample
 end
 
 MicrobiomeSample(n::AbstractString) = MicrobiomeSample(n, Dictionary{Symbol, Any}())
-# Base.convert(::Type{MicrobiomeSample}, s::AbstractString) = MicrobiomeSample(s)
+MicrobiomeSample(n::AbstractString; kwargs...) = MicrobiomeSample(n, dictionary(kwargs))
 
 const _clades = (
     domain     = 0,

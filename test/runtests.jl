@@ -34,6 +34,11 @@ import Microbiome.MultivariateStats: MDS
             set!(ms, :thing2, "metadata2")
             ms.thing2 == "metadata2"
         end
+
+        ms2 = MicrobiomeSample("sample2"; age=10, birthtype="vaginal", allergies=true)
+        @test ms2.age == 10
+        @test ms2.birthtype == "vaginal"
+        @test ms2.allergies
     end
     
     @testset "Taxa" begin
