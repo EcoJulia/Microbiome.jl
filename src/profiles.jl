@@ -12,39 +12,6 @@ that uses an `AxisArray` of a `SparseMatrixCSC` under the hood.
 `CommunityProfile`s are tables with `AbstractFeature`-indexed rows and
 `AbstractSample`-indexed columns.
 Note - we can use the `name` of samples and features to index.
-
-```jldoctest community
-julia> txs = [Taxon("taxon\$i") for i in 1:10];
-
-julia> mss = [MicrobiomeSample("sample\$i") for i in 1:5];
-
-julia> mat = spzeros(10,5);
-
-julia> for i in 1:5; mat[i,i] = 1.; end
-
-julia> comm = CommunityProfile(mat, txs, mss)
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 5 samples
-
-Feature names:
-taxon1, taxon2, taxon3...taxon9, taxon10
-
-Sample names:
-sample1, sample2, sample3, sample4, sample5
-
-julia> comm["taxon1", "sample1"]
-1.0
-
-julia> comm[:,["sample1", "sample5"]]
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 2 samples
-
-Feature names:
-taxon1, taxon2, taxon3...taxon9, taxon10
-
-Sample names:
-sample1, sample5
-
-julia> comm[Taxon("taxon3", :kingdom), "sample1"]
-0.0
 ```
 """
 mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
@@ -360,43 +327,6 @@ Return a filtered `CommunityProfile` where features with prevalence lower than `
 By default, a feature is considered "present" if > 0, but this can be changed by setting `minabundance`.
 
 Optionally, set `renorm = true` to calculate relative abundances after low prevalence features are removed.
-
-```jldoctest
-julia> comm = CommunityProfile(sparse([3 0 1 # 0.33, assuming minabundance 2
-                                       2 2 2 # 1.0
-                                       0 0 1 # 0.0
-                                       2 0 0 # 0.33
-                                       ]),
-                               [Taxon(string(i)) for i in 1:4],
-                               [MicrobiomeSample(string(i)) for i in 1:3]);
-
-julia> prevalence_filter(comm, minabundance=2, minprevalence=0.3) 
-CommunityProfile{Int64, Taxon, MicrobiomeSample} with 3 features in 3 samples
-
-Feature names:
-1, 2, 4
-
-Sample names:
-1, 2, 3
-
-julia> prevalence_filter(comm, minabundance=2, minprevalence=0.4)
-CommunityProfile{Int64, Taxon, MicrobiomeSample} with 1 features in 3 samples
-
-Feature names:
-2
-
-Sample names:
-1, 2, 3
-
-julia> prevalence_filter(comm, minabundance=3, minprevalence=0.3)
-CommunityProfile{Int64, Taxon, MicrobiomeSample} with 1 features in 3 samples
-
-Feature names:
-1
-
-Sample names:
-1, 2, 3
-```
 """
 function prevalence_filter(comm::AbstractAbundanceTable; minabundance=0.0, minprevalence=0.05, renorm=false)
     comm = comm[vec(prevalence(comm, minabundance) .>= minprevalence), :]
