@@ -51,8 +51,8 @@ julia> delete!(s3, :gender)
 MicrobiomeSample("sample3", {:age = 23})
 ```
 
-You can access values of the dictionary using either [`getindex`](@ref Base.getindex)
-or [`getfield`](@ref Base.getproperty) syntax, that is:
+You can access values of the dictionary using either `getindex`
+or `getfield` syntax, that is:
 
 ```jldoctest sampletypes
 julia> s3[:age]
@@ -76,8 +76,6 @@ MicrobiomeSample("sample3", {:age = 23, :gender = "nonbinary", :genotype = "XY",
 ```@docs
 MicrobiomeSample
 metadata
-getindex(::AbstractSample, ::Symbol)
-getproperty(::AbstractSample, ::Symbol)
 ```
 
 ## Feature Types

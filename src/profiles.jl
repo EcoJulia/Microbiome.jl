@@ -513,52 +513,56 @@ function add_metadata!(commp::CommunityProfile, samplename::AbstractString, md::
 end
 
 """
-    add_metadata!(commp::CommunityProfile, samplecol::Symbol, md; overwrite=false)
+    set!(cp::CommunityProfile, md; namecol=:sample)
 
 Add metadata (in the form of a `Tables.jl` table) a `CommunityProfile`.
-One column (`samplecol`) should contain sample names that exist in `commp`,
+One column (`namecol`) should contain sample names that exist in `commp`,
 and other columns should contain metadata that will be added to the metadata of each sample.
-
-The function will fail if any of the column names in `md` already exist as metadata in any of the `MicrobiomeSample`s,
-unless `overwrite=true` is used.
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> metadata(comm)
-3-element Vector{NamedTuple{(:sample,), Tuple{String}}}:
- (sample = "sample1",)
- (sample = "sample2",)
- (sample = "sample3",)
-
-julia> md_table = [(id="sample1", something=5,  newthing="bar"),
-                   (id="sample2", something=10, newthing="baz"),
-                   (id="sample3", something=42, newthing="fuz")];
-
-julia> add_metadata!(comm, :id, md_table)
-
-julia> metadata(comm)
-3-element Vector{NamedTuple{(:sample, :something, :newthing), Tuple{String, Int6
-4, String}}}:
- (sample = "sample1", something = 5, newthing = "bar")
- (sample = "sample2", something = 10, newthing = "baz")
- (sample = "sample3", something = 42, newthing = "fuz")
- ```
 """
-function add_metadata!(commp::CommunityProfile, samplecol::Symbol, md; overwrite = false)
+function set!(commp::CommunityProfile, md; namecol=:sample)
     Tables.istable(md) || throw(ArgumentError("Metadata must be a Tables.table"))
+    sns = Set(samplenames(commp))
+    md = filter(row-> row[namecol] in sns, md)
     for row in Tables.rows(md)
-        row[samplecol] in samplenames(commp) || throw(IndexError("Sample '$(row[samplecol])' not found in CommunityProfile"))
-        sample = samples(commp, row[samplecol])
-        if !overwrite
-            any(k-> haskey(sample, k), Tables.columnnames(row)) && throw(IndexError("Adding this metadata would overwrite existing values. Use `overwrite=true` to proceed anyway"))
+        sample = samples(commp, row[namecol])
+        ks = filter(!=(namecol), keys(first(md)))
+        for k in ks
+            set!(sample, k, row[k])
         end
     end
+    return nothing
+end
 
+"""
+    insert!(cp::CommunityProfile, md; namecol=:sample)
+
+Add metadata (in the form of a `Tables.jl` table) a `CommunityProfile`.
+One column (`namecol`) should contain sample names that exist in `commp`,
+and other columns should contain metadata that will be added to the metadata of each sample.
+
+Before starting, this will check that every value in every row is `insert!`able,
+and will throw an error if not.
+This requires iterating over the metadata table twice, which may be slow.
+If performance matters, you can use `set!` instead, 
+though this will overwrite existing data.
+"""
+function insert!(commp::CommunityProfile, md; namecol=:sample, careful=true)
+    Tables.istable(md) || throw(ArgumentError("Metadata must be a Tables.table"))
+    sns = Set(samplenames(commp))
+    md = filter(row-> row[namecol] in sns, md)
     for row in Tables.rows(md)
-        rowmd = Dict(col=> row[col] for col in Tables.columnnames(row) if col != samplecol)
-        add_metadata!(commp, row[samplecol], rowmd; overwrite)
+        sample = samples(commp, row[namecol])
+        ks = filter(!=(namecol), keys(first(md)))
+        for k in ks
+            haskey(sample, k) && throw(ArgumentError("Duplicate metadata detected. Use `set!` to force overwrite."))
+        end
+    end
+    for row in Tables.rows(md)
+        sample = samples(commp, row[namecol])
+        ks = filter(!=(namecol), keys(first(md)))
+        for k in ks
+            set!(sample, k, row[k])
+        end
     end
     return nothing
 end
