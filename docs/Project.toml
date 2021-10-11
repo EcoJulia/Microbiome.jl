@@ -2,6 +2,8 @@
 Dictionaries = "85a47980-9c8c-11e8-2b9f-f7ca1fa99fb4"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Microbiome = "3bd8f0ae-a0f2-5238-a5af-e1b399a4940c"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
 Documenter = "0.24"

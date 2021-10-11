@@ -2,7 +2,7 @@
 CurrentModule = Microbiome
 DocTestSetup  = quote
     using Microbiome
-    using Dictionaries
+    using Microbiome.Dictionaries
 end
 ```
 # Samples and Features

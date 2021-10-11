@@ -351,5 +351,4 @@ end
 end
 
 
-DocMeta.setdocmeta!(Microbiome, :DocTestSetup, :(using Microbiome); recursive=true)
 doctest(Microbiome)
