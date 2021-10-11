@@ -24,11 +24,17 @@ name(as::AbstractFeature) = as.name
 Base.String(as::AbstractSample) = name(as)
 Base.String(af::AbstractFeature) = name(af)
 
-## getters and setters for metadata ##
+"""
+    getindex(as::AbstractSample, prop::Symbol)
+
+Return the `prop` value in the metadata dictionary of `as`.
+This enables using bracket syntax for access, eg `as[prop]`.
+"""
 function Base.getindex(as::AbstractSample, prop::Symbol)
     prop in _restricted_fields(as) && error("Do not use getindex to access $prop of $(typeof(as)). Use accessor function or getfield instead.")
     getindex(as.metadata, prop)
 end
+
 
 function Base.setindex!(as::AbstractSample, val, prop::Symbol)
     prop in _restricted_fields(as) && error("Do not use setindex! to change $prop of $(typeof(as)).")
@@ -36,6 +42,12 @@ function Base.setindex!(as::AbstractSample, val, prop::Symbol)
     return as
 end
 
+"""
+    getproperty(as::AbstractSample, prop::Symbol)
+
+Return the `prop` value in the metadata dictionary of `as`.
+This enables using dot syntax for access, eg `as.prop`.
+"""
 function Base.getproperty(as::AbstractSample, prop::Symbol)
     prop in _restricted_fields(as) ? getfield(as, prop) : as.metadata[prop]
 end
@@ -198,6 +210,22 @@ julia> get(ms, :thing1, 42)
 ```
 """
 Base.get(as::AbstractSample, key::Symbol, default) = get(metadata(as), key, default)
+
+
+function set!(as::AbstractSample, d::Union{NamedTuple, Dictionary{Symbol, <:Any}})
+    for (key, value) in pairs(d)
+        set!(as, key, value)
+    end
+    return as
+end
+
+function insert!(as::AbstractSample, d::Union{NamedTuple, Dictionary{Symbol, <:Any}})
+    isempty(Set(keys(as)) ∩ Set(keys(d))) || throw(ArgumentError("Duplicate keys found. Use `set!` to overwrite"))
+    for (key, value) in pairs(d)
+        insert!(as, key, value)
+    end
+    return as
+end
 
 """
     MicrobiomeSample(name::String, metadata::Dictionary{Symbol, T}) <: AbstractSample
@@ -385,3 +413,20 @@ taxrank(gf::GeneFunction) = taxrank(taxon(gf))
 Pretty self-explanatory.
 """
 hasrank(gf::GeneFunction) = hastaxon(gf) && !ismissing(taxrank(gf))
+
+Base.String(gf::GeneFunction) = hastaxon(gf) ? string(name(gf), '|', String(taxon(gf))) : name(gf)
+
+"""
+    genefunction(n::AbstractString)
+
+Make a gene function from a string,
+Converting anything after an initial `|` as a [`Taxon`](@ref).
+"""
+function genefunction(n::AbstractString)
+    if contains(n, '|')
+        spl = split(n, '|')
+        return GeneFunction(string(spl[1]), taxon(join(spl[2:end], '|')))
+    else
+        return GeneFunction(n)
+    end
+end

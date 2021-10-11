@@ -40,6 +40,12 @@ using Documenter
         @test ms2.age == 10
         @test ms2.birthtype == "vaginal"
         @test ms2.allergies
+
+        @test_throws ArgumentError insert!(ms2, (; birthtype="cesarean"))
+        insert!(ms2, (; foo=10))
+        @test ms2.foo == 10
+        set!(ms2, (; birthtype="cesarean"))
+        @test ms2.birthtype == "cesarean"
     end
     
     @testset "Taxa" begin

@@ -13,7 +13,8 @@ export MicrobiomeSample,
        taxrank,
        hasrank,
        taxon,
-       hastaxon
+       hastaxon,
+       genefunction
 
 # EcoBase Translations
 export abundances,

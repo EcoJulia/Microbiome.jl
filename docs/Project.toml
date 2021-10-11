@@ -1,4 +1,5 @@
 [deps]
+Dictionaries = "85a47980-9c8c-11e8-2b9f-f7ca1fa99fb4"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Microbiome = "3bd8f0ae-a0f2-5238-a5af-e1b399a4940c"
 
