@@ -40,8 +40,7 @@ export CommunityProfile,
        featuretotals,
        sampletotals,
        commjoin,
-       metadata,
-       add_metadata!
+       metadata
    
 # Abundances
 export present,
@@ -77,7 +76,8 @@ import Dictionaries: set!, unset!, insert!, delete!
 import Base: ==
 
 include("ecobase.jl")
-include("samples_features.jl")
+include("samples.jl")
+include("features.jl")
 include("profiles.jl")
 include("diversity.jl")
 include("comm_joins.jl")

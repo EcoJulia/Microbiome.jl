@@ -83,7 +83,7 @@ using Documenter
         gf2 = GeneFunction("gene", Taxon("sp1"))
         @test name(gf1) == "gene"
         @test String(gf1) == "gene|s__sp1"
-        @test String(gf2) == "gene|sp1"
+        @test String(gf2) == "gene|u__sp1"
         @test genefunction("gene|s__sp1") == gf1
         @test genefunction("gene|u__sp1") == gf2
         
@@ -248,22 +248,31 @@ end
             @test md2[:something_else] == 2.0
             @test ismissing(md1[:something_else])
 
-            @test_throws IndexError add_metadata!(c5, "sample1", Dict(:something=>3.0))
-            add_metadata!(c5, "sample1", Dict(:something=>3.0), overwrite=true)
-            @test first(metadata(c5))[:something] == 3
-            
-            @test_throws IndexError add_metadata!(c5, "sample1", (; something=4.0))
-            add_metadata!(c5, "sample1", (; something=4.0), overwrite=true)
-            @test first(metadata(c5))[:something] == 4
+            @testset "insert!" begin
+                insert!(c5, "sample1", :foo, "bar")
+                @test samples(c5, "sample1").foo == "bar"
+                @test_throws IndexError insert!(c5, "sample1", :foo, "baz")
 
-            tbl = [(sample="sample1", something=5,  newthing="bar"),
-                   (sample="sample2", something=10, newthing="baz"),
-                   (sample="sample3", something=42, newthing="fuz")]
-            @test_throws IndexError add_metadata!(c5, :sample, tbl, overwrite=true) # for sample that doesn't exist
-            @test_throws IndexError add_metadata!(c5, :sample, tbl[1:2])            # for metadata that already exists
-            add_metadata!(c5, :sample, tbl[1:2]; overwrite = true)
-            @test first(metadata(c5))[:something] == 5
-            @test first(metadata(c5))[:newthing] == "bar"
+                insert!(c5, "sample2", (; foo="baz", greeting="hello"))
+                @test samples(c5, "sample2").foo == "baz"
+                @test_throws IndexError insert!(c5, "sample2", Dict(:baz=> "test", :foo=>"bar"))
+                @test !haskey(c5, "sample2", :baz)
+
+                @test_throws IndexError insert!(c5, [(;sample="sample1", still_other="yes"), (;sample="sample2", still_other="no")])
+                @test !haskey(c5, "sample1", :still_other)
+            end
+
+            @testset "set!" begin
+                set!(c5, "sample1", :foo, "barre")
+                @test samples(c5, "sample1").foo == "barre"
+                set!(c5, "sample2", (; foo="bazze", greeting="hello world!"))
+                @test samples(c5, "sample2").foo == "bazze"
+
+                set!(c5, [(;sample="sample1", still_other="yes"), (;sample="sample2", still_other="no")])
+                @test haskey(c5, "sample1", :still_other)
+                @test samples(c5, "sample1").still_other == "yes"
+                @test samples(c5, "sample2").still_other == "no"
+            end
         end
     end
     
@@ -341,4 +350,4 @@ end
     end
 end
 
-# doctest(Microbiome)
+doctest(Microbiome)

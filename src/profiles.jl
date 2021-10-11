@@ -472,45 +472,47 @@ function metadata(commp::CommunityProfile)
                     ) for s in ss)
 end
 
+
 """
-    add_metadata!(commp::CommunityProfile, samplename::AbstractString, md::Union{AbstractDict,NamedTuple}; overwrite=false)
+    set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
+    set!(commp::CommunityProfile, sample::AbstractString, md::Union{AbstractDict, NamedTuple})
 
-Add metadata (in the form of an `AbstractDict` or `NamedTuple`) to the `MicrobiomeSample` in `commp` with name `samplename`.
-For `AbstractDict`s, all keys must be `Symbol`s. 
+Update or insert a value `val` to the metadata of `sample` in the CommunityProfile `commp` using a Symbol `prop`. 
+If you want an error to be thrown if the value already exists, use [`insert!`](@ref).
 
-The function will fail if any of the keys in `md` already exist in the `MicrobiomeSample`,
-unless `overwrite=true` is used.
+Can also pass a Dictionary or NamedTuple containing key=> value pairs,
+all of which will be `set!`.
 
 Examples
 ≡≡≡≡≡≡≡≡≡≡
 
 ```jldoctest
-julia> metadata(comm)
-3-element Vector{NamedTuple{(:sample,), Tuple{String}}}:
- (sample = "sample1",)
- (sample = "sample2",)
- (sample = "sample3",)
+julia> set!(comm, "sample1", :something, 1.0)
 
-julia> add_metadata!(comm, "sample1", Dict(:subjectname=>"kevin", :age=>37))
-
-julia> metadata(comm)
-3-element Vector{NamedTuple{(:sample, :subjectname, :age), T} where T<:Tuple}:
- (sample = "sample1", subjectname = "kevin", age = 37)
- (sample = "sample2", subjectname = missing, age = missing)
- (sample = "sample3", subjectname = missing, age = missing)
+julia> first(metadata(comm))[:something]
+1.0
+```
 """
-function add_metadata!(commp::CommunityProfile, samplename::AbstractString, md::Union{AbstractDict,NamedTuple}; overwrite=false)
-    s = samples(commp, samplename)
-    if !overwrite
-        length(keys(md) ∩ keys(metadata(s))) == 0 || throw(IndexError("Adding this metadata would overwrite existing values. Use `overwrite=true` to proceed anyway"))
-    end
-    
-    for key in keys(md)
-        value = md[key]
-        overwrite ? set!(s, key, value) : insert!(s, key, value)
+function set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
+    sample = samples(commp, sample)
+    prop in _restricted_fields(sample) && error("Cannot set! $prop for $(typeof(sample)).")
+    set!(sample.metadata, prop, val)
+    return sample
+end
+
+function set!(commp::CommunityProfile, sample::AbstractString, md::Dictionary)
+    for (key, value) in pairs(md)
+        set!(commp, sample, key, value)
     end
     return nothing
 end
+
+function set!(commp::CommunityProfile, sample::AbstractString, md::Union{AbstractDict, NamedTuple})
+    md = Dictionary(md)
+    set!(commp, sample, md)
+    return nothing
+end
+
 
 """
     set!(cp::CommunityProfile, md; namecol=:sample)
@@ -533,85 +535,6 @@ function set!(commp::CommunityProfile, md; namecol=:sample)
     return nothing
 end
 
-"""
-    insert!(cp::CommunityProfile, md; namecol=:sample)
-
-Add metadata (in the form of a `Tables.jl` table) a `CommunityProfile`.
-One column (`namecol`) should contain sample names that exist in `commp`,
-and other columns should contain metadata that will be added to the metadata of each sample.
-
-Before starting, this will check that every value in every row is `insert!`able,
-and will throw an error if not.
-This requires iterating over the metadata table twice, which may be slow.
-If performance matters, you can use `set!` instead, 
-though this will overwrite existing data.
-"""
-function insert!(commp::CommunityProfile, md; namecol=:sample, careful=true)
-    Tables.istable(md) || throw(ArgumentError("Metadata must be a Tables.table"))
-    sns = Set(samplenames(commp))
-    md = filter(row-> row[namecol] in sns, md)
-    for row in Tables.rows(md)
-        sample = samples(commp, row[namecol])
-        ks = filter(!=(namecol), keys(first(md)))
-        for k in ks
-            haskey(sample, k) && throw(ArgumentError("Duplicate metadata detected. Use `set!` to force overwrite."))
-        end
-    end
-    for row in Tables.rows(md)
-        sample = samples(commp, row[namecol])
-        ks = filter(!=(namecol), keys(first(md)))
-        for k in ks
-            set!(sample, k, row[k])
-        end
-    end
-    return nothing
-end
-
-"""
-    set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
-
-Update or insert a value `val` to the metadata of `sample` in the CommunityProfile `commp` using a Symbol `prop`. 
-If you want an error to be thrown if the value already exists, use [`insert!`](@ref).
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> set!(comm, "sample1", :something, 1.0)
-
-julia> first(metadata(comm))[:something]
-1.0
- ```
-"""
-function set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
-    sample = samples(commp, sample)
-    prop in _restricted_fields(sample) && error("Cannot set! $prop for $(typeof(sample)).")
-    set!(sample.metadata, prop, val)
-    return sample
-end
-
-"""
-    unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
-
-Delete a metadata entry in `sample` from CommunityProfile `commp` using the Symbol `prop`. 
-If you want an error to be thrown if the value does not exist, use [`delete!`](@ref).
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> unset!(comm, "sample1", :something) 
-
-julia> !haskey(comm, "sample1", :something)
-true
- ```
-"""
-function unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
-    sample = samples(commp, sample)
-    prop in _restricted_fields(sample) && error("Cannot unset! $prop for $(typeof(sample)).")
-    unset!(sample.metadata, prop)
-    return sample
-end
 
 """
     insert!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
@@ -637,6 +560,80 @@ function insert!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, 
     insert!(sample.metadata, prop, val)
     return sample
 end
+
+function insert!(commp::CommunityProfile, sample::AbstractString, md::Dictionary)
+    isempty(Set(keys(commp, sample)) ∩ Set(keys(md))) || throw(IndexError("Duplicate keys found. Use `set!` to overwrite"))
+    for (key, value) in pairs(md)
+        insert!(commp, sample, key, value)
+    end
+    return nothing
+end
+
+function insert!(commp::CommunityProfile, sample::AbstractString, md::Union{<:AbstractDict, NamedTuple})
+    md = Dictionary(md)
+    insert!(commp, sample, md)
+    return nothing
+end
+
+
+"""
+    insert!(cp::CommunityProfile, md; namecol=:sample)
+
+Add metadata (in the form of a `Tables.jl` table) a `CommunityProfile`.
+One column (`namecol`) should contain sample names that exist in `commp`,
+and other columns should contain metadata that will be added to the metadata of each sample.
+
+Before starting, this will check that every value in every row is `insert!`able,
+and will throw an error if not.
+This requires iterating over the metadata table twice, which may be slow.
+If performance matters, you can use `set!` instead, 
+though this will overwrite existing data.
+"""
+function insert!(commp::CommunityProfile, md; namecol=:sample, careful=true)
+    Tables.istable(md) || throw(ArgumentError("Metadata must be a Tables.table"))
+    sns = Set(samplenames(commp))
+    md = filter(row-> row[namecol] in sns, md)
+    for row in Tables.rows(md)
+        sample = samples(commp, row[namecol])
+        ks = filter(!=(namecol), keys(first(md)))
+        for k in ks
+            haskey(sample, k) && throw(IndexError("Duplicate metadata detected. Use `set!` to force overwrite."))
+        end
+    end
+    for row in Tables.rows(md)
+        sample = samples(commp, row[namecol])
+        ks = filter(!=(namecol), keys(first(md)))
+        for k in ks
+            set!(sample, k, row[k])
+        end
+    end
+    return nothing
+end
+
+
+"""
+unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
+
+Delete a metadata entry in `sample` from CommunityProfile `commp` using the Symbol `prop`. 
+If you want an error to be thrown if the value does not exist, use [`delete!`](@ref).
+
+Examples
+≡≡≡≡≡≡≡≡≡≡
+
+```jldoctest
+julia> unset!(comm, "sample1", :something) 
+
+julia> !haskey(comm, "sample1", :something)
+true
+ ```
+"""
+function unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
+    sample = samples(commp, sample)
+    prop in _restricted_fields(sample) && error("Cannot unset! $prop for $(typeof(sample)).")
+    unset!(sample.metadata, prop)
+    return sample
+end
+
 
 """
     delete!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
