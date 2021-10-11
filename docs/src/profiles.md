@@ -303,7 +303,7 @@ julia> metadata(cp)
  (sample = "s3", subject = "annelle", foo = "baz", other = missing)
 ```
 
-## API
+## Types and Methods
 
 ```@docs
 CommunityProfile

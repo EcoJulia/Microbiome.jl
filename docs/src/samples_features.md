@@ -73,10 +73,6 @@ julia> set!(s3, (genotype="XY", ses=7))
 MicrobiomeSample("sample3", {:age = 23, :gender = "nonbinary", :genotype = "XY", :ses = 7})
 ```
 
-```@docs
-MicrobiomeSample
-metadata
-```
 
 ## Feature Types
 
@@ -132,13 +128,7 @@ julia> String(ecoli) |> taxon
 Taxon("Escherichia_coli", :species)
 ```
 
-```@docs
-Taxon
-name
-hasrank
-taxrank
-taxon
-```
+
 
 ### GeneFunction
 
@@ -197,10 +187,24 @@ julia> genefunction(String(gf3))
 GeneFunction("gene2", Taxon("Species_name", :species))
 ```
 
+
+
+## Types and Methods
+
+```@docs
+MicrobiomeSample
+metadata
+```
+
+```@docs
+Taxon
+name
+hasrank
+taxrank
+taxon
+```
+
 ```@docs
 GeneFunction
 genefunction
 ```
-
-## Types and Methods
-

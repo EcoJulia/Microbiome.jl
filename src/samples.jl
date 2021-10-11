@@ -63,16 +63,6 @@ end
 
 Update or insert a value `val` to the metadata of sample `as` using a Symbol `prop`. 
 If you want an error to be thrown if the value already exists, use [`insert!`](@ref).
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> set!(ms, :thing1, "metadata1")
-
-julia> ms.thing1
-"metadata1"
-```
 """
 function set!(as::AbstractSample, prop::Symbol, val)
     prop in _restricted_fields(as) && error("Cannot set! $prop for $(typeof(as)).")
@@ -85,16 +75,6 @@ end
 
 Delete a metadata entry of sample `as` using the Symbol `prop`. 
 If you want an error to be thrown if the value does not exist, use [`delete!`](@ref).
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> unset!(ms, :thing1)
-
-julia> !haskey(ms, :thing1)
-true
-```
 """
 function unset!(as::AbstractSample, prop::Symbol)
     prop in _restricted_fields(as) && error("Cannot unset! $prop for $(typeof(as)).")
@@ -108,17 +88,6 @@ end
 Insert a value `val` to the metadata of sample `as` using a Symbol `prop`, 
 and it will throw an error if `prop` exists. 
 If you don't want an error to be thrown if the value exists, use [`set!`](@ref).
-
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> insert!(ms, :thing, "metadata")
-
-julia> ms.thing
-"metadata"
-```
 """
 function insert!(as::AbstractSample, prop::Symbol, val)
     prop in _restricted_fields(as) && error("Cannot insert! $prop for $(typeof(as)).")
@@ -131,16 +100,6 @@ end
 
 Delete a metadata entry of sample `as` using the Symbol `prop` if it exists, or throw an error otherwise.
 If you don't want an error to be thrown if the value does not exist, use [`unset!`](@ref).
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> delete!(ms, :thing) 
-
-julia> !haskey(ms, :thing)
-true
- ```
 """
 function delete!(as::AbstractSample, prop::Symbol)
     prop in _restricted_fields(as) && error("Cannot delete! $prop for $(typeof(as)).")
@@ -153,18 +112,6 @@ end
 
 Return an iterator over all keys of the metadata attached to sample `as`. 
 `collect(keys(as))` returns an array of keys. 
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> ms = MicrobiomeSample("sample1", Dictionary([:thing1, :thing2], ["metadata1", "metadata2"]))
-
-julia> collect(keys(ms))
-2-element Vector{Symbol}:
- :thing1
- :thing2
-```
 """
 Base.keys(as::AbstractSample) = keys(metadata(as))
 
@@ -173,21 +120,6 @@ Base.keys(as::AbstractSample) = keys(metadata(as))
 
 Determine whether the metadata of sample `as` has a mapping for a given `key`. 
 Use `!haskey` to determine whether a sample `as` in a CommunityProfile doesn't have a mapping for a given `key`
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> set!(ms, :thing1, "metadata1")
-
-julia> haskey(ms, :thing1)
-true
-
-julia> delete!(ms, :thing1, "metadata1")
-
-julia> !haskey(ms, :thing1)
-true
-```
 """
 Base.haskey(as::AbstractSample, key::Symbol) = in(key, keys(as))
 
@@ -195,19 +127,6 @@ Base.haskey(as::AbstractSample, key::Symbol) = in(key, keys(as))
     get(as::AbstractSample, key::Symbol, default)
 
 Return the value of the metadata in the sample `as` stored for the given `key`, or the given `default` value if no mapping for the key is present.
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> get(ms, :thing1, 42)
-42 
-
-julia> insert!(ms, :thing1, 3.0) 
-
-julia> get(ms, :thing1, 42)
-3.0
-```
 """
 Base.get(as::AbstractSample, key::Symbol, default) = get(metadata(as), key, default)
 
@@ -237,36 +156,7 @@ of arbitrary metadata using `Symbol`s (other than `:name` or `:metadata`) as key
 
 Metadata can be accessed using `getproperty` or `getindex` on the sample itself.
 
-```jldoctest MicrobiomeSample
-julia> ms = MicrobiomeSample("sample1", Dictionary([:gender, :age], ["female", 180]))
-MicrobiomeSample("sample1", {:gender │ "female", :age │ 180})
-
-julia> name(ms)
-"sample1"
-
-julia> ms.name
-"sample1"
-
-julia> ms.gender
-"female"
-
-julia> ms.age
-180
-```
-
 Samples can be instantiated with only a name, leaving the `metadata` `Dictionary` blank
-
-```jldoctest MicrobiomeSample
-julia> ms2 = MicrobiomeSample("sample2")
-MicrobiomeSample("sample2", {})
-```
-
-or using keyword arguments.
-
-```jldoctest MicrobiomeSample
-julia> ms3 = MicrobiomeSample("sample3"; age=20)
-MicrobiomeSample("sample2", {:age | 20})
-```
 
 Adding or changing metadata follows [the same rules](https://github.com/andyferris/Dictionaries.jl#accessing-dictionaries) as for the normal `Dictionary`.
 

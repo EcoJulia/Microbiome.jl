@@ -408,33 +408,6 @@ end
 
 Return a copy of `comm`, where only rows that have `taxrank(feature) == cl` are kept.
 Use `keepempty = true` to also keep features that don't have a `rank` (eg "UNIDENTIFIED").
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> features(comm)
-10-element Vector{Taxon}:
- Taxon("taxon1", :domain)
- Taxon("taxon2", :kingdom)
- Taxon("taxon3", :phylum)
- Taxon("taxon4", :class)
- Taxon("taxon5", :order)
- Taxon("taxon6", :family)
- Taxon("taxon7", :genus)
- Taxon("taxon8", :species)
- Taxon("taxon9", :subspecies)
- Taxon("taxon10", missing)
-
-julia> features(rankfilter(comm, :species))
- 1-element Vector{Taxon}:
-  Taxon("taxon8", :species)
-
-julia> features(rankfilter(comm, :genus; keepempty = true))
-  2-element Vector{Taxon}:
-   Taxon("taxon7", :genus)
-   Taxon("taxon10", missing)
-```
 """
 function rankfilter(comm::AbstractAbundanceTable, cl::Symbol; keepempty=false)
     in(cl, keys(_ranks)) ||  error("Invalid rank $cl, must be one of $(keys(_ranks))")
@@ -482,16 +455,6 @@ If you want an error to be thrown if the value already exists, use [`insert!`](@
 
 Can also pass a Dictionary or NamedTuple containing key=> value pairs,
 all of which will be `set!`.
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> set!(comm, "sample1", :something, 1.0)
-
-julia> first(metadata(comm))[:something]
-1.0
-```
 """
 function set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
     sample = samples(commp, sample)
@@ -542,17 +505,6 @@ end
 Insert a value `val` to the metadata of `sample` in a CommunityProfile `commp` using a Symbol `prop`, 
 and it will throw an error if `prop` exists. 
 If you don't want an error to be thrown if the value exists, use [`set!`](@ref).
-
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> insert!(comm, "sample1", :something, 3.0) 
-
-julia> get(comm, "sample1", :something, 3.0)
-3.0
- ```
 """
 function insert!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
     sample = samples(commp, sample)
@@ -616,16 +568,6 @@ unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
 
 Delete a metadata entry in `sample` from CommunityProfile `commp` using the Symbol `prop`. 
 If you want an error to be thrown if the value does not exist, use [`delete!`](@ref).
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> unset!(comm, "sample1", :something) 
-
-julia> !haskey(comm, "sample1", :something)
-true
- ```
 """
 function unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
     sample = samples(commp, sample)
@@ -640,16 +582,6 @@ end
 
 Delete a metadata entry in `sample` from CommunityProfile `commp` using the Symbol `prop` if it exists, or throw an error otherwise.
 If you don't want an error to be thrown if the value does not exist, use [`unset!`](@ref).
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> delete!(comm, "sample1", :something) 
-
-julia> !haskey(comm, "sample1", :something)
-true
- ```
 """
 function delete!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
     sample = samples(commp, sample)
@@ -663,18 +595,6 @@ end
 
 Return an iterator over all keys of the metadata attached to `sample` in a CommunityProfile `commp`. 
 `collect(keys(commp, sample))` returns an array of keys. 
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> add_metadata!(comm, "sample1", Dict(:subjectname=>"kevin", :age=>37))
-
-julia> collect(keys(comm, "sample1"))
-2-element Vector{Symbol}:
- :subjectname
- :age
-```
 """
 Base.keys(commp::CommunityProfile, sample::AbstractString) = keys(metadata(samples(commp, sample)))
 
@@ -683,21 +603,6 @@ Base.keys(commp::CommunityProfile, sample::AbstractString) = keys(metadata(sampl
 
 Determine whether the metadata of `sample` in a CommunityProfile `commp` has a mapping for a given `key`. 
 Use `!haskey` to determine whether a `sample` in a CommunityProfile doesn't have a mapping for a given `key`
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> set!(comm, "sample1", :something, 1.0)
-
-julia> haskey(comm, "sample1", :something)
-true
-
-julia> delete!(comm, "sample1", :something) 
-
-julia> !haskey(comm, "sample1", :something)
-true
- ```
 """
 Base.haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol) = in(key, keys(samples(commp, sample)))
 
@@ -705,19 +610,6 @@ Base.haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol) = in(k
     get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default)
 
 Return the value of the metadata in a `sample` stored for the given `key`, or the given `default` value if no mapping for the key is present.
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> get(comm, "sample1", :something, 42)
-42 
-
-julia> insert!(comm, "sample1", :something, 3.0) 
-
-julia> get(comm, "sample1", :something, 42)
-3.0
- ```
 """
 Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default) = get(metadata(samples(commp, sample)), key, default)
 
@@ -727,22 +619,6 @@ Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default) 
 
 Apply `f` to the features of `comm`,
 and return a copy where `f(feature)` is `true`.
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> features(comm)
-3-element Vector{GeneFunction}:
- GeneFunction("gene1", Taxon("tax1", :species))
- GeneFunction("gene1", Taxon("tax2", :genus))
- GeneFunction("gene2", missing)
-
-julia> features(filter(hastaxon, comm))
-2-element Vector{GeneFunction}:
- GeneFunction("gene1", Taxon("tax1", :species))
- GeneFunction("gene1", Taxon("tax2", :genus))
-```
 """
 function Base.filter(f::Function, commp::CommunityProfile)
     ridx = findall(f, features(commp))
