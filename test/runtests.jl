@@ -4,6 +4,7 @@ using Microbiome.SparseArrays
 using Microbiome.Tables
 using Microbiome.Dictionaries
 import Microbiome.MultivariateStats: MDS
+using Documenter
 
 @testset "Samples and Features" begin
     @testset "MicriobiomeSamples and metadata" begin
@@ -326,5 +327,6 @@ end
         @test all(hellinger(comm) .== [0 1 1 1 1; 1 0 1 1 1; 1 1 0 1 1; 1 1 1 0 1; 1 1 1 1 0])
         @test pcoa(comm) isa MDS
     end
-
 end
+
+doctest(Microbiome)

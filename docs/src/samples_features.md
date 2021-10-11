@@ -46,7 +46,6 @@ julia> delete!(s3, :gender)
 MicrobiomeSample("sample3", {:age = 23})
 ```
 
-
 ```@docs
 MicrobiomeSample
 ```
