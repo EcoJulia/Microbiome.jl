@@ -57,7 +57,7 @@ julia> mat
  0.570085  0.249238   ⋅
   ⋅        0.841643   ⋅
 
-julia> cp = CommunityProfile(mat, taxa, samps)
+julia> comm = CommunityProfile(mat, taxa, samps)
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 3 samples
 
 Feature names:
@@ -74,7 +74,7 @@ features, and samples using
 [`abundances`](@ref), [`features`](@ref), and [`samples`](@ref) respectively:
 
 ```jldoctest profiles
-julia> abundances(cp)
+julia> abundances(comm)
 10×3 SparseMatrixCSC{Float64, Int64} with 10 stored entries:
   ⋅         ⋅        0.172933
   ⋅         ⋅         ⋅
@@ -87,7 +87,7 @@ julia> abundances(cp)
  0.570085  0.249238   ⋅
   ⋅        0.841643   ⋅
 
-julia> features(cp)
+julia> features(comm)
 10-element Vector{Taxon}:
  Taxon("s1", :species)
  Taxon("s2", :species)
@@ -100,7 +100,7 @@ julia> features(cp)
  Taxon("g4", :genus)
  Taxon("g5", :genus)
  
-julia> samples(cp)
+julia> samples(comm)
 3-element Vector{MicrobiomeSample}:
  MicrobiomeSample("s1", {})
  MicrobiomeSample("s2", {})
@@ -111,7 +111,7 @@ You can also just get an array of feature and sample names
 using [`featurenames`](@ref) and [`samplenames`](@ref) respectively.
 
 ```jldoctest profiles
-julia> featurenames(cp)
+julia> featurenames(comm)
 10-element Vector{String}:
  "s1"
  "s2"
@@ -124,7 +124,7 @@ julia> featurenames(cp)
  "g4"
  "g5"
 
-julia> samplenames(cp)
+julia> samplenames(comm)
 3-element Vector{String}:
  "s1"
  "s2"
@@ -138,7 +138,7 @@ which is compliant with the [`Tables.jl`](https://github.com/JuliaData/Tables.jl
 so it's easy to load into other formats (like [`DataFrames.jl`](https://github.com/JuliaData/DataFrames.jl) for example):
 
 ```jldoctest profiles
-julia> metadata(cp)
+julia> metadata(comm)
 3-element Vector{NamedTuple{(:sample,), Tuple{String}}}:
  (sample = "s1",)
  (sample = "s2",)
@@ -194,10 +194,10 @@ will return the value of the matrix at that position,
 while indexing with slices will return a new `CommunityProfile`:
 
 ```jldoctest profiles
-julia> cp[1,3]
+julia> comm[1,3]
 0.17293302893695128
 
-julia> cp[1:3,6]
+julia> comm[1:3,6]
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 3 features in 1 samples
 
 Feature names:
@@ -208,7 +208,7 @@ g1
 
 
 
-julia> cp[1:3,3] |> abundances
+julia> comm[1:3,3] |> abundances
 3×1 SparseMatrixCSC{Float64, Int64} with 1 stored entry:
  0.172933
   ⋅
@@ -226,7 +226,7 @@ This kind of indexing always returns a `CommunityProfile`,
 even if it only has 1 value.
 
 ```jldoctest profiles
-julia> cp["g1", "s1"]
+julia> comm["g1", "s1"]
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 1 features in 1 samples
 
 Feature names:
@@ -237,7 +237,7 @@ s1
 
 
 
-julia> cp[r"[gs]1", "s1"]
+julia> comm[r"[gs]1", "s1"]
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 2 features in 1 samples
 
 Feature names:
@@ -257,10 +257,10 @@ either by directly acting on the underlying sample object,
 or using special methods that take the sample name as the second argument:
 
 ```jldoctest profiles
-julia> set!(samples(cp)[1], :subject, "kevin")
+julia> set!(samples(comm)[1], :subject, "kevin")
 MicrobiomeSample("s1", {:subject = "kevin"})
 
-julia> insert!(cp, "s2", :subject, "anika")
+julia> insert!(comm, "s2", :subject, "anika")
 MicrobiomeSample("s2", {:subject = "anika"})
 ```
 
@@ -271,7 +271,7 @@ All metadata fields found in any sample will be returned in every row,
 with the value `missing` in any samples that do not have that field set.
 
 ```jldoctest profiles
-julia> metadata(cp)
+julia> metadata(comm)
 3-element Vector{NamedTuple{(:sample, :subject), T} where T<:Tuple}:
  (sample = "s1", subject = "kevin")
  (sample = "s2", subject = "anika")
@@ -287,16 +287,16 @@ julia> md = [(sample="s1", subject="kevin", foo="bar"), (sample="s3", subject="a
  (sample = "s1", subject = "kevin", foo = "bar")
  (sample = "s3", subject = "annelle", foo = "baz")
 
-julia> set!(cp, md)
+julia> set!(comm, md)
 
 julia> md2 = [(name="s1", other="Hello, World!"), (name="s2", other="Goodbye!")]
 2-element Vector{NamedTuple{(:name, :other), Tuple{String, String}}}:
  (name = "s1", other = "Hello, World!")
  (name = "s2", other = "Goodbye!")
 
-julia> insert!(cp, md2; namecol=:name)
+julia> insert!(comm, md2; namecol=:name)
 
-julia> metadata(cp)
+julia> metadata(comm)
 3-element Vector{NamedTuple{(:sample, :subject, :foo, :other), T} where T<:Tuple}:
  (sample = "s1", subject = "kevin", foo = "bar", other = "Hello, World!")
  (sample = "s2", subject = "anika", foo = missing, other = "Goodbye!")
