@@ -59,8 +59,34 @@ MicrobiomeSample
 
 ### Taxon
 
-The `Taxon` type contains a name and a rank (eg `:phylum`).
+The `Taxon` type contains a name and (optionally) a rank (eg `:phylum`).
+
+```jldoctest
+julia> ecoli = Taxon("Escherichia_coli", :species)
+Taxon("Escherichia_coli", :species)
+
+julia> uncl = Taxon("Unknown_bug")
+Taxon("Unknown_bug", missing)
+```
+
 For compatibility with other tools, converting a `Taxon` to a `String`
+will return the name prepended with the first letter of the taxonomic rank
+and 2 underscores.
+You can convert back using [`taxon`](@ref) (note the lowercase 't'):
+
+```jldoctest
+julia> String(uncl)
+"u__Unknown_bug"
+
+julia> String(ecoli)
+"s__Escherichia_coli"
+
+julia> String(ecoli) |> Taxon
+Taxon("s__Escherichia_coli", missing)
+
+julia> String(ecoli) |> taxon
+Taxon("Escherichia_coli", :species)
+```
 
 ```@docs
 Taxon

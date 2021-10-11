@@ -315,14 +315,14 @@ function Base.String(t::Taxon)
     if hasrank(t)
         return taxrank(t) == :strain ? string("t__", name(t)) : string(first(string(taxrank(t))), "__", name(t))
     else
-        return name(t)
+        return string("u__", name(t))
     end
 end
 
 function taxon(n::AbstractString)
     m = match(r"^([dkpcofgst])__(.+)", n)
     isnothing(m) && return Taxon(n)
-    return Taxon(string(m.captures[2], _shortranks[Symbol(m.captures[1])]))
+    return Taxon(string(m.captures[2]), _shortranks[Symbol(m.captures[1])])
 end
 
 """
