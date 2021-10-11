@@ -49,16 +49,15 @@ using Documenter
     end
     
     @testset "Taxa" begin
-        _ranks = (:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain)
         txm = Taxon("taxon", missing)
         @test txm === Taxon("taxon")
         @test ismissing(taxrank(txm))
         @test !hasrank(txm)
 
-        for (i, c) in enumerate(_ranks)
-            tx = Taxon("taxon", c)
-            @test taxrank(tx) == c
-            @test tx === Taxon("taxon", i-1)
+        for (r, i) in pairs(Microbiome._ranks)
+            tx = Taxon("taxon", r)
+            @test taxrank(tx) == r
+            @test tx === Taxon("taxon", i)
             @test tx !== txm
         end
         
@@ -66,7 +65,10 @@ using Documenter
         @test_throws ErrorException Taxon("taxon", 10)
         @test let tx = Taxon("taxon", :kingdom)
             hasrank(tx)
+            String(tx) == "k__taxon"
+            taxon("g__Somegenus") == Taxon("Somegenus", :genus)
         end
+
     end
 
     @testset "Gene Functions" begin
@@ -80,6 +82,10 @@ using Documenter
         gf1 = GeneFunction("gene", Taxon("sp1", :species))
         gf2 = GeneFunction("gene", Taxon("sp1"))
         @test name(gf1) == "gene"
+        @test String(gf1) == "gene|s__sp1"
+        @test String(gf2) == "gene|sp1"
+        @test genefunction("gene|s__sp1") == gf1
+        @test genefunction("gene|u__sp1") == gf2
         
         @test gf1 != gfm
         @test gf1 === GeneFunction("gene", Taxon("sp1", :species))
@@ -335,4 +341,4 @@ end
     end
 end
 
-doctest(Microbiome)
+# doctest(Microbiome)
