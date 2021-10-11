@@ -156,39 +156,37 @@ and you can access the values as you would a normal matrix.
 In julia, you can pull out specific values using `[row, col]`.
 So for example, to get the 3rd row, 2nd column, of matrix `mat`:
 
-```jldoctest profiles
-julia> mat = reshape(1:12, 4, 3) |> collect # hide
-
-julia> mat
+```jldoctest indexing
+julia> mat = reshape(1:12, 4, 3) |> collect
 4×3 Matrix{Int64}:
-  1   2   3
-  4   5   6
-  7   8   9
- 10  11  12
+ 1  5   9
+ 2  6  10
+ 3  7  11
+ 4  8  12
 
 julia> mat[3,2]
-8
+7
 ```
 
 You can also get "slices", eg to get rows 2-4, column 1:
 
-```julia-repl
+```jldoctest indexing
 julia> mat[2:4, 1]
 3-element Vector{Int64}:
-  4
-  7
- 10
+ 2
+ 3
+ 4
 ```
 
 To get all of one dimension, you can just use a bare `:`
 
-```julia-repl
+```jldoctest indexing
 julia> mat[:, 1:2]
 4×2 Matrix{Int64}:
-  1   2
-  4   5
-  7   8
- 10  11
+ 1  5
+ 2  6
+ 3  7
+ 4  8
 ```
 
 For `CommunityProfile`s, indexing with integer values
@@ -199,14 +197,14 @@ while indexing with slices will return a new `CommunityProfile`:
 julia> cp[1,3]
 0.17293302893695128
 
-julia> cp[1:3,3]
+julia> cp[1:3,6]
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 3 features in 1 samples
 
 Feature names:
 s1, s2, s3
 
 Sample names:
-s3
+g1
 
 
 
