@@ -1,111 +1,180 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Profiles and Communities · Microbiome.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">Microbiome.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../samples_features/">Samples and features</a></li><li class="is-active"><a class="tocitem" href>Profiles and Communities</a><ul class="internal"><li><a class="tocitem" href="#Working-with-microbial-abundances-1"><span>Working with microbial abundances</span></a></li></ul></li><li><a class="tocitem" href="../diversity/">Diversity measures</a></li><li><a class="tocitem" href="../contributing/">Contributing</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Profiles and Communities</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Profiles and Communities</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/BioJulia/Microbiome.jl/blob/master/docs/src/profiles.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h2 id="Working-with-microbial-abundances-1"><a class="docs-heading-anchor" href="#Working-with-microbial-abundances-1">Working with microbial abundances</a><a class="docs-heading-anchor-permalink" href="#Working-with-microbial-abundances-1" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="Microbiome.CommunityProfile" href="#Microbiome.CommunityProfile"><code>Microbiome.CommunityProfile</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">CommunityProfile{T, F, S} &lt;: AbstractAbundanceTable{T, F, S}</code></pre><p>An <code>AbstractAssemblage</code> from <a href="https://github.com/EcoJulia/EcoBase.jl">EcoBase.jl</a> that uses an <code>AxisArray</code> of a <code>SparseMatrixCSC</code> under the hood.</p><p><code>CommunityProfile</code>s are tables with <code>AbstractFeature</code>-indexed rows and <code>AbstractSample</code>-indexed columns. Note - we can use the <code>name</code> of samples and features to index.</p><pre><code class="language-julia-repl">julia&gt; txs = [Taxon(&quot;taxon$i&quot;) for i in 1:10];
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Profiles and Communities · Microbiome.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">Microbiome.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../samples_features/">Samples and features</a></li><li class="is-active"><a class="tocitem" href>Profiles and Communities</a><ul class="internal"><li><a class="tocitem" href="#Accessing-CommunitProfile-contents-1"><span>Accessing <code>CommunitProfile</code> contents</span></a></li><li><a class="tocitem" href="#Indexing-and-selecting-1"><span>Indexing and selecting</span></a></li><li><a class="tocitem" href="#working-metadata-1"><span>Working with metadata</span></a></li><li><a class="tocitem" href="#Types-and-Methods-1"><span>Types and Methods</span></a></li></ul></li><li><a class="tocitem" href="../diversity/">Diversity measures</a></li><li><a class="tocitem" href="../contributing/">Contributing</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Profiles and Communities</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Profiles and Communities</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/BioJulia/Microbiome.jl/blob/master/docs/src/profiles.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Working-with-microbial-abundances-1"><a class="docs-heading-anchor" href="#Working-with-microbial-abundances-1">Working with microbial abundances</a><a class="docs-heading-anchor-permalink" href="#Working-with-microbial-abundances-1" title="Permalink"></a></h1><p>The primary type for working with microbial abundances is the <a href="#Microbiome.CommunityProfile"><code>CommunityProfile</code></a>, which is a sparse matrix with <a href="../samples_features/#Microbiome.MicrobiomeSample"><code>MicrobiomeSample</code></a>s as column indices and features (eg <a href="../samples_features/#Microbiome.Taxon"><code>Taxon</code></a>s or <a href="../samples_features/#Microbiome.GeneFunction"><code>GeneFunction</code></a>s) as row indices.</p><p>For example, let&#39;s make a <code>CommunityProfile</code> with 3 samples, 5 species and 5 genera.</p><pre><code class="language-julia-repl">julia&gt; samps = MicrobiomeSample.([&quot;s1&quot;, &quot;s2&quot;, &quot;s3&quot;])
+3-element Vector{MicrobiomeSample}:
+ MicrobiomeSample(&quot;s1&quot;, {})
+ MicrobiomeSample(&quot;s2&quot;, {})
+ MicrobiomeSample(&quot;s3&quot;, {})
 
-julia&gt; mss = [MicrobiomeSample(&quot;sample$i&quot;) for i in 1:5];
+julia&gt; taxa = [[Taxon(&quot;s$i&quot;, :species) for i in 1:5]; [Taxon(&quot;g$i&quot;, :genus) for i in 1:5]]
+10-element Vector{Taxon}:
+ Taxon(&quot;s1&quot;, :species)
+ Taxon(&quot;s2&quot;, :species)
+ Taxon(&quot;s3&quot;, :species)
+ Taxon(&quot;s4&quot;, :species)
+ Taxon(&quot;s5&quot;, :species)
+ Taxon(&quot;g1&quot;, :genus)
+ Taxon(&quot;g2&quot;, :genus)
+ Taxon(&quot;g3&quot;, :genus)
+ Taxon(&quot;g4&quot;, :genus)
+ Taxon(&quot;g5&quot;, :genus)
 
-julia&gt; mat = spzeros(10,5);
+julia&gt; mat = spzeros(10, 3); # 10 x 3 matrix filled with zeros
 
-julia&gt; for i in 1:5; mat[i,i] = 1.; end
+julia&gt; for i in 1:10, j in 1:3 
+           # fill some spots with random values
+           rand() &lt; 0.3 &amp;&amp; (mat[i,j] = rand())
+       end
 
-julia&gt; comm = CommunityProfile(mat, txs, mss)
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 5 samples
+julia&gt; mat
+10×3 SparseMatrixCSC{Float64, Int64} with 10 stored entries:
+  ⋅         ⋅        0.172933
+  ⋅         ⋅         ⋅
+ 0.956916   ⋅         ⋅
+ 0.422956   ⋅         ⋅
+  ⋅         ⋅         ⋅
+ 0.502952   ⋅        0.167169
+  ⋅         ⋅        0.244683
+  ⋅         ⋅        0.143638
+ 0.570085  0.249238   ⋅
+  ⋅        0.841643   ⋅
 
-Feature names:
-taxon1, taxon2, taxon3...taxon9, taxon10
-
-Sample names:
-sample1, sample2, sample3, sample4, sample5
-
-julia&gt; comm[&quot;taxon1&quot;, &quot;sample1&quot;]
-1.0
-
-julia&gt; comm[:,[&quot;sample1&quot;, &quot;sample5&quot;]]
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 2 samples
-
-Feature names:
-taxon1, taxon2, taxon3...taxon9, taxon10
-
-Sample names:
-sample1, sample5
-
-julia&gt; comm[Taxon(&quot;taxon3&quot;, :kingdom), &quot;sample1&quot;]
-0.0</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/d4f9cc3586b85ea13a51aa37a171c8ec97da5077/src/profiles.jl#L6-L49">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.samples" href="#Microbiome.samples"><code>Microbiome.samples</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">samples(at::AbstractAbundanceTable)</code></pre><p>Returns samples in <code>at</code>. To get samplenames instead, use <a href="#Microbiome.samplenames"><code>samplenames</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/d4f9cc3586b85ea13a51aa37a171c8ec97da5077/src/profiles.jl#L94-L98">source</a></section><section><div><pre><code class="language-none">samples(at::AbstractAbundanceTable, name::AbstractString)</code></pre><p>Returns sample in <code>at</code> with name <code>name</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/d4f9cc3586b85ea13a51aa37a171c8ec97da5077/src/profiles.jl#L101-L105">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.features" href="#Microbiome.features"><code>Microbiome.features</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">features(at::AbstractAbundanceTable)</code></pre><p>Returns features in <code>at</code>. To get featurenames instead, use <a href="#Microbiome.featurenames"><code>featurenames</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/d4f9cc3586b85ea13a51aa37a171c8ec97da5077/src/profiles.jl#L87-L91">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.samplenames" href="#Microbiome.samplenames"><code>Microbiome.samplenames</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">samplenames(at::AbstractAbundanceTable)</code></pre><p>Get a vector of sample names from <code>at</code>, equivalent to <code>name.(samples(at))</code></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/d4f9cc3586b85ea13a51aa37a171c8ec97da5077/src/ecobase.jl#L22-L26">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.featurenames" href="#Microbiome.featurenames"><code>Microbiome.featurenames</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">featurenames(at::AbstractAbundanceTable)</code></pre><p>Get a vector of feature names from <code>at</code>, equivalent to <code>name.(features(at))</code></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/d4f9cc3586b85ea13a51aa37a171c8ec97da5077/src/ecobase.jl#L12-L16">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.commjoin" href="#Microbiome.commjoin"><code>Microbiome.commjoin</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">commjoin(c1::CommunityProfile, comms::CommunityProfile...)</code></pre><p>Join multiple <code>CommunityProfile</code>s, creating a new <code>CommunityProfile</code>. For now, sample names cannot overlap in any of the input profiles.</p><pre><code class="language-julia-repl">julia&gt; mss = [MicrobiomeSample(string(&quot;sample&quot;,i)) for i in 1:15];
-
-julia&gt; txs = [Taxon(string(&quot;taxon&quot;,i)) for i in 1:20];
-
-julia&gt; cm1 = CommunityProfile(spzeros(10,5), txs[1:10], mss[1:5])
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 5 samples
-
-Feature names:
-taxon1, taxon2, taxon3...taxon9, taxon10
-
-Sample names:
-sample1, sample2, sample3, sample4, sample5
-
-
-
-julia&gt; cm2 = CommunityProfile(spzeros(10,5), txs[6:15], mss[6:10])
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 5 samples
+julia&gt; comm = CommunityProfile(mat, taxa, samps)
+CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 3 samples
 
 Feature names:
-taxon6, taxon7, taxon8...taxon14, taxon15
+s1, s2, s3...g4, g5
 
 Sample names:
-sample6, sample7, sample8, sample9, sample10
+s1, s2, s3</code></pre><h2 id="Accessing-CommunitProfile-contents-1"><a class="docs-heading-anchor" href="#Accessing-CommunitProfile-contents-1">Accessing <code>CommunitProfile</code> contents</a><a class="docs-heading-anchor-permalink" href="#Accessing-CommunitProfile-contents-1" title="Permalink"></a></h2><p>It is easy to get out the underlying abundance matrix, features, and samples using <a href="@ref"><code>abundances</code></a>, <a href="#Microbiome.features"><code>features</code></a>, and <a href="#Microbiome.samples"><code>samples</code></a> respectively:</p><pre><code class="language-julia-repl">julia&gt; abundances(comm)
+10×3 SparseMatrixCSC{Float64, Int64} with 10 stored entries:
+  ⋅         ⋅        0.172933
+  ⋅         ⋅         ⋅
+ 0.956916   ⋅         ⋅
+ 0.422956   ⋅         ⋅
+  ⋅         ⋅         ⋅
+ 0.502952   ⋅        0.167169
+  ⋅         ⋅        0.244683
+  ⋅         ⋅        0.143638
+ 0.570085  0.249238   ⋅
+  ⋅        0.841643   ⋅
 
+julia&gt; features(comm)
+10-element Vector{Taxon}:
+ Taxon(&quot;s1&quot;, :species)
+ Taxon(&quot;s2&quot;, :species)
+ Taxon(&quot;s3&quot;, :species)
+ Taxon(&quot;s4&quot;, :species)
+ Taxon(&quot;s5&quot;, :species)
+ Taxon(&quot;g1&quot;, :genus)
+ Taxon(&quot;g2&quot;, :genus)
+ Taxon(&quot;g3&quot;, :genus)
+ Taxon(&quot;g4&quot;, :genus)
+ Taxon(&quot;g5&quot;, :genus)
+ 
+julia&gt; samples(comm)
+3-element Vector{MicrobiomeSample}:
+ MicrobiomeSample(&quot;s1&quot;, {})
+ MicrobiomeSample(&quot;s2&quot;, {})
+ MicrobiomeSample(&quot;s3&quot;, {})</code></pre><p>You can also just get an array of feature and sample names using <a href="#Microbiome.featurenames"><code>featurenames</code></a> and <a href="#Microbiome.samplenames"><code>samplenames</code></a> respectively.</p><pre><code class="language-julia-repl">julia&gt; featurenames(comm)
+10-element Vector{String}:
+ &quot;s1&quot;
+ &quot;s2&quot;
+ &quot;s3&quot;
+ &quot;s4&quot;
+ &quot;s5&quot;
+ &quot;g1&quot;
+ &quot;g2&quot;
+ &quot;g3&quot;
+ &quot;g4&quot;
+ &quot;g5&quot;
 
+julia&gt; samplenames(comm)
+3-element Vector{String}:
+ &quot;s1&quot;
+ &quot;s2&quot;
+ &quot;s3&quot;</code></pre><p>Finally, you can pull out the metadata of all samples or a subset using <a href="../samples_features/#Microbiome.metadata"><code>metadata</code></a>. The returned value is a vector of <code>NamedTuple</code>s, which is compliant with the <a href="https://github.com/JuliaData/Tables.jl"><code>Tables.jl</code></a> interface, so it&#39;s easy to load into other formats (like <a href="https://github.com/JuliaData/DataFrames.jl"><code>DataFrames.jl</code></a> for example):</p><pre><code class="language-julia-repl">julia&gt; metadata(comm)
+3-element Vector{NamedTuple{(:sample,), Tuple{String}}}:
+ (sample = &quot;s1&quot;,)
+ (sample = &quot;s2&quot;,)
+ (sample = &quot;s3&quot;,)</code></pre><p>Of course, for now, the metadata is pretty boring -  jump ahead to <a href="#working-metadata-1">Working with metadata</a> to do some more fun things.</p><h2 id="Indexing-and-selecting-1"><a class="docs-heading-anchor" href="#Indexing-and-selecting-1">Indexing and selecting</a><a class="docs-heading-anchor-permalink" href="#Indexing-and-selecting-1" title="Permalink"></a></h2><p><code>CommunityProfile</code>s wrap a sparse matrix, and you can access the values as you would a normal matrix. In julia, you can pull out specific values using <code>[row, col]</code>. So for example, to get the 3rd row, 2nd column, of matrix <code>mat</code>:</p><pre><code class="language-julia-repl">julia&gt; mat = reshape(1:12, 4, 3) |&gt; collect
+4×3 Matrix{Int64}:
+ 1  5   9
+ 2  6  10
+ 3  7  11
+ 4  8  12
 
-julia&gt; cm3 = CommunityProfile(spzeros(10,5), txs[11:20], mss[11:15])
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 5 samples
+julia&gt; mat[3,2]
+7</code></pre><p>You can also get &quot;slices&quot;, eg to get rows 2-4, column 1:</p><pre><code class="language-julia-repl">julia&gt; mat[2:4, 1]
+3-element Vector{Int64}:
+ 2
+ 3
+ 4</code></pre><p>To get all of one dimension, you can just use a bare <code>:</code></p><pre><code class="language-julia-repl">julia&gt; mat[:, 1:2]
+4×2 Matrix{Int64}:
+ 1  5
+ 2  6
+ 3  7
+ 4  8</code></pre><p>For <code>CommunityProfile</code>s, indexing with integer values will return the value of the matrix at that position, while indexing with slices will return a new <code>CommunityProfile</code>:</p><pre><code class="language-julia-repl">julia&gt; comm[1,3]
+0.17293302893695128
+
+julia&gt; comm[6:8,3]
+CommunityProfile{Float64, Taxon, MicrobiomeSample} with 3 features in 1 samples
 
 Feature names:
-taxon11, taxon12, taxon13...taxon19, taxon20
+g1, g2, g3
 
 Sample names:
-sample11, sample12, sample13, sample14, sample15
+s3
 
 
 
-julia&gt; commjoin(cm1, cm2, cm3)
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 20 features in 15 samples
+julia&gt; comm[1:3,3] |&gt; abundances
+3×1 SparseMatrixCSC{Float64, Int64} with 1 stored entry:
+ 0.172933
+  ⋅
+  ⋅</code></pre><h3 id="Indexing-with-strings-and-regular-expressions-1"><a class="docs-heading-anchor" href="#Indexing-with-strings-and-regular-expressions-1">Indexing with strings and regular expressions</a><a class="docs-heading-anchor-permalink" href="#Indexing-with-strings-and-regular-expressions-1" title="Permalink"></a></h3><p>It is often inconvenient to find the numerical index of a particular feature or sample. Instead, you can use strings or regular expressions to get slices of a <code>CommunityProfile</code>, which will match on the <code>name</code> field of the features or samples. This kind of indexing always returns a <code>CommunityProfile</code>, even if it only has 1 value.</p><pre><code class="language-julia-repl">julia&gt; comm[&quot;g1&quot;, &quot;s1&quot;]
+CommunityProfile{Float64, Taxon, MicrobiomeSample} with 1 features in 1 samples
 
 Feature names:
-taxon1, taxon2, taxon3...taxon19, taxon20
+g1
 
 Sample names:
-sample1, sample2, sample3...sample14, sample15</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/d4f9cc3586b85ea13a51aa37a171c8ec97da5077/src/comm_joins.jl#L1-L54">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.relativeabundance" href="#Microbiome.relativeabundance"><code>Microbiome.relativeabundance</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">relativeabundance(at::AbstractAbundanceTable, kind::Symbol=:fraction)</code></pre><p>Like <a href="#Microbiome.relativeabundance!"><code>relativeabundance!</code></a>, but does not mutate original.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/d4f9cc3586b85ea13a51aa37a171c8ec97da5077/src/profiles.jl#L302-L306">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.relativeabundance!" href="#Microbiome.relativeabundance!"><code>Microbiome.relativeabundance!</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">relativeabundance!(a::AbstractAbundanceTable; kind::Symbol=:fraction)</code></pre><p>Normalize each sample in AbstractAbundanceTable to the sum of the sample.</p><p>By default, columns sum to 1.0. Use <code>kind=:percent</code> for columns to sum to 100.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/d4f9cc3586b85ea13a51aa37a171c8ec97da5077/src/profiles.jl#L284-L291">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.present" href="#Microbiome.present"><code>Microbiome.present</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">present(t::Union{Real, Missing}, minabundance::Real=0.0)
-present(at::AbstractAbundanceTable, minabundance::Real=0.0)</code></pre><p>Check if a given (non-zero) value is greater than or equal to a minimum value. If the minimum abundance is 0, just checks if value is non-zero.</p><p>If used on an <code>AbstractAbundanceTable</code>, returns a sparse boolean matrix of the same size.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/d4f9cc3586b85ea13a51aa37a171c8ec97da5077/src/profiles.jl#L312-L320">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.prevalence" href="#Microbiome.prevalence"><code>Microbiome.prevalence</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">prevalence(a::AbstractArray{&lt;:Real}, minabundance::Real=0.0)
-prevalence(at::AbstractAbundanceTable, minabundance::Real=0.0)</code></pre><p>Return the fraction of values that are greater than or equal to a minimum. If the minimum abundance is 0, returns the fraction of non-zero values.</p><p>If used on an <code>AbstractAbundanceTable</code>, returns a prevalence value for each <code>feature</code> accross the <code>sample</code>s.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/d4f9cc3586b85ea13a51aa37a171c8ec97da5077/src/profiles.jl#L337-L346">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.prevalence_filter" href="#Microbiome.prevalence_filter"><code>Microbiome.prevalence_filter</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">prevalence_filter(comm::AbstractAbundanceTable; minabundance=0.0; minprevalence=0.05, renorm=false)</code></pre><p>Return a filtered <code>CommunityProfile</code> where features with prevalence lower than <code>minprevalence</code> are removed. By default, a feature is considered &quot;present&quot; if &gt; 0, but this can be changed by setting <code>minabundance</code>.</p><p>Optionally, set <code>renorm = true</code> to calculate relative abundances after low prevalence features are removed.</p><pre><code class="language-julia-repl">julia&gt; comm = CommunityProfile(sparse([3 0 1 # 0.33, assuming minabundance 2
-                                       2 2 2 # 1.0
-                                       0 0 1 # 0.0
-                                       2 0 0 # 0.33
-                                       ]),
-                               [Taxon(string(i)) for i in 1:4],
-                               [MicrobiomeSample(string(i)) for i in 1:3]);
+s1
 
-julia&gt; prevalence_filter(comm, minabundance=2, minprevalence=0.3) 
-CommunityProfile{Int64, Taxon, MicrobiomeSample} with 3 features in 3 samples
+
+
+julia&gt; comm[r&quot;[gs]1&quot;, &quot;s1&quot;]
+CommunityProfile{Float64, Taxon, MicrobiomeSample} with 2 features in 1 samples
 
 Feature names:
-1, 2, 4
+s1, g1
 
 Sample names:
-1, 2, 3
+s1</code></pre><h2 id="working-metadata-1"><a class="docs-heading-anchor" href="#working-metadata-1">Working with metadata</a><a class="docs-heading-anchor-permalink" href="#working-metadata-1" title="Permalink"></a></h2><p>The <code>metadata</code> dictionaries of <code>MicrobiomeSample</code>s can accessed and updated inside a <code>CommunityProfile</code> using <code>insert!</code>, <code>delete!</code>, <code>set!</code>, and <code>unset!</code>. either by directly acting on the underlying sample object, or using special methods that take the sample name as the second argument:</p><pre><code class="language-julia-repl">julia&gt; set!(samples(comm)[1], :subject, &quot;kevin&quot;)
+MicrobiomeSample(&quot;s1&quot;, {:subject = &quot;kevin&quot;})
 
-julia&gt; prevalence_filter(comm, minabundance=2, minprevalence=0.4)
-CommunityProfile{Int64, Taxon, MicrobiomeSample} with 1 features in 3 samples
+julia&gt; insert!(comm, &quot;s2&quot;, :subject, &quot;anika&quot;)
+MicrobiomeSample(&quot;s2&quot;, {:subject = &quot;anika&quot;})</code></pre><p>You can also retrieve all metadata associated with a table using <a href="../samples_features/#Microbiome.metadata"><code>metadata</code></a>, which will return a <code>Tables.jl</code>-compatible vector or <code>NamedTuple</code>s, where each &quot;row&quot; corresponds to one sample. All metadata fields found in any sample will be returned in every row, with the value <code>missing</code> in any samples that do not have that field set.</p><pre><code class="language-julia-repl">julia&gt; metadata(comm)
+3-element Vector{NamedTuple{(:sample, :subject), T} where T&lt;:Tuple}:
+ (sample = &quot;s1&quot;, subject = &quot;kevin&quot;)
+ (sample = &quot;s2&quot;, subject = &quot;anika&quot;)
+ (sample = &quot;s3&quot;, subject = missing)</code></pre><p>And you can bulk-<code>insert!</code> or <code>set!</code> metadata by passing a similar Table-like object with the a field (<code>:sample</code> by default) matching sample names found in the <code>CommunityProfile</code>.</p><pre><code class="language-julia-repl">julia&gt; md = [(sample=&quot;s1&quot;, subject=&quot;kevin&quot;, foo=&quot;bar&quot;), (sample=&quot;s3&quot;, subject=&quot;annelle&quot;, foo=&quot;baz&quot;)]
+2-element Vector{NamedTuple{(:sample, :subject, :foo), Tuple{String, String, String}}}:
+ (sample = &quot;s1&quot;, subject = &quot;kevin&quot;, foo = &quot;bar&quot;)
+ (sample = &quot;s3&quot;, subject = &quot;annelle&quot;, foo = &quot;baz&quot;)
 
-Feature names:
-2
+julia&gt; set!(comm, md)
 
-Sample names:
-1, 2, 3
+julia&gt; md2 = [(name=&quot;s1&quot;, other=&quot;Hello, World!&quot;), (name=&quot;s2&quot;, other=&quot;Goodbye!&quot;)]
+2-element Vector{NamedTuple{(:name, :other), Tuple{String, String}}}:
+ (name = &quot;s1&quot;, other = &quot;Hello, World!&quot;)
+ (name = &quot;s2&quot;, other = &quot;Goodbye!&quot;)
 
-julia&gt; prevalence_filter(comm, minabundance=3, minprevalence=0.3)
-CommunityProfile{Int64, Taxon, MicrobiomeSample} with 1 features in 3 samples
+julia&gt; insert!(comm, md2; namecol=:name)
 
-Feature names:
-1
-
-Sample names:
-1, 2, 3</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/d4f9cc3586b85ea13a51aa37a171c8ec97da5077/src/profiles.jl#L356-L400">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../samples_features/">« Samples and features</a><a class="docs-footer-nextpage" href="../diversity/">Diversity measures »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 10 October 2021 17:56">Sunday 10 October 2021</span>. Using Julia version 1.6.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+julia&gt; metadata(comm)
+3-element Vector{NamedTuple{(:sample, :subject, :foo, :other), T} where T&lt;:Tuple}:
+ (sample = &quot;s1&quot;, subject = &quot;kevin&quot;, foo = &quot;bar&quot;, other = &quot;Hello, World!&quot;)
+ (sample = &quot;s2&quot;, subject = &quot;anika&quot;, foo = missing, other = &quot;Goodbye!&quot;)
+ (sample = &quot;s3&quot;, subject = &quot;annelle&quot;, foo = &quot;baz&quot;, other = missing)</code></pre><h2 id="Types-and-Methods-1"><a class="docs-heading-anchor" href="#Types-and-Methods-1">Types and Methods</a><a class="docs-heading-anchor-permalink" href="#Types-and-Methods-1" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="Microbiome.CommunityProfile" href="#Microbiome.CommunityProfile"><code>Microbiome.CommunityProfile</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia">CommunityProfile{T, F, S} &lt;: AbstractAbundanceTable{T, F, S}</code></pre><p>An <code>AbstractAssemblage</code> from <a href="https://github.com/EcoJulia/EcoBase.jl">EcoBase.jl</a> that uses an <code>AxisArray</code> of a <code>SparseMatrixCSC</code> under the hood.</p><p><code>CommunityProfile</code>s are tables with <code>AbstractFeature</code>-indexed rows and <code>AbstractSample</code>-indexed columns. Note - we can use the <code>name</code> of samples and features to index. ```</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/5e2746e879854014a719f2f553294582c04b0e73/src/profiles.jl#L6-L16">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.samples" href="#Microbiome.samples"><code>Microbiome.samples</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">samples(at::AbstractAbundanceTable)</code></pre><p>Returns samples in <code>at</code>. To get samplenames instead, use <a href="#Microbiome.samplenames"><code>samplenames</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/5e2746e879854014a719f2f553294582c04b0e73/src/profiles.jl#L61-L65">source</a></section><section><div><pre><code class="language-none">samples(at::AbstractAbundanceTable, name::AbstractString)</code></pre><p>Returns sample in <code>at</code> with name <code>name</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/5e2746e879854014a719f2f553294582c04b0e73/src/profiles.jl#L68-L72">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.features" href="#Microbiome.features"><code>Microbiome.features</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">features(at::AbstractAbundanceTable)</code></pre><p>Returns features in <code>at</code>. To get featurenames instead, use <a href="#Microbiome.featurenames"><code>featurenames</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/5e2746e879854014a719f2f553294582c04b0e73/src/profiles.jl#L54-L58">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.samplenames" href="#Microbiome.samplenames"><code>Microbiome.samplenames</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">samplenames(at::AbstractAbundanceTable)</code></pre><p>Get a vector of sample names from <code>at</code>, equivalent to <code>name.(samples(at))</code></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/5e2746e879854014a719f2f553294582c04b0e73/src/ecobase.jl#L22-L26">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.featurenames" href="#Microbiome.featurenames"><code>Microbiome.featurenames</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">featurenames(at::AbstractAbundanceTable)</code></pre><p>Get a vector of feature names from <code>at</code>, equivalent to <code>name.(features(at))</code></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/5e2746e879854014a719f2f553294582c04b0e73/src/ecobase.jl#L12-L16">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.commjoin" href="#Microbiome.commjoin"><code>Microbiome.commjoin</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">commjoin(c1::CommunityProfile, comms::CommunityProfile...)</code></pre><p>Join multiple <code>CommunityProfile</code>s, creating a new <code>CommunityProfile</code>. For now, sample names cannot overlap in any of the input profiles.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/5e2746e879854014a719f2f553294582c04b0e73/src/comm_joins.jl#L1-L6">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.relativeabundance" href="#Microbiome.relativeabundance"><code>Microbiome.relativeabundance</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">relativeabundance(at::AbstractAbundanceTable, kind::Symbol=:fraction)</code></pre><p>Like <a href="#Microbiome.relativeabundance!"><code>relativeabundance!</code></a>, but does not mutate original.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/5e2746e879854014a719f2f553294582c04b0e73/src/profiles.jl#L269-L273">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.relativeabundance!" href="#Microbiome.relativeabundance!"><code>Microbiome.relativeabundance!</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">relativeabundance!(a::AbstractAbundanceTable; kind::Symbol=:fraction)</code></pre><p>Normalize each sample in AbstractAbundanceTable to the sum of the sample.</p><p>By default, columns sum to 1.0. Use <code>kind=:percent</code> for columns to sum to 100.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/5e2746e879854014a719f2f553294582c04b0e73/src/profiles.jl#L251-L258">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.present" href="#Microbiome.present"><code>Microbiome.present</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">present(t::Union{Real, Missing}, minabundance::Real=0.0)
+present(at::AbstractAbundanceTable, minabundance::Real=0.0)</code></pre><p>Check if a given (non-zero) value is greater than or equal to a minimum value. If the minimum abundance is 0, just checks if value is non-zero.</p><p>If used on an <code>AbstractAbundanceTable</code>, returns a sparse boolean matrix of the same size.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/5e2746e879854014a719f2f553294582c04b0e73/src/profiles.jl#L279-L287">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.prevalence" href="#Microbiome.prevalence"><code>Microbiome.prevalence</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">prevalence(a::AbstractArray{&lt;:Real}, minabundance::Real=0.0)
+prevalence(at::AbstractAbundanceTable, minabundance::Real=0.0)</code></pre><p>Return the fraction of values that are greater than or equal to a minimum. If the minimum abundance is 0, returns the fraction of non-zero values.</p><p>If used on an <code>AbstractAbundanceTable</code>, returns a prevalence value for each <code>feature</code> accross the <code>sample</code>s.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/5e2746e879854014a719f2f553294582c04b0e73/src/profiles.jl#L304-L313">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.prevalence_filter" href="#Microbiome.prevalence_filter"><code>Microbiome.prevalence_filter</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">prevalence_filter(comm::AbstractAbundanceTable; minabundance=0.0; minprevalence=0.05, renorm=false)</code></pre><p>Return a filtered <code>CommunityProfile</code> where features with prevalence lower than <code>minprevalence</code> are removed. By default, a feature is considered &quot;present&quot; if &gt; 0, but this can be changed by setting <code>minabundance</code>.</p><p>Optionally, set <code>renorm = true</code> to calculate relative abundances after low prevalence features are removed.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/Microbiome.jl/blob/5e2746e879854014a719f2f553294582c04b0e73/src/profiles.jl#L323-L330">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../samples_features/">« Samples and features</a><a class="docs-footer-nextpage" href="../diversity/">Diversity measures »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 12 October 2021 15:15">Tuesday 12 October 2021</span>. Using Julia version 1.6.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
