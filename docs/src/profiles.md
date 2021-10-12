@@ -197,14 +197,14 @@ while indexing with slices will return a new `CommunityProfile`:
 julia> comm[1,3]
 0.17293302893695128
 
-julia> comm[1:3,6]
+julia> comm[6:8,3]
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 3 features in 1 samples
 
 Feature names:
-s1, s2, s3
+g1, g2, g3
 
 Sample names:
-g1
+s3
 
 
 
@@ -281,7 +281,7 @@ julia> metadata(comm)
 And you can bulk-`insert!` or `set!` metadata by passing a similar Table-like object
 with the a field (`:sample` by default) matching sample names found in the `CommunityProfile`.
 
-```jldoctest
+```jldoctest profiles
 julia> md = [(sample="s1", subject="kevin", foo="bar"), (sample="s3", subject="annelle", foo="baz")]
 2-element Vector{NamedTuple{(:sample, :subject, :foo), Tuple{String, String, String}}}:
  (sample = "s1", subject = "kevin", foo = "bar")
