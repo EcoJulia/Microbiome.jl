@@ -12,39 +12,6 @@ that uses an `AxisArray` of a `SparseMatrixCSC` under the hood.
 `CommunityProfile`s are tables with `AbstractFeature`-indexed rows and
 `AbstractSample`-indexed columns.
 Note - we can use the `name` of samples and features to index.
-
-```jldoctest community
-julia> txs = [Taxon("taxon\$i") for i in 1:10];
-
-julia> mss = [MicrobiomeSample("sample\$i") for i in 1:5];
-
-julia> mat = spzeros(10,5);
-
-julia> for i in 1:5; mat[i,i] = 1.; end
-
-julia> comm = CommunityProfile(mat, txs, mss)
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 5 samples
-
-Feature names:
-taxon1, taxon2, taxon3...taxon9, taxon10
-
-Sample names:
-sample1, sample2, sample3, sample4, sample5
-
-julia> comm["taxon1", "sample1"]
-1.0
-
-julia> comm[:,["sample1", "sample5"]]
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 2 samples
-
-Feature names:
-taxon1, taxon2, taxon3...taxon9, taxon10
-
-Sample names:
-sample1, sample5
-
-julia> comm[Taxon("taxon3", :kingdom), "sample1"]
-0.0
 ```
 """
 mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
@@ -111,7 +78,7 @@ function samples(at::AbstractAbundanceTable, name::AbstractString)
 end
 
 profiletype(at::AbstractAbundanceTable) = eltype(features(at))
-clades(at::AbstractAbundanceTable) = clade.(features(at))
+ranks(at::AbstractAbundanceTable) = taxrank.(features(at))
 
 Base.size(at::AbstractAbundanceTable, dims...) = size(at.aa, dims...)
 
@@ -360,43 +327,6 @@ Return a filtered `CommunityProfile` where features with prevalence lower than `
 By default, a feature is considered "present" if > 0, but this can be changed by setting `minabundance`.
 
 Optionally, set `renorm = true` to calculate relative abundances after low prevalence features are removed.
-
-```jldoctest
-julia> comm = CommunityProfile(sparse([3 0 1 # 0.33, assuming minabundance 2
-                                       2 2 2 # 1.0
-                                       0 0 1 # 0.0
-                                       2 0 0 # 0.33
-                                       ]),
-                               [Taxon(string(i)) for i in 1:4],
-                               [MicrobiomeSample(string(i)) for i in 1:3]);
-
-julia> prevalence_filter(comm, minabundance=2, minprevalence=0.3) 
-CommunityProfile{Int64, Taxon, MicrobiomeSample} with 3 features in 3 samples
-
-Feature names:
-1, 2, 4
-
-Sample names:
-1, 2, 3
-
-julia> prevalence_filter(comm, minabundance=2, minprevalence=0.4)
-CommunityProfile{Int64, Taxon, MicrobiomeSample} with 1 features in 3 samples
-
-Feature names:
-2
-
-Sample names:
-1, 2, 3
-
-julia> prevalence_filter(comm, minabundance=3, minprevalence=0.3)
-CommunityProfile{Int64, Taxon, MicrobiomeSample} with 1 features in 3 samples
-
-Feature names:
-1
-
-Sample names:
-1, 2, 3
-```
 """
 function prevalence_filter(comm::AbstractAbundanceTable; minabundance=0.0, minprevalence=0.05, renorm=false)
     comm = comm[vec(prevalence(comm, minabundance) .>= minprevalence), :]
@@ -404,50 +334,23 @@ function prevalence_filter(comm::AbstractAbundanceTable; minabundance=0.0, minpr
 end
 
 """
-    cladefilter(comm::AbstractAbundanceTable, cl::Union{Symbol, Int}; keepempty=false)
+    rankfilter(comm::AbstractAbundanceTable, cl::Union{Symbol, Int}; keepempty=false)
 
-Return a copy of `comm`, where only rows that have `clade(feature) == cl` are kept.
-Use `keepempty = true` to also keep features that don't have a `clade` (eg "UNIDENTIFIED").
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> features(comm)
-10-element Vector{Taxon}:
- Taxon("taxon1", :domain)
- Taxon("taxon2", :kingdom)
- Taxon("taxon3", :phylum)
- Taxon("taxon4", :class)
- Taxon("taxon5", :order)
- Taxon("taxon6", :family)
- Taxon("taxon7", :genus)
- Taxon("taxon8", :species)
- Taxon("taxon9", :subspecies)
- Taxon("taxon10", missing)
-
-julia> features(cladefilter(comm, :species))
- 1-element Vector{Taxon}:
-  Taxon("taxon8", :species)
-
-julia> features(cladefilter(comm, :genus; keepempty = true))
-  2-element Vector{Taxon}:
-   Taxon("taxon7", :genus)
-   Taxon("taxon10", missing)
-```
+Return a copy of `comm`, where only rows that have `taxrank(feature) == cl` are kept.
+Use `keepempty = true` to also keep features that don't have a `rank` (eg "UNIDENTIFIED").
 """
-function cladefilter(comm::AbstractAbundanceTable, cl::Symbol; keepempty=false)
-    in(cl, keys(_clades)) ||  error("Invalid clade $cl, must be one of $(keys(_clades))")
+function rankfilter(comm::AbstractAbundanceTable, cl::Symbol; keepempty=false)
+    in(cl, keys(_ranks)) ||  error("Invalid rank $cl, must be one of $(keys(_ranks))")
     if keepempty
-        return filter(f-> !hasclade(f) || clade(f) == cl, comm)
+        return filter(f-> !hasrank(f) || taxrank(f) == cl, comm)
     else
-        return filter(f-> hasclade(f) && clade(f) == cl, comm)
+        return filter(f-> hasrank(f) && taxrank(f) == cl, comm)
     end
 end
 
-function cladefilter(comm::AbstractAbundanceTable, clade::Int; keepempty=false)
-    0 <= clade <= 9 ||  error("Invalid clade $clade, must be one of $_clades")
-    return cladefilter(comm, keys(_clades)[clade+1]; keepempty)
+function rankfilter(comm::AbstractAbundanceTable, rank::Int; keepempty=false)
+    0 <= rank <= 9 ||  error("Invalid rank $rank, must be one of $_ranks")
+    return rankfilter(comm, keys(_ranks)[rank+1]; keepempty)
 end
 
 
@@ -472,112 +375,16 @@ function metadata(commp::CommunityProfile)
                     ) for s in ss)
 end
 
-"""
-    add_metadata!(commp::CommunityProfile, samplename::AbstractString, md::Union{AbstractDict,NamedTuple}; overwrite=false)
-
-Add metadata (in the form of an `AbstractDict` or `NamedTuple`) to the `MicrobiomeSample` in `commp` with name `samplename`.
-For `AbstractDict`s, all keys must be `Symbol`s. 
-
-The function will fail if any of the keys in `md` already exist in the `MicrobiomeSample`,
-unless `overwrite=true` is used.
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> metadata(comm)
-3-element Vector{NamedTuple{(:sample,), Tuple{String}}}:
- (sample = "sample1",)
- (sample = "sample2",)
- (sample = "sample3",)
-
-julia> add_metadata!(comm, "sample1", Dict(:subjectname=>"kevin", :age=>37))
-
-julia> metadata(comm)
-3-element Vector{NamedTuple{(:sample, :subjectname, :age), T} where T<:Tuple}:
- (sample = "sample1", subjectname = "kevin", age = 37)
- (sample = "sample2", subjectname = missing, age = missing)
- (sample = "sample3", subjectname = missing, age = missing)
-"""
-function add_metadata!(commp::CommunityProfile, samplename::AbstractString, md::Union{AbstractDict,NamedTuple}; overwrite=false)
-    s = samples(commp, samplename)
-    if !overwrite
-        length(keys(md) ∩ keys(metadata(s))) == 0 || throw(IndexError("Adding this metadata would overwrite existing values. Use `overwrite=true` to proceed anyway"))
-    end
-    
-    for key in keys(md)
-        value = md[key]
-        overwrite ? set!(s, key, value) : insert!(s, key, value)
-    end
-    return nothing
-end
-
-"""
-    add_metadata!(commp::CommunityProfile, samplecol::Symbol, md; overwrite=false)
-
-Add metadata (in the form of a `Tables.jl` table) a `CommunityProfile`.
-One column (`samplecol`) should contain sample names that exist in `commp`,
-and other columns should contain metadata that will be added to the metadata of each sample.
-
-The function will fail if any of the column names in `md` already exist as metadata in any of the `MicrobiomeSample`s,
-unless `overwrite=true` is used.
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> metadata(comm)
-3-element Vector{NamedTuple{(:sample,), Tuple{String}}}:
- (sample = "sample1",)
- (sample = "sample2",)
- (sample = "sample3",)
-
-julia> md_table = [(id="sample1", something=5,  newthing="bar"),
-                   (id="sample2", something=10, newthing="baz"),
-                   (id="sample3", something=42, newthing="fuz")];
-
-julia> add_metadata!(comm, :id, md_table)
-
-julia> metadata(comm)
-3-element Vector{NamedTuple{(:sample, :something, :newthing), Tuple{String, Int6
-4, String}}}:
- (sample = "sample1", something = 5, newthing = "bar")
- (sample = "sample2", something = 10, newthing = "baz")
- (sample = "sample3", something = 42, newthing = "fuz")
- ```
-"""
-function add_metadata!(commp::CommunityProfile, samplecol::Symbol, md; overwrite = false)
-    Tables.istable(md) || throw(ArgumentError("Metadata must be a Tables.table"))
-    for row in Tables.rows(md)
-        row[samplecol] in samplenames(commp) || throw(IndexError("Sample '$(row[samplecol])' not found in CommunityProfile"))
-        sample = samples(commp, row[samplecol])
-        if !overwrite
-            any(k-> haskey(sample, k), Tables.columnnames(row)) && throw(IndexError("Adding this metadata would overwrite existing values. Use `overwrite=true` to proceed anyway"))
-        end
-    end
-
-    for row in Tables.rows(md)
-        rowmd = Dict(col=> row[col] for col in Tables.columnnames(row) if col != samplecol)
-        add_metadata!(commp, row[samplecol], rowmd; overwrite)
-    end
-    return nothing
-end
 
 """
     set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
+    set!(commp::CommunityProfile, sample::AbstractString, md::Union{AbstractDict, NamedTuple})
 
 Update or insert a value `val` to the metadata of `sample` in the CommunityProfile `commp` using a Symbol `prop`. 
 If you want an error to be thrown if the value already exists, use [`insert!`](@ref).
 
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> set!(comm, "sample1", :something, 1.0)
-
-julia> first(metadata(comm))[:something]
-1.0
- ```
+Can also pass a Dictionary or NamedTuple containing key=> value pairs,
+all of which will be `set!`.
 """
 function set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
     sample = samples(commp, sample)
@@ -586,28 +393,41 @@ function set!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val
     return sample
 end
 
-"""
-    unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
-
-Delete a metadata entry in `sample` from CommunityProfile `commp` using the Symbol `prop`. 
-If you want an error to be thrown if the value does not exist, use [`delete!`](@ref).
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> unset!(comm, "sample1", :something) 
-
-julia> !haskey(comm, "sample1", :something)
-true
- ```
-"""
-function unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
-    sample = samples(commp, sample)
-    prop in _restricted_fields(sample) && error("Cannot unset! $prop for $(typeof(sample)).")
-    unset!(sample.metadata, prop)
-    return sample
+function set!(commp::CommunityProfile, sample::AbstractString, md::Dictionary)
+    for (key, value) in pairs(md)
+        set!(commp, sample, key, value)
+    end
+    return nothing
 end
+
+function set!(commp::CommunityProfile, sample::AbstractString, md::Union{AbstractDict, NamedTuple})
+    md = Dictionary(md)
+    set!(commp, sample, md)
+    return nothing
+end
+
+
+"""
+    set!(cp::CommunityProfile, md; namecol=:sample)
+
+Add metadata (in the form of a `Tables.jl` table) a `CommunityProfile`.
+One column (`namecol`) should contain sample names that exist in `commp`,
+and other columns should contain metadata that will be added to the metadata of each sample.
+"""
+function set!(commp::CommunityProfile, md; namecol=:sample)
+    Tables.istable(md) || throw(ArgumentError("Metadata must be a Tables.table"))
+    sns = Set(samplenames(commp))
+    md = filter(row-> row[namecol] in sns, md)
+    for row in Tables.rows(md)
+        sample = samples(commp, row[namecol])
+        ks = filter(!=(namecol), keys(first(md)))
+        for k in ks
+            set!(sample, k, row[k])
+        end
+    end
+    return nothing
+end
+
 
 """
     insert!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
@@ -615,17 +435,6 @@ end
 Insert a value `val` to the metadata of `sample` in a CommunityProfile `commp` using a Symbol `prop`, 
 and it will throw an error if `prop` exists. 
 If you don't want an error to be thrown if the value exists, use [`set!`](@ref).
-
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> insert!(comm, "sample1", :something, 3.0) 
-
-julia> get(comm, "sample1", :something, 3.0)
-3.0
- ```
 """
 function insert!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, val)
     sample = samples(commp, sample)
@@ -634,21 +443,75 @@ function insert!(commp::CommunityProfile, sample::AbstractString, prop::Symbol, 
     return sample
 end
 
+function insert!(commp::CommunityProfile, sample::AbstractString, md::Dictionary)
+    isempty(Set(keys(commp, sample)) ∩ Set(keys(md))) || throw(IndexError("Duplicate keys found. Use `set!` to overwrite"))
+    for (key, value) in pairs(md)
+        insert!(commp, sample, key, value)
+    end
+    return nothing
+end
+
+function insert!(commp::CommunityProfile, sample::AbstractString, md::Union{<:AbstractDict, NamedTuple})
+    md = Dictionary(md)
+    insert!(commp, sample, md)
+    return nothing
+end
+
+
+"""
+    insert!(cp::CommunityProfile, md; namecol=:sample)
+
+Add metadata (in the form of a `Tables.jl` table) a `CommunityProfile`.
+One column (`namecol`) should contain sample names that exist in `commp`,
+and other columns should contain metadata that will be added to the metadata of each sample.
+
+Before starting, this will check that every value in every row is `insert!`able,
+and will throw an error if not.
+This requires iterating over the metadata table twice, which may be slow.
+If performance matters, you can use `set!` instead, 
+though this will overwrite existing data.
+"""
+function insert!(commp::CommunityProfile, md; namecol=:sample, careful=true)
+    Tables.istable(md) || throw(ArgumentError("Metadata must be a Tables.table"))
+    sns = Set(samplenames(commp))
+    md = filter(row-> row[namecol] in sns, md)
+    for row in Tables.rows(md)
+        sample = samples(commp, row[namecol])
+        ks = filter(!=(namecol), keys(first(md)))
+        for k in ks
+            haskey(sample, k) && throw(IndexError("Duplicate metadata detected. Use `set!` to force overwrite."))
+        end
+    end
+    for row in Tables.rows(md)
+        sample = samples(commp, row[namecol])
+        ks = filter(!=(namecol), keys(first(md)))
+        for k in ks
+            set!(sample, k, row[k])
+        end
+    end
+    return nothing
+end
+
+
+"""
+unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
+
+Delete a metadata entry in `sample` from CommunityProfile `commp` using the Symbol `prop`. 
+If you want an error to be thrown if the value does not exist, use [`delete!`](@ref).
+"""
+function unset!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
+    sample = samples(commp, sample)
+    prop in _restricted_fields(sample) && error("Cannot unset! $prop for $(typeof(sample)).")
+    unset!(sample.metadata, prop)
+    return sample
+end
+
+
 """
     delete!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
 
 Delete a metadata entry in `sample` from CommunityProfile `commp` using the Symbol `prop` if it exists, or throw an error otherwise.
 If you don't want an error to be thrown if the value does not exist, use [`unset!`](@ref).
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> delete!(comm, "sample1", :something) 
-
-julia> !haskey(comm, "sample1", :something)
-true
- ```
 """
 function delete!(commp::CommunityProfile, sample::AbstractString, prop::Symbol)
     sample = samples(commp, sample)
@@ -662,18 +525,6 @@ end
 
 Return an iterator over all keys of the metadata attached to `sample` in a CommunityProfile `commp`. 
 `collect(keys(commp, sample))` returns an array of keys. 
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> add_metadata!(comm, "sample1", Dict(:subjectname=>"kevin", :age=>37))
-
-julia> collect(keys(comm, "sample1"))
-2-element Vector{Symbol}:
- :subjectname
- :age
-```
 """
 Base.keys(commp::CommunityProfile, sample::AbstractString) = keys(metadata(samples(commp, sample)))
 
@@ -682,21 +533,6 @@ Base.keys(commp::CommunityProfile, sample::AbstractString) = keys(metadata(sampl
 
 Determine whether the metadata of `sample` in a CommunityProfile `commp` has a mapping for a given `key`. 
 Use `!haskey` to determine whether a `sample` in a CommunityProfile doesn't have a mapping for a given `key`
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> set!(comm, "sample1", :something, 1.0)
-
-julia> haskey(comm, "sample1", :something)
-true
-
-julia> delete!(comm, "sample1", :something) 
-
-julia> !haskey(comm, "sample1", :something)
-true
- ```
 """
 Base.haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol) = in(key, keys(samples(commp, sample)))
 
@@ -704,19 +540,6 @@ Base.haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol) = in(k
     get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default)
 
 Return the value of the metadata in a `sample` stored for the given `key`, or the given `default` value if no mapping for the key is present.
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> get(comm, "sample1", :something, 42)
-42 
-
-julia> insert!(comm, "sample1", :something, 3.0) 
-
-julia> get(comm, "sample1", :something, 42)
-3.0
- ```
 """
 Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default) = get(metadata(samples(commp, sample)), key, default)
 
@@ -726,22 +549,6 @@ Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default) 
 
 Apply `f` to the features of `comm`,
 and return a copy where `f(feature)` is `true`.
-
-Examples
-≡≡≡≡≡≡≡≡≡≡
-
-```jldoctest
-julia> features(comm)
-3-element Vector{GeneFunction}:
- GeneFunction("gene1", Taxon("tax1", :species))
- GeneFunction("gene1", Taxon("tax2", :genus))
- GeneFunction("gene2", missing)
-
-julia> features(filter(hastaxon, comm))
-2-element Vector{GeneFunction}:
- GeneFunction("gene1", Taxon("tax1", :species))
- GeneFunction("gene1", Taxon("tax2", :genus))
-```
 """
 function Base.filter(f::Function, commp::CommunityProfile)
     ridx = findall(f, features(commp))
