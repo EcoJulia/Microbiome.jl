@@ -10,10 +10,11 @@ export MicrobiomeSample,
        insert!,
        delete!,
        name,
-       clade,
-       hasclade,
+       taxrank,
+       hasrank,
        taxon,
-       hastaxon
+       hastaxon,
+       genefunction
 
 # EcoBase Translations
 export abundances,
@@ -33,14 +34,13 @@ export CommunityProfile,
        featuretype,
        features,
        samples,
-       clades,
-       cladefilter,
+       ranks,
+       rankfilter,
        profiletype,
        featuretotals,
        sampletotals,
        commjoin,
-       metadata,
-       add_metadata!
+       metadata
    
 # Abundances
 export present,
@@ -76,7 +76,8 @@ import Dictionaries: set!, unset!, insert!, delete!
 import Base: ==
 
 include("ecobase.jl")
-include("samples_features.jl")
+include("samples.jl")
+include("features.jl")
 include("profiles.jl")
 include("diversity.jl")
 include("comm_joins.jl")

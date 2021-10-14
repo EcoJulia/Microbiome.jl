@@ -4,6 +4,7 @@ using Microbiome.SparseArrays
 using Microbiome.Tables
 using Microbiome.Dictionaries
 import Microbiome.MultivariateStats: MDS
+using Documenter
 
 @testset "Samples and Features" begin
     @testset "MicriobiomeSamples and metadata" begin
@@ -34,28 +35,40 @@ import Microbiome.MultivariateStats: MDS
             set!(ms, :thing2, "metadata2")
             ms.thing2 == "metadata2"
         end
+
+        ms2 = MicrobiomeSample("sample2"; age=10, birthtype="vaginal", allergies=true)
+        @test ms2.age == 10
+        @test ms2.birthtype == "vaginal"
+        @test ms2.allergies
+
+        @test_throws ArgumentError insert!(ms2, (; birthtype="cesarean"))
+        insert!(ms2, (; foo=10))
+        @test ms2.foo == 10
+        set!(ms2, (; birthtype="cesarean"))
+        @test ms2.birthtype == "cesarean"
     end
     
     @testset "Taxa" begin
-        _clades = (:domain, :kingdom, :phylum, :class, :order, :family, :genus, :species, :subspecies, :strain)
         txm = Taxon("taxon", missing)
         @test txm === Taxon("taxon")
-        @test ismissing(clade(txm))
-        @test !hasclade(txm)
+        @test ismissing(taxrank(txm))
+        @test !hasrank(txm)
 
-        for (i, c) in enumerate(_clades)
-            tx = Taxon("taxon", c)
-            @test clade(tx) == c
-            @test tx === Taxon("taxon", i-1)
+        for (r, i) in pairs(Microbiome._ranks)
+            tx = Taxon("taxon", r)
+            @test taxrank(tx) == r
+            @test tx === Taxon("taxon", i)
             @test tx !== txm
-            @test tx == txm
         end
         
         @test_throws ErrorException Taxon("taxon", :invalid)
         @test_throws ErrorException Taxon("taxon", 10)
         @test let tx = Taxon("taxon", :kingdom)
-            hasclade(tx)
+            hasrank(tx)
+            String(tx) == "k__taxon"
+            taxon("g__Somegenus") == Taxon("Somegenus", :genus)
         end
+
     end
 
     @testset "Gene Functions" begin
@@ -64,27 +77,33 @@ import Microbiome.MultivariateStats: MDS
         @test gfm === GeneFunction("gene")
         @test ismissing(taxon(gfm))
         @test !hastaxon(gfm)
-        @test !hasclade(gfm)
+        @test !hasrank(gfm)
 
         gf1 = GeneFunction("gene", Taxon("sp1", :species))
         gf2 = GeneFunction("gene", Taxon("sp1"))
         @test name(gf1) == "gene"
+        @test String(gf1) == "gene|s__sp1"
+        @test String(gf2) == "gene|u__sp1"
+        @test genefunction("gene|s__sp1") == gf1
+        @test genefunction("gene|u__sp1") == gf2
         
-        @test gf1 == gf2 == gfm
+        @test gf1 != gfm
+        @test gf1 === GeneFunction("gene", Taxon("sp1", :species))
+        @test gf2 === GeneFunction("gene", Taxon("sp1"))
         @test gf1 !== gf2
-        @test gf1 !== gfm
         @test hastaxon(gf1)
         @test !ismissing(taxon(gf1))
-        @test taxon(gf1) == taxon(gf2)
-        @test hasclade(gf1)
-        @test clade(gf1) == :species
+        @test taxon(gf1) == Taxon("sp1", :species)
+        @test taxon(gf1) != taxon(gf2)
+        @test hasrank(gf1)
+        @test taxrank(gf1) == :species
     end
 end
 
 @testset "Profiles" begin
-    _clades = Tuple(keys(Microbiome._clades))[1:9]
+    _ranks = Tuple(keys(Microbiome._ranks))[1:9]
     mss = [MicrobiomeSample("sample$i") for i in 1:5]
-    txs = [Taxon("taxon$i", _clades[i]) for i in 1:9]
+    txs = [Taxon("taxon$i", _ranks[i]) for i in 1:9]
     push!(txs, Taxon("taxon10", missing))
     
     mat = spzeros(10,5)
@@ -109,22 +128,22 @@ end
         @test nfeatures(comm) == 10
         @test size(comm) == (10, 5)
         @test profiletype(comm) == Taxon
-        @test clades(comm)[1:9] == [_clades...]
+        @test ranks(comm)[1:9] == [_ranks...]
         @test sampletotals(comm) == [1.6 1.6 1.6 1.6 1.6]
         @test featuretotals(comm) == reshape([1.0, 1.0, 1.0, 1.0, 1.0, 0.6, 0.6, 0.6, 0.6, 0.6], 10, 1)
         @test features(comm) == txs
         @test samples(comm) == mss
 
-        @test size(cladefilter(comm, :species), 1) == 1
-        @test size(cladefilter(comm, :genus; keepempty=true), 1) == 2
+        @test size(rankfilter(comm, :species), 1) == 1
+        @test size(rankfilter(comm, :genus; keepempty=true), 1) == 2
 
-        @test size(cladefilter(comm, 5), 1) == 1
-        @test size(cladefilter(comm, 6; keepempty=true), 1) == 2
-        @test_throws ErrorException cladefilter(comm, :foo)
-        @test_throws ErrorException cladefilter(comm, 10)
-        @test_throws ErrorException cladefilter(cladefilter(comm, :species), :genus) # will be empty
+        @test size(rankfilter(comm, 5), 1) == 1
+        @test size(rankfilter(comm, 6; keepempty=true), 1) == 2
+        @test_throws ErrorException rankfilter(comm, :foo)
+        @test_throws ErrorException rankfilter(comm, 10)
+        @test_throws ErrorException rankfilter(rankfilter(comm, :species), :genus) # will be empty
 
-        @test filter(f-> hasclade(f) && clade(f) == :species, comm) == cladefilter(comm, :species)
+        @test featurenames(filter(f-> hasrank(f) && taxrank(f) == :species, comm)) == featurenames(rankfilter(comm, :species))
 
         @test present(0.1)
         @test !present(0.1, 0.2)
@@ -169,7 +188,28 @@ end
         @test size(prevalence_filter(filtertest, minabundance=2, minprevalence=0.4)) == (2,3)
         @test all(<=(1.0), abundances(prevalence_filter(filtertest, renorm=true)))
         @test all(x-> isapprox(x, 1.0, atol=1e-8), sum(abundances(prevalence_filter(filtertest, renorm=true)), dims=1))
+    end 
+
+    @testset "Stratified gene functions operations" begin
+        strat = CommunityProfile(sparse(Float64[3 2 1 
+                                                2 2 2
+                                                0 0 1
+                                                0 1 0
+                                        ]),
+                                        [GeneFunction("gene1"),
+                                         GeneFunction("gene1", "species1"),
+                                         GeneFunction("gene1", "species2"),
+                                         GeneFunction("gene2")
+                                         ],
+                                        [MicrobiomeSample(string(i)) for i in 1:3]);
+        
+        @test filter(hastaxon, strat)         |> nfeatures == 2
+        @test filter(!hastaxon, strat)        |> nfeatures == 2
+        @test strat["gene1", :]               |> nfeatures == 3
+        @test strat[["gene1", "gene2"], :]    |> nfeatures == 4
+        @test strat[GeneFunction("gene1"), :] |> nfeatures == 1
     end
+
 
     @testset "Profile Metadata" begin
         s1 = MicrobiomeSample("sample1", Dictionary(Dict(:age=> 37, :name=>"kevin", :something=>1.0)))
@@ -208,22 +248,31 @@ end
             @test md2[:something_else] == 2.0
             @test ismissing(md1[:something_else])
 
-            @test_throws IndexError add_metadata!(c5, "sample1", Dict(:something=>3.0))
-            add_metadata!(c5, "sample1", Dict(:something=>3.0), overwrite=true)
-            @test first(metadata(c5))[:something] == 3
-            
-            @test_throws IndexError add_metadata!(c5, "sample1", (; something=4.0))
-            add_metadata!(c5, "sample1", (; something=4.0), overwrite=true)
-            @test first(metadata(c5))[:something] == 4
+            @testset "insert!" begin
+                insert!(c5, "sample1", :foo, "bar")
+                @test samples(c5, "sample1").foo == "bar"
+                @test_throws IndexError insert!(c5, "sample1", :foo, "baz")
 
-            tbl = [(sample="sample1", something=5,  newthing="bar"),
-                   (sample="sample2", something=10, newthing="baz"),
-                   (sample="sample3", something=42, newthing="fuz")]
-            @test_throws IndexError add_metadata!(c5, :sample, tbl, overwrite=true) # for sample that doesn't exist
-            @test_throws IndexError add_metadata!(c5, :sample, tbl[1:2])            # for metadata that already exists
-            add_metadata!(c5, :sample, tbl[1:2]; overwrite = true)
-            @test first(metadata(c5))[:something] == 5
-            @test first(metadata(c5))[:newthing] == "bar"
+                insert!(c5, "sample2", (; foo="baz", greeting="hello"))
+                @test samples(c5, "sample2").foo == "baz"
+                @test_throws IndexError insert!(c5, "sample2", Dict(:baz=> "test", :foo=>"bar"))
+                @test !haskey(c5, "sample2", :baz)
+
+                @test_throws IndexError insert!(c5, [(;sample="sample1", still_other="yes"), (;sample="sample2", still_other="no")])
+                @test !haskey(c5, "sample1", :still_other)
+            end
+
+            @testset "set!" begin
+                set!(c5, "sample1", :foo, "barre")
+                @test samples(c5, "sample1").foo == "barre"
+                set!(c5, "sample2", (; foo="bazze", greeting="hello world!"))
+                @test samples(c5, "sample2").foo == "bazze"
+
+                set!(c5, [(;sample="sample1", still_other="yes"), (;sample="sample2", still_other="no")])
+                @test haskey(c5, "sample1", :still_other)
+                @test samples(c5, "sample1").still_other == "yes"
+                @test samples(c5, "sample2").still_other == "no"
+            end
         end
     end
     
@@ -232,6 +281,9 @@ end
             @test abundances(comm[:, "sample$i"]) == mat[:, [i]]
             @test abundances(comm["taxon$i", :]) == mat[[i], :]
         end
+
+        @test abundances(comm[r"taxon1", :]) == abundances(comm[["taxon1", "taxon10"], :]) == abundances(comm[[1,10], :])
+        @test abundances(comm[:, r"sample[13]"]) == abundances(comm[:,["sample1", "sample3"]]) == abundances(comm[:, [1,3]])
 
         for (i, col) in enumerate(Tables.columns(comm))
             if i == 1
@@ -296,5 +348,7 @@ end
         @test all(hellinger(comm) .== [0 1 1 1 1; 1 0 1 1 1; 1 1 0 1 1; 1 1 1 0 1; 1 1 1 1 0])
         @test pcoa(comm) isa MDS
     end
-
 end
+
+
+doctest(Microbiome)
