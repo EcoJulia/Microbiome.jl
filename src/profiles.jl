@@ -12,7 +12,6 @@ that uses an `AxisArray` of a `SparseMatrixCSC` under the hood.
 `CommunityProfile`s are tables with `AbstractFeature`-indexed rows and
 `AbstractSample`-indexed columns.
 Note - we can use the `name` of samples and features to index.
-```
 """
 mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
     aa::NamedAxisArray
