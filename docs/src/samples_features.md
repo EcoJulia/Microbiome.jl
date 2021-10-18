@@ -20,8 +20,8 @@ The concrete type [`MicrobiomeSample`](@ref) is implemented with these two field
 the latter of which is a `Dictionary` from [`Dictionaries.jl`](https://github.com/andyferris/Dictionaries.jl).
 
 You can instantiate a `MicrobiomeSample` with just a name (in which case the metadata dictionary will be empty),
-using keyword arguments for metadata entries,
-or with existing metadata in the form of a dictionary.
+with existing metadata in the form of a dictionary,
+or using keyword arguments for metadata entries.
 
 ```jldoctest sampletypes
 julia> s1 = MicrobiomeSample("sample1")
@@ -107,12 +107,6 @@ julia> taxrank(ecoli)
 
 julia> taxrank(uncl)
 missing
-
-julia> name(ecoli)
-"Escherichia_coli"
-
-julia> name(uncl)
-"Unknown_bug"
 ```
 
 For compatibility with other tools, converting a `Taxon` to a `String`
@@ -139,7 +133,7 @@ Taxon("Escherichia_coli", :species)
 ### GeneFunction
 
 The [`GeneFunction`](@ref) type contains a name and (optionally) a [`Taxon`](@ref).
-In addition to providing both a name and `Taxon`,
+In addiction to providing both a name and `Taxon`,
 you can instantiate a `GeneFunction` with just a name (in which case the taxon will be `missing`),
 or with the name of the taxon (in which case it will not have a `rank`).
 
@@ -207,8 +201,7 @@ Taxon
 name
 hasrank
 taxrank
-taxon(::AbstractString)
-taxon(::GeneFunction)
+taxon
 ```
 
 ```@docs

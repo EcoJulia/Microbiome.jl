@@ -67,24 +67,6 @@ function Base.String(t::Taxon)
     end
 end
 
-"""
-    taxon(::AbstractString)
-
-Return a [`Taxon`](@ref) from a string representation.
-If the string contains taxonomic rank information in the form
-`"x__Thename"` where `x` is the first letter of the rank,
-this information will be used.
-
-## Examples
-
-```jldoctest
-julia> taxon("Unknown")
-Taxon("Unknown", missing)
-
-julia> taxon("s__Prevotella_copri")
-Taxon("Prevotella_copri", :species)
-```
-"""
 function taxon(n::AbstractString)
     m = match(r"^([dkpcofgstu])__(.+)", n)
     isnothing(m) && return Taxon(n)
@@ -168,3 +150,5 @@ function genefunction(n::AbstractString)
         return GeneFunction(n)
     end
 end
+
+Base.string(f::AbstractFeature) = String(f)

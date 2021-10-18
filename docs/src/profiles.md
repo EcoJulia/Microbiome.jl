@@ -67,7 +67,7 @@ Sample names:
 s1, s2, s3
 ```
 
-## Accessing `CommunityProfile` contents
+## Accessing `CommunitProfile` contents
 
 It is easy to get out the underlying abundance matrix,
 features, and samples using
@@ -191,8 +191,7 @@ julia> mat[:, 1:2]
 
 For `CommunityProfile`s, indexing with integer values
 will return the value of the matrix at that position,
-while indexing with slices will return a new `CommunityProfile`.
-To get the values of a matrix slice, use `abundances` after indexing.
+while indexing with slices will return a new `CommunityProfile`:
 
 ```jldoctest profiles
 julia> comm[1,3]
@@ -206,6 +205,8 @@ g1, g2, g3
 
 Sample names:
 s3
+
+
 
 julia> comm[1:3,3] |> abundances
 3×1 SparseMatrixCSC{Float64, Int64} with 1 stored entry:
@@ -278,7 +279,7 @@ julia> metadata(comm)
 ```
 
 And you can bulk-`insert!` or `set!` metadata by passing a similar Table-like object
-with a field (`:sample` by default) matching sample names found in the `CommunityProfile`.
+with the a field (`:sample` by default) matching sample names found in the `CommunityProfile`.
 
 ```jldoctest profiles
 julia> md = [(sample="s1", subject="kevin", foo="bar"), (sample="s3", subject="annelle", foo="baz")]
@@ -309,8 +310,7 @@ CommunityProfile
 samples
 features
 samplenames
-featurenames
-abundances
+**featurenames**
 commjoin
 relativeabundance
 relativeabundance!
