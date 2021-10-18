@@ -107,6 +107,12 @@ julia> taxrank(ecoli)
 
 julia> taxrank(uncl)
 missing
+
+julia> name(ecoli)
+"Escherichia_coli"
+
+julia> name(uncl)
+"Unknown_bug"
 ```
 
 For compatibility with other tools, converting a `Taxon` to a `String`
