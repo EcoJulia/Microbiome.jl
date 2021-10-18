@@ -84,7 +84,7 @@ to store and access this information (Figure \autoref{fig1}).
     or with strings and regular expressions that will search on the `name`
     fields of the sample or feature dimensions.
 
-![Functionality of Microbiome.jl\label{fig1}](manuscript/figure1.png)
+![Functionality of Microbiome.jl\label{fig1}](Microbiome-jl-fig1.svg)
 
 `BiobakeryUtils.jl` provides a julia interface for the command line utilities
 from HUMAnN and MetaPhlAn, two widely-used tools
@@ -95,7 +95,7 @@ and I/O for the common file types used and produced by those tools.
 Together, `Microbiome.jl` and `BiobakeryUtils.jl`
 make it easy to load, manipulate, and analyze microbial community data (Figure \autoref{fig2}).
 
-![Microbial community analysis workflow\label{fig2}](manuscript/figure2.png)
+![Microbial community analysis workflow\label{fig2}](Microbiome-jl-fig2.svg)
 
 # Limitations and future work
 
