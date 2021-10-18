@@ -20,8 +20,8 @@ The concrete type [`MicrobiomeSample`](@ref) is implemented with these two field
 the latter of which is a `Dictionary` from [`Dictionaries.jl`](https://github.com/andyferris/Dictionaries.jl).
 
 You can instantiate a `MicrobiomeSample` with just a name (in which case the metadata dictionary will be empty),
-with existing metadata in the form of a dictionary,
-or using keyword arguments for metadata entries.
+using keyword arguments for metadata entries,
+or with existing metadata in the form of a dictionary.
 
 ```jldoctest sampletypes
 julia> s1 = MicrobiomeSample("sample1")
