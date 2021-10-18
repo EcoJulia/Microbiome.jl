@@ -310,6 +310,7 @@ samples
 features
 samplenames
 featurenames
+abundances
 commjoin
 relativeabundance
 relativeabundance!
