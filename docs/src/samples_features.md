@@ -133,7 +133,7 @@ Taxon("Escherichia_coli", :species)
 ### GeneFunction
 
 The [`GeneFunction`](@ref) type contains a name and (optionally) a [`Taxon`](@ref).
-In addiction to providing both a name and `Taxon`,
+In addition to providing both a name and `Taxon`,
 you can instantiate a `GeneFunction` with just a name (in which case the taxon will be `missing`),
 or with the name of the taxon (in which case it will not have a `rank`).
 
