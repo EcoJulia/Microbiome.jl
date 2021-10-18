@@ -67,7 +67,7 @@ Sample names:
 s1, s2, s3
 ```
 
-## Accessing `CommunitProfile` contents
+## Accessing `CommunityProfile` contents
 
 It is easy to get out the underlying abundance matrix,
 features, and samples using
