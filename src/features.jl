@@ -77,7 +77,7 @@ this information will be used.
 
 ## Examples
 
-```jldoctest
+```julia-repl
 julia> taxon("Unknown")
 Taxon("Unknown", missing)
 
