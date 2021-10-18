@@ -168,3 +168,5 @@ function genefunction(n::AbstractString)
         return GeneFunction(n)
     end
 end
+
+Base.string(f::AbstractFeature) = String(f)

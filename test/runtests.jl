@@ -65,7 +65,7 @@ using Documenter
         @test_throws ErrorException Taxon("taxon", 10)
         @test let tx = Taxon("taxon", :kingdom)
             hasrank(tx)
-            String(tx) == "k__taxon"
+            String(tx) == string(tx) == "k__taxon"
             taxon("g__Somegenus") == Taxon("Somegenus", :genus)
         end
 
@@ -82,8 +82,8 @@ using Documenter
         gf1 = GeneFunction("gene", Taxon("sp1", :species))
         gf2 = GeneFunction("gene", Taxon("sp1"))
         @test name(gf1) == "gene"
-        @test String(gf1) == "gene|s__sp1"
-        @test String(gf2) == "gene|u__sp1"
+        @test String(gf1) == string(gf1) == "gene|s__sp1"
+        @test String(gf2) == string(gf2) == "gene|u__sp1"
         @test genefunction("gene|s__sp1") == gf1
         @test genefunction("gene|u__sp1") == gf2
         
@@ -287,18 +287,18 @@ end
 
         for (i, col) in enumerate(Tables.columns(comm))
             if i == 1
-                @test col == name.(txs)
+                @test col == txs
             else
                 @test col ==  mat[:, [i-1]] 
             end
         end
         
         for (i, row) in enumerate(Tables.rows(comm))
-            @test row == (; :features => name(txs[i]), (Symbol("sample$(j)") => mat[i, j] for j in 1:5)...)
+            @test row == (; :features => txs[i], (Symbol("sample$(j)") => mat[i, j] for j in 1:5)...)
         end
 
         tbl = Tables.columntable(comm)
-        @test tbl.features == featurenames(comm)
+        @test tbl.features == features(comm)
         @test keys(tbl) == (:features, Symbol.(samplenames(comm))...)
         @test tbl.sample1 == abundances(comm[:, "sample1"])
     end
