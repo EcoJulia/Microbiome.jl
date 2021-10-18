@@ -10,7 +10,7 @@ authors:
     affiliation: 1
   - name: Annelle Abatoni Kayisire
     affiliation: 1
-  - name: Anika Luo
+  - name: Anika S. Luo
     affiliation: 1
   - name: Vanja Klepac-Ceraj^[Corresponding author]
     affiliation: 1
@@ -53,20 +53,56 @@ while remaining agnostic to downstream analysis.
 
 # Functionality
 
+At its most basic, microbial community data can be represented as a sparse matrix,
+where one dimension is indexed by microbial `feature`s (eg, species),
+and the other is indexed by biological `sample`s or observations (eg, a stool sample).
+Together, the measured abundances of each `feature` in each `sample`
+make up the taxonomic or function "profile."
+Typically, additional information (`metadata`) about each `sample`
+is also needed for downstream statistical analysis,
+such as the location or human subject it was collected from,
+data about that environment (salinity, temperature etc for environmental samples,
+clinical covariates for human subjects),
+and storage or processing details.
+While the observed values for microbial `feature`s are uniformly numeric,
+and can be efficiently stored in a spares matrix of floating point numbers,
+`metadata` can take many forms.
+Further, `CommuinityProfile`s may have hundreds to hundreds of thousands of features,
+while typically only a few dozen metadata variables are necessary for a given analysis.
+
+`Microbiome.jl` provides a convenient set of types and type constructors
+to store and access this information (Figure \autoref{fig1}).
+
+- The `MicrobiomeSample` type contains `name` and `metadata` fields,
+  and methods for efficiently adding and extracting stored metadata
+- The `Taxon` type stores `name` and taxonomic `rank` (eg `genus`, `phylum`) fields
+- The `GeneFunction` type stores `name` and `taxon` fields,
+  the later of which may be a `Taxon` (allowing taxonomically stratified gene functions).
+- The `CommunityProfile` type, which is a wrapped `SparseMatrixCSC`,
+  with `MicrobiomeSample`s as columns and features (`Taxon`s or `GeneFunction`s) as rows.
+  - `CommunityProfile`s can be indexed like normal julia arrays with integers,
+    or with strings and regular expressions that will search on the `name`
+    fields of the sample or feature dimensions.
+
+![Functionality of Microbiome.jl\label{fig1}](manuscript/figure1.png)
+
+`BiobakeryUtils.jl` provides a julia interface for the command line utilities
+from HUMAnN and MetaPhlAn, two widely-used tools
+for using metagenomic sequencing reads to generate
+functional and taxonomic profiles respectively.
+It also provides functionality to simplify installation of the tools
+and I/O for the common file types used and produced by those tools.
+Together, `Microbiome.jl` and `BiobakeryUtils.jl`
+make it easy to load, manipulate, and analyze microbial community data (Figure \autoref{fig2}).
+
+![Microbial community analysis workflow\label{fig2}](manuscript/figure2.png)
+
 # Limitations and future work
-# Citations
 
-Citations to entries in paper.bib should be in
-[rMarkdown](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
-format.
-
-For a quick reference, the following citation commands can be used:
-- `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
-
-# Figures
-
+- More I/O in BiobakeryUtils (eg panphlan, strainphlan)
+- Better integration with EcoJulia
+- Plot recipes
+- Additional conveniences for tabular data
 
 # Acknowledgements
 
