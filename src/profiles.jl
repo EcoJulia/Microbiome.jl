@@ -364,7 +364,6 @@ Samples without given metadata are filled with `missing`.
 
 Returned values can be passed to any Tables.rowtable - compliant type,
 eg `DataFrame`.
-```
 """
 function metadata(commp::CommunityProfile)
     ss = samples(commp)
