@@ -278,7 +278,7 @@ julia> metadata(comm)
 ```
 
 And you can bulk-`insert!` or `set!` metadata by passing a similar Table-like object
-with the a field (`:sample` by default) matching sample names found in the `CommunityProfile`.
+with a field (`:sample` by default) matching sample names found in the `CommunityProfile`.
 
 ```jldoctest profiles
 julia> md = [(sample="s1", subject="kevin", foo="bar"), (sample="s3", subject="annelle", foo="baz")]
@@ -310,6 +310,7 @@ samples
 features
 samplenames
 featurenames
+abundances
 commjoin
 relativeabundance
 relativeabundance!

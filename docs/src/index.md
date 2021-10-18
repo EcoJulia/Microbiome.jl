@@ -19,7 +19,7 @@ If you are interested in the cutting edge of the development, please check out
 the master branch to try new features before release.
 
 ```julia
-julia> pkg"add Microbiome#master"
+julia> pkg"add Microbiome#main"
 ```
 
 ```@contents

@@ -207,7 +207,8 @@ Taxon
 name
 hasrank
 taxrank
-taxon
+taxon(::AbstractString)
+taxon(::GeneFunction)
 ```
 
 ```@docs
