@@ -191,7 +191,8 @@ julia> mat[:, 1:2]
 
 For `CommunityProfile`s, indexing with integer values
 will return the value of the matrix at that position,
-while indexing with slices will return a new `CommunityProfile`:
+while indexing with slices will return a new `CommunityProfile`.
+To get the values of a matrix slice, use `abundances` after indexing.
 
 ```jldoctest profiles
 julia> comm[1,3]
@@ -205,8 +206,6 @@ g1, g2, g3
 
 Sample names:
 s3
-
-
 
 julia> comm[1:3,3] |> abundances
 3×1 SparseMatrixCSC{Float64, Int64} with 1 stored entry:
