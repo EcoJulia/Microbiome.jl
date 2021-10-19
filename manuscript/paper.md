@@ -73,6 +73,8 @@ while typically only a few dozen metadata variables are necessary for a given an
 `Microbiome.jl` provides a convenient set of types and type constructors
 to store and access this information (Figure \autoref{fig1}).
 
+![Functionality of Microbiome.jl\label{fig1}](Microbiome-jl-fig1.png)
+
 - The `MicrobiomeSample` type contains `name` and `metadata` fields,
   and methods for efficiently adding and extracting stored metadata
 - The `Taxon` type stores `name` and taxonomic `rank` (eg `genus`, `phylum`) fields
@@ -84,7 +86,13 @@ to store and access this information (Figure \autoref{fig1}).
   or with strings and regular expressions that will search on the `name`
   fields of the sample or feature dimensions.
 
-![Functionality of Microbiome.jl\label{fig1}](Microbiome-jl-fig1.png)
+Further, the `CommunityProfile` type implements the `Tables.jl` interface,
+making it trivial to convert to other tabular representations,
+in particular enabling round-tripping to and from column separated values (`.csv`) files
+using `CSV.jl`.
+Feature types (`Taxon` and `GeneFunction`), `MicrobiomeSample`, and `CommunityProfile`
+types are also implemented with the interface of `EcoBase.jl`,
+potentially enabling integration with the wider EcoJulia family of packages.
 
 `BiobakeryUtils.jl` provides a julia interface for the command line utilities
 from HUMAnN and MetaPhlAn, two widely-used tools
@@ -99,13 +107,39 @@ make it easy to load, manipulate, and analyze microbial community data (Figure \
 
 # Limitations and future work
 
-- More I/O in BiobakeryUtils (eg panphlan, strainphlan)
-- Better integration with EcoJulia
-- Plot recipes
-- Additional conveniences for tabular data
+While `Microbiome.jl` and `BiobakeryUtils.jl` are already functional
+and being used for research [@Tso2021-vv; @Lewis2021-be; @Peterson2021-mr],
+there are several avenues for further development.
+First, there are many additional tools in the bioBakery
+whose interface and outputs could be incorporated into `BiobakeryUtils.jl`.
+In particular, `StrainPhlAn` and `PanPhlAn` [@Beghini2021-xy],
+which have tabular output distinct from, but quite similar to that
+of `HUMAnN` and `MetaPhlAn` could be supported.
+
+Second, two of the largest plotting packages in the julia ecosystem,
+`Plots.jl` and `Makie.jl` [@tom_breloff_2021_5566503; @DanischKrumbiegel2021]
+share a common "recipes" system,
+enabling package authors to include instructions to provide instructions
+for how to plot their types.
+`Microbiome.jl` currently contains convenience functions to facilitate
+the generation of easy-to-plot data structures,
+but including plot recipes for thing like ordinations (PCoA),
+abundance bar plots, and other commonly used microbial community visualizations
+would make it even easier to generate publication-quality figures.
+
+Finally, better integration with EcoJulia would carry a host of benefits.
+For example, `Diversity.jl` [@Diversity.jl-2016] provides a wide array
+of alpha and beta diversity metrics that could be beneficial
+for investigations of microbial diversity.
+There are also several packages that provide functionality
+around phylogenies and taxonomic information
+that could enhance or replace `Taxon`,
+making it easier to gain insight into the relationships
+between different microbial taxa found in communities.
 
 # Acknowledgements
 
-<!-- TODO -->
+The authors would like to thank the families participating in the RESONANCE cohort.
+This work was funded in part by the NIH UG3 OD023313 (VK-C).
 
 # References
