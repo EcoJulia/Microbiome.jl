@@ -80,9 +80,9 @@ to store and access this information (Figure \autoref{fig1}).
   the later of which may be a `Taxon` (allowing taxonomically stratified gene functions).
 - The `CommunityProfile` type, which is a wrapped `SparseMatrixCSC`,
   with `MicrobiomeSample`s as columns and features (`Taxon`s or `GeneFunction`s) as rows.
-  - `CommunityProfile`s can be indexed like normal julia arrays with integers,
-    or with strings and regular expressions that will search on the `name`
-    fields of the sample or feature dimensions.
+- `CommunityProfile`s can be indexed like normal julia arrays with integers,
+  or with strings and regular expressions that will search on the `name`
+  fields of the sample or feature dimensions.
 
 ![Functionality of Microbiome.jl\label{fig1}](Microbiome-jl-fig1.png)
 
