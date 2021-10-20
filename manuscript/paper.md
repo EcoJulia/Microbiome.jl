@@ -124,7 +124,7 @@ enabling package authors to provide instructions
 for how to plot their types.
 `Microbiome.jl` currently contains convenience functions to facilitate
 the generation of easy-to-plot data structures,
-but including plot recipes for thing like ordinations (PCoA),
+but including plot recipes for things like ordinations (PCoA),
 abundance bar plots, and other commonly used microbial community visualizations
 would make it even easier to generate publication-quality figures.
 
