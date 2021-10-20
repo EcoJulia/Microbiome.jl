@@ -37,8 +37,8 @@ Complex microbial communities exist everywhere, including in and on the human bo
 and have profound effects on the environment and human health [@LloydPrice2017].
 Common methods for analyzing microbial communities (eg 16S amplicon or metagenomic sequencing)
 generate a large quantity of numerical data (eg count or relative abundance data)
-as well as metadata associated with biological samples (locations, human subject data)
-and microbial features (taxa, gene functions) [@Mallick2017ExperimentalDA].
+as well as metadata associated with biological samples (eg locations, human subject data)
+and microbial features (eg taxa, gene functions) [@Mallick2017ExperimentalDA].
 
 The julia programming language [@Bezanson2017-ud] is gaining increasing prominence in biological research
 due to its speed and flexibility [@roesch2021julia],
