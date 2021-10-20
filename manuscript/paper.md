@@ -73,8 +73,6 @@ while typically only a few dozen metadata variables are necessary for a given an
 `Microbiome.jl` provides a convenient set of types and type constructors
 to store and access this information (\autoref{fig1}).
 
-![Functionality of Microbiome.jl\label{fig1}](Microbiome-jl-fig1.png)
-
 - The `MicrobiomeSample` type contains `name` and `metadata` fields,
   and methods for efficiently adding and extracting stored metadata
 - The `Taxon` type stores `name` and taxonomic `rank` (eg. `genus`, `phylum`) fields
@@ -93,6 +91,8 @@ using `CSV.jl`.
 Feature types (`Taxon` and `GeneFunction`), `MicrobiomeSample`, and `CommunityProfile`
 types are also implemented with the interface of `EcoBase.jl`,
 potentially enabling integration with the wider EcoJulia family of packages.
+
+![Functionality of Microbiome.jl\label{fig1}](Microbiome-jl-fig1.png)
 
 `BiobakeryUtils.jl` provides a julia interface for the command line utilities
 from HUMAnN and MetaPhlAn, two widely-used tools
