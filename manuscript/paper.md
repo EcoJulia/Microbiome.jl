@@ -92,7 +92,7 @@ Feature (`Taxon` and `GeneFunction`), `MicrobiomeSample`, and `CommunityProfile`
 types are also implemented with the interface of `EcoBase.jl`,
 potentially enabling integration with the wider EcoJulia family of packages.
 
-![Functionality of Microbiome.jl\label{fig1}](Microbiome-jl-fig1.png)
+![Concrete types provided by `Microbiome.jl` for storing information about features, samples, and whole communities.\label{fig1}](Microbiome-jl-fig1.png)
 
 `BiobakeryUtils.jl` provides a julia interface for the command line utilities
 from HUMAnN and MetaPhlAn, two widely-used tools
@@ -103,7 +103,7 @@ and I/O for the common file types used and produced by those tools.
 Together, `Microbiome.jl` and `BiobakeryUtils.jl`
 make it easy to load, manipulate, and analyze microbial community data (\autoref{fig2}).
 
-![Microbial community analysis workflow\label{fig2}](Microbiome-jl-fig2.png)
+![Microbial community analysis workflow using `Microbiome.jl` and `BiobakeryUtils.jl`\label{fig2}](Microbiome-jl-fig2.png)
 
 # Limitations and future work
 
