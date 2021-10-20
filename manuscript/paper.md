@@ -47,7 +47,7 @@ as well as libraries for Bayesian statistical analysis [@ge2018t],
 scientific machine learning [@rackauckas2017differentialequations],
 and plotting [@DanischKrumbiegel2021].
 Julia's type system makes it incredibly easy for packages to interoperate,
-making `Microbiome.jl` and `BiobakeryUtils.jl` and effective bridge between
+making `Microbiome.jl` and `BiobakeryUtils.jl` an effective bridge between
 microbial community data and julia's package ecosystem,
 while remaining agnostic to downstream analysis.
 
