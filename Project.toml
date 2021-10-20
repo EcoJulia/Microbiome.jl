@@ -4,7 +4,7 @@ keywords = ["microbiology", "microbiome", "biology"]
 license = "MIT"
 desc = "Functions and types for working with microbial community data"
 authors = ["@kescobo <kevbonham@gmail.com>"]
-version = "0.8.0-dev"
+version = "0.8.0"
 
 [deps]
 AxisIndices = "f52c9ee2-1b1c-4fd8-8546-6350938c7f11"
@@ -25,7 +25,7 @@ EcoBase = "0.1.4"
 MultivariateStats = "0.7, 0.8"
 NamedDims = "0.2"
 Tables = "1.2.1"
-julia = "1.1"
+julia = "1.6"
 
 [extras]
 Coverage = "a2441757-f6aa-5fb2-8edb-039e3f45d037"
