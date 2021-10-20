@@ -71,7 +71,7 @@ Further, `CommunityProfile`s may have hundreds to hundreds of thousands of featu
 while typically only a few dozen metadata variables are necessary for a given analysis.
 
 `Microbiome.jl` provides a convenient set of types and type constructors
-to store and access this information ( \autoref{fig1}).
+to store and access this information (Fig \autoref{fig1}).
 
 ![Functionality of Microbiome.jl\label{fig1}](Microbiome-jl-fig1.png)
 
@@ -101,7 +101,7 @@ functional and taxonomic profiles, respectively.
 It also provides functionality to simplify installation of the tools
 and I/O for the common file types used and produced by those tools.
 Together, `Microbiome.jl` and `BiobakeryUtils.jl`
-make it easy to load, manipulate, and analyze microbial community data ( \autoref{fig2}).
+make it easy to load, manipulate, and analyze microbial community data (Fig \autoref{fig2}).
 
 ![Microbial community analysis workflow\label{fig2}](Microbiome-jl-fig2.png)
 
