@@ -7,7 +7,6 @@ makedocs(
         "Samples and features" => "samples_features.md",
         "Profiles and Communities" => "profiles.md",
         "Diversity measures" => "diversity.md",
-        "Contributing" => "contributing.md"
     ],
     authors = "Kevin Bonham, PhD <kbonham@wellesley.edu",
     format = Documenter.HTML(
