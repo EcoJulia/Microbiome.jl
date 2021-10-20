@@ -61,7 +61,7 @@ make up the taxonomic or function "profile."
 Typically, additional information (`metadata`) about each `sample`
 is also needed for downstream statistical analysis,
 such as the location or human subject it was collected from,
-data about that environment (salinity, temperature etc for environmental samples,
+data about that environment (salinity, temperature, etc. for environmental samples;
 clinical covariates for human subjects),
 and storage or processing details.
 While the observed values for microbial `feature`s are uniformly numeric,
