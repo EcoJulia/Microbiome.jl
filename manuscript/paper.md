@@ -88,7 +88,7 @@ Further, the `CommunityProfile` type implements the `Tables.jl` interface,
 making it trivial to convert to other tabular representations,
 in particular enabling round-tripping to and from column separated values (`.csv`) files
 using `CSV.jl`.
-Feature types (`Taxon` and `GeneFunction`), `MicrobiomeSample`, and `CommunityProfile`
+Feature (`Taxon` and `GeneFunction`), `MicrobiomeSample`, and `CommunityProfile`
 types are also implemented with the interface of `EcoBase.jl`,
 potentially enabling integration with the wider EcoJulia family of packages.
 
