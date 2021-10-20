@@ -101,7 +101,7 @@ functional and taxonomic profiles respectively.
 It also provides functionality to simplify installation of the tools
 and I/O for the common file types used and produced by those tools.
 Together, `Microbiome.jl` and `BiobakeryUtils.jl`
-make it easy to load, manipulate, and analyze microbial community data (Figure \autoref{fig2}).
+make it easy to load, manipulate, and analyze microbial community data (\autoref{fig2}).
 
 ![Microbial community analysis workflow\label{fig2}](Microbiome-jl-fig2.png)
 
