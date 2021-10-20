@@ -35,10 +35,10 @@ with the power of julia's numerical, statistical, and plotting libraries.
 
 Complex microbial communities exist everywhere, including in and on the human body,
 and have profound effects on the environment and human health [@LloydPrice2017].
-Common methods for analyzing microbial communities (eg 16S amplicon or metagenomic sequencing)
-generate a large quantity of numerical data (eg count or relative abundance data)
-as well as metadata associated with biological samples (eg locations, human subject data)
-and microbial features (eg taxa, gene functions) [@Mallick2017ExperimentalDA].
+Common methods for analyzing microbial communities (eg. 16S amplicon or metagenomic sequencing)
+generate a large quantity of numerical data (eg. count or relative abundance data)
+as well as metadata associated with biological samples (eg. locations, human subject data)
+and microbial features (eg. taxa, gene functions) [@Mallick2017ExperimentalDA].
 
 The julia programming language [@Bezanson2017-ud] is gaining increasing prominence in biological research
 due to its speed and flexibility [@roesch2021julia],
@@ -54,8 +54,8 @@ while remaining agnostic to downstream analysis.
 # Functionality
 
 At its most basic, microbial community data can be represented as a sparse matrix,
-where one dimension is indexed by microbial `feature`s (eg, species),
-and the other is indexed by biological `sample`s or observations (eg, a stool sample).
+where one dimension is indexed by microbial `feature`s (eg. species),
+and the other is indexed by biological `sample`s or observations (eg. a stool sample).
 Together, the measured abundances of each `feature` in each `sample`
 make up the taxonomic or function "profile."
 Typically, additional information (`metadata`) about each `sample`
