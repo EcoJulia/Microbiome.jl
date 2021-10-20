@@ -113,7 +113,7 @@ there are several avenues for further development.
 First, there are many additional tools in the bioBakery
 whose interface and outputs could be incorporated into `BiobakeryUtils.jl`.
 In particular, `StrainPhlAn` and `PanPhlAn` [@Beghini2021-xy],
-which have tabular output distinct from, but quite similar to that
+which have tabular output distinct from but quite similar to that
 of `HUMAnN` and `MetaPhlAn` could be supported.
 
 Second, two of the largest plotting packages in the julia ecosystem,
