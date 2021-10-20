@@ -71,7 +71,7 @@ Further, `CommuinityProfile`s may have hundreds to hundreds of thousands of feat
 while typically only a few dozen metadata variables are necessary for a given analysis.
 
 `Microbiome.jl` provides a convenient set of types and type constructors
-to store and access this information (Figure \autoref{fig1}).
+to store and access this information (\autoref{fig1}).
 
 ![Functionality of Microbiome.jl\label{fig1}](Microbiome-jl-fig1.png)
 
