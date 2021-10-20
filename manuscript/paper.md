@@ -1,5 +1,5 @@
 ---
-title: 'Microbiome.jl and BiobakeryUtils.jl - Julia packages for working with microbial community data'
+title: "Microbiome.jl and BiobakeryUtils.jl - Julia packages for working with microbial community data"
 tags:
   - julia
   - biology
@@ -15,8 +15,8 @@ authors:
   - name: Vanja Klepac-Ceraj^[Corresponding author]
     affiliation: 1
 affiliations:
- - name: Department of Biological Sciences, Wellesley College
-   index: 1
+  - name: Department of Biological Sciences, Wellesley College
+    index: 1
 date: 30 October 2021
 bibliography: paper.bib
 ---
@@ -35,8 +35,8 @@ with the power of julia's numerical, statistical, and plotting libraries.
 
 Complex microbial communities exist everywhere, including in and on the human body,
 and have profound effects on the environment and human health [@LloydPrice2017].
-Common methods for analyzing microbial communities (eg 16S amplicon or metagenomic sequencing)
-generate a large quantity of numerical data (eg count or relative abundance data)
+Common methods for analyzing microbial communities (e.g., 16S rRNA gene amplicon or metagenomic sequencing)
+generate a large quantity of numerical data (e.g., count or relative abundance data)
 as well as metadata associated with biological samples (locations, human subject data)
 and microbial features (taxa, gene functions) [@Mallick2017ExperimentalDA].
 
@@ -47,37 +47,37 @@ as well as libraries for Bayesian statistical analysis [@ge2018t],
 scientific machine learning [@rackauckas2017differentialequations],
 and plotting [@DanischKrumbiegel2021].
 Julia's type system makes it incredibly easy for packages to interoperate,
-making `Microbiome.jl` and `BiobakeryUtils.jl` and effective bridge between
+making `Microbiome.jl` and `BiobakeryUtils.jl` an effective bridge between
 microbial community data and julia's package ecosystem,
 while remaining agnostic to downstream analysis.
 
 # Functionality
 
 At its most basic, microbial community data can be represented as a sparse matrix,
-where one dimension is indexed by microbial `feature`s (eg, species),
-and the other is indexed by biological `sample`s or observations (eg, a stool sample).
+where one dimension is indexed by microbial `feature`s (e.g., species),
+and the other is indexed by biological `sample`s or observations (e.g., a stool sample).
 Together, the measured abundances of each `feature` in each `sample`
 make up the taxonomic or function "profile."
 Typically, additional information (`metadata`) about each `sample`
 is also needed for downstream statistical analysis,
 such as the location or human subject it was collected from,
-data about that environment (salinity, temperature etc for environmental samples,
+data about that environment (salinity, temperature, etc. for environmental samples,
 clinical covariates for human subjects),
 and storage or processing details.
 While the observed values for microbial `feature`s are uniformly numeric,
 and can be efficiently stored in a spares matrix of floating point numbers,
 `metadata` can take many forms.
-Further, `CommuinityProfile`s may have hundreds to hundreds of thousands of features,
+Further, `CommunityProfile`s may have hundreds to hundreds of thousands of features,
 while typically only a few dozen metadata variables are necessary for a given analysis.
 
 `Microbiome.jl` provides a convenient set of types and type constructors
-to store and access this information (Figure \autoref{fig1}).
+to store and access this information ( \autoref{fig1}).
 
 ![Functionality of Microbiome.jl\label{fig1}](Microbiome-jl-fig1.png)
 
 - The `MicrobiomeSample` type contains `name` and `metadata` fields,
   and methods for efficiently adding and extracting stored metadata
-- The `Taxon` type stores `name` and taxonomic `rank` (eg `genus`, `phylum`) fields
+- The `Taxon` type stores `name` and taxonomic `rank` (e.g., `genus`, `phylum`) fields
 - The `GeneFunction` type stores `name` and `taxon` fields,
   the later of which may be a `Taxon` (allowing taxonomically stratified gene functions).
 - The `CommunityProfile` type, which is a wrapped `SparseMatrixCSC`,
@@ -97,11 +97,11 @@ potentially enabling integration with the wider EcoJulia family of packages.
 `BiobakeryUtils.jl` provides a julia interface for the command line utilities
 from HUMAnN and MetaPhlAn, two widely-used tools
 for using metagenomic sequencing reads to generate
-functional and taxonomic profiles respectively.
+functional and taxonomic profiles, respectively.
 It also provides functionality to simplify installation of the tools
 and I/O for the common file types used and produced by those tools.
 Together, `Microbiome.jl` and `BiobakeryUtils.jl`
-make it easy to load, manipulate, and analyze microbial community data (Figure \autoref{fig2}).
+make it easy to load, manipulate, and analyze microbial community data ( \autoref{fig2}).
 
 ![Microbial community analysis workflow\label{fig2}](Microbiome-jl-fig2.png)
 
@@ -119,11 +119,10 @@ of `HUMAnN` and `MetaPhlAn` could be supported.
 Second, two of the largest plotting packages in the julia ecosystem,
 `Plots.jl` and `Makie.jl` [@tom_breloff_2021_5566503; @DanischKrumbiegel2021]
 share a common "recipes" system,
-enabling package authors to include instructions to provide instructions
-for how to plot their types.
+enabling package authors to include instructions for how to plot their types.
 `Microbiome.jl` currently contains convenience functions to facilitate
 the generation of easy-to-plot data structures,
-but including plot recipes for thing like ordinations (PCoA),
+but including plot recipes for things like ordinations (PCoA),
 abundance bar plots, and other commonly used microbial community visualizations
 would make it even easier to generate publication-quality figures.
 
