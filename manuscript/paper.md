@@ -110,6 +110,7 @@ make it easy to load, manipulate, and analyze microbial community data (\autoref
 While `Microbiome.jl` and `BiobakeryUtils.jl` are already functional
 and being used for research [@Tso2021-vv; @Lewis2021-be; @Peterson2021-mr],
 there are several avenues for further development.
+
 First, there are many additional tools in the bioBakery
 whose interface and outputs could be incorporated into `BiobakeryUtils.jl`.
 In particular, `StrainPhlAn` and `PanPhlAn` [@Beghini2021-xy],
@@ -119,7 +120,7 @@ of `HUMAnN` and `MetaPhlAn` could be supported.
 Second, two of the largest plotting packages in the julia ecosystem,
 `Plots.jl` and `Makie.jl` [@tom_breloff_2021_5566503; @DanischKrumbiegel2021]
 share a common "recipes" system,
-enabling package authors to include instructions to provide instructions
+enabling package authors to provide instructions
 for how to plot their types.
 `Microbiome.jl` currently contains convenience functions to facilitate
 the generation of easy-to-plot data structures,
