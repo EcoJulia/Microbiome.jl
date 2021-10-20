@@ -65,7 +65,7 @@ data about that environment (salinity, temperature, etc. for environmental sampl
 clinical covariates for human subjects),
 and storage or processing details.
 While the observed values for microbial `feature`s are uniformly numeric,
-and can be efficiently stored in a spares matrix of floating point numbers,
+and can be efficiently stored in a sparse matrix of floating point numbers,
 `metadata` can take many forms.
 Further, `CommuinityProfile`s may have hundreds to hundreds of thousands of features,
 while typically only a few dozen metadata variables are necessary for a given analysis.
