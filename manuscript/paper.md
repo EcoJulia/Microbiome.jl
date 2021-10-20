@@ -77,10 +77,10 @@ to store and access this information (\autoref{fig1}).
 
 - The `MicrobiomeSample` type contains `name` and `metadata` fields,
   and methods for efficiently adding and extracting stored metadata
-- The `Taxon` type stores `name` and taxonomic `rank` (eg `genus`, `phylum`) fields
+- The `Taxon` type stores `name` and taxonomic `rank` (eg. `genus`, `phylum`) fields
 - The `GeneFunction` type stores `name` and `taxon` fields,
   the later of which may be a `Taxon` (allowing taxonomically stratified gene functions).
-- The `CommunityProfile` type, which is a wrapped `SparseMatrixCSC`,
+- The `CommunityProfile` type is a wrapped `SparseMatrixCSC`,
   with `MicrobiomeSample`s as columns and features (`Taxon`s or `GeneFunction`s) as rows.
 - `CommunityProfile`s can be indexed like normal julia arrays with integers,
   or with strings and regular expressions that will search on the `name`
