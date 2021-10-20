@@ -15,7 +15,7 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/BioJulia/Microbiome.jl.git",
+    repo = "github.com/EcoJulia/Microbiome.jl.git",
     push_preview=true,
     devbranch="main"
 )
