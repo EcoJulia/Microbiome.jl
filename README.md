@@ -33,13 +33,13 @@ If you are interested in the cutting edge of the development, please check out
 the master branch to try new features before release.
 
 ```julia
-julia> pkg"add Microbiome#master"
+julia> pkg"add Microbiome#main"
 ```
 
 ## Companion Packages
 
 - You might also be interested in some functionality provided by
-  [BiobakeryUtils.jl](https://github.com/EcoJulia/BiobakeryUtils).
+  [BiobakeryUtils.jl](https://github.com/EcoJulia/BiobakeryUtils.jl).
 - Microbiome.jl uses [EcoBase](https://github.com/EcoJulia/EcoBase.jl) under the hood
   for many of its types and methods.
 - Microbiome.jl has a `Tables.jl` interface, so you can convert `CommunityProfiles`
