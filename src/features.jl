@@ -120,7 +120,7 @@ struct GeneFunction <: AbstractFeature
 end
 
 GeneFunction(n::AbstractString) = GeneFunction(n, missing)
-GeneFunction(n::AbstractString, t::AbstractString) = GeneFunction(n, Taxon(t))
+GeneFunction(n::AbstractString, t::AbstractString) = GeneFunction(n, taxon(t))
 
 """
     taxon(t::GeneFunction)
