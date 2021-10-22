@@ -37,6 +37,8 @@ julia> taxa = [[Taxon("s$i", :species) for i in 1:5]; [Taxon("g$i", :genus) for 
  Taxon("g4", :genus)
  Taxon("g5", :genus)
 
+julia> using SparseArrays
+
 julia> mat = spzeros(10, 3); # 10 x 3 matrix filled with zeros
 
 julia> for i in 1:10, j in 1:3 
