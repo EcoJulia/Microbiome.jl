@@ -21,7 +21,10 @@ microbiome and microbial community data.
 
 ## Installation
 
-Install Microbiome from the Julia REPL:
+To use the latest version of `Microbiome.jl`,
+you must be on `julia` v1.6 or greater.
+
+Install `Microbiome.jl` from the Julia REPL:
 
 ```julia
 julia> using Pkg
