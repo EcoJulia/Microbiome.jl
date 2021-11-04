@@ -36,16 +36,25 @@ using Documenter
             ms.thing2 == "metadata2"
         end
 
+        # kwargs constructor
         ms2 = MicrobiomeSample("sample2"; age=10, birthtype="vaginal", allergies=true)
-        @test ms2.age == 10
-        @test ms2.birthtype == "vaginal"
-        @test ms2.allergies
+        # Dict constructor
+        ms3 = MicrobiomeSample("sample3", Dict(:age=>10, :birthtype=>"vaginal", :allergies=>true))
+        # NamedTuple constructor
+        ms4 = MicrobiomeSample("sample4", (;age=10, birthtype="vaginal", allergies=true))
+        
+        for ms in [ms2, ms3, ms4]
+            @test ms.age == 10
+            @test ms.birthtype == "vaginal"
+            @test Bool(ms.allergies)
 
-        @test_throws ArgumentError insert!(ms2, (; birthtype="cesarean"))
-        insert!(ms2, (; foo=10))
-        @test ms2.foo == 10
-        set!(ms2, (; birthtype="cesarean"))
-        @test ms2.birthtype == "cesarean"
+            @test_throws ArgumentError insert!(ms, (; birthtype="cesarean"))
+            insert!(ms, (; foo=10))
+            @test ms.foo == 10
+            set!(ms, (; birthtype="cesarean"))
+            @test ms.birthtype == "cesarean"
+        end
+
     end
     
     @testset "Taxa" begin

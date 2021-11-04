@@ -19,9 +19,10 @@ At its most basic, an `AbstractSample` simply encodes a `name`
 The concrete type [`MicrobiomeSample`](@ref) is implemented with these two fields,
 the latter of which is a `Dictionary` from [`Dictionaries.jl`](https://github.com/andyferris/Dictionaries.jl).
 
+
 You can instantiate a `MicrobiomeSample` with just a name (in which case the metadata dictionary will be empty),
 using keyword arguments for metadata entries,
-or with existing metadata in the form of a dictionary.
+or with existing metadata in the form of a dictionary (with keys of type `Symbol`) or a `NamedTuple`.
 
 ```jldoctest sampletypes
 julia> s1 = MicrobiomeSample("sample1")
@@ -30,8 +31,8 @@ MicrobiomeSample("sample1", {})
 julia> s2 = MicrobiomeSample("sample2"; age=37)
 MicrobiomeSample("sample2", {:age = 37})
 
-julia> s3 = MicrobiomeSample("sample3", Dictionary([:gender, :age], ["female", 23]))
-MicrobiomeSample("sample3", {:gender = "female", :age = 23})
+julia> s3 = MicrobiomeSample("sample3", Dict(:gender=>"female", :age=>23))
+MicrobiomeSample("sample3", {:age = 23, :gender = "female"})
 ```
 
 ### Working with metadata
@@ -45,7 +46,7 @@ julia> insert!(s1, :age, 50)
 MicrobiomeSample("sample1", {:age = 50})
 
 julia> set!(s3, :gender, "nonbinary")
-MicrobiomeSample("sample3", {:gender = "nonbinary", :age = 23})
+MicrobiomeSample("sample3", {:age = 23, :gender = "nonbinary"})
 
 julia> delete!(s3, :gender)
 MicrobiomeSample("sample3", {:age = 23})
