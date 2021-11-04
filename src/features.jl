@@ -42,7 +42,9 @@ Microbial taxon with a name and a rank that can be one of
 9. `:strain`
 
 or `missing`. Contructors can also use numbers 0-9, or pass a string alone
-(in which case the `taxon` will be stored as `missing`)
+(in which case the `taxon` will be stored as `missing`).
+
+See also [`taxon`](@ref Microbiome.taxon).
 """
 struct Taxon <: AbstractFeature
     name::String
@@ -103,7 +105,9 @@ taxrank(::Missing) = missing
 """
     hasrank(t::Taxon)::Bool
 
-Pretty self-explanatory.
+Boolean function that returns `true` if the `rank`
+field in a [`Taxon`](@ref) is not `missing`,
+or `false` if it is `missing`
 """
 hasrank(t::Taxon) = !ismissing(taxrank(t))
 
@@ -125,7 +129,7 @@ GeneFunction(n::AbstractString, t::AbstractString) = GeneFunction(n, taxon(t))
 """
     taxon(t::GeneFunction)
 
-Get the `taxon` field from a `GeneFunction`.
+Get the `taxon` field from a [`GeneFunction`](@ref).
 Returns `missing` if the taxon is not set.
 """
 taxon(gf::GeneFunction) = gf.taxon
@@ -133,22 +137,28 @@ taxon(gf::GeneFunction) = gf.taxon
 """
     hastaxon(t::GeneFunction)::Bool
 
-Pretty self-explanatory.
+Boolean function that returns `true` if the `taxon`
+field in a [`GeneFunction`](@ref) is not `missing`,
+or `false` if it is `missing`
 """
 hastaxon(gf::GeneFunction) = !ismissing(taxon(gf))
 
 """
     taxrank(gf::GeneFunction)
 
-Get the `rank` field from the Taxon, if `gf` has one.
+Get the `rank` field from the [`Taxon`](@ref), if `gf` has one.
 Returns `missing` if the taxon or rank is not set.
 """
 taxrank(gf::GeneFunction) = taxrank(taxon(gf))
 
 """
-    hasrank(t::GeneFunction)::Bool
+    hasrank(gf::GeneFunction)::Bool
 
-Pretty self-explanatory.
+Boolean function that returns:
+
+    - `true` if `gf` has a [`Taxon`](@ref) with a non-missing `rank` field,
+    - `false` if there's no `Taxon`, or 
+    - `false` if the `Taxon` has no `rank`
 """
 hasrank(gf::GeneFunction) = hastaxon(gf) && !ismissing(taxrank(gf))
 
@@ -157,7 +167,7 @@ Base.String(gf::GeneFunction) = hastaxon(gf) ? string(name(gf), '|', String(taxo
 """
     genefunction(n::AbstractString)
 
-Make a gene function from a string,
+Make a [`GeneFunction`](@ref) from a string,
 Converting anything after an initial `|` as a [`Taxon`](@ref).
 """
 function genefunction(n::AbstractString)
