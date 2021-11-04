@@ -96,7 +96,7 @@ end
 """
     taxrank(t::Union{Taxon, missing})
 
-Get the `rank` field from an `Taxon`.
+Get the `rank` field from a [`Taxon`](@ref) `t`.
 Returns `missing` if the rank is not set.
 """
 taxrank(t::Taxon) = t.rank
@@ -106,7 +106,7 @@ taxrank(::Missing) = missing
     hasrank(t::Taxon)::Bool
 
 Boolean function that returns `true` if the `rank`
-field in a [`Taxon`](@ref) is not `missing`,
+field in [`Taxon`](@ref) `t` is not `missing`,
 or `false` if it is `missing`
 """
 hasrank(t::Taxon) = !ismissing(taxrank(t))
@@ -127,18 +127,18 @@ GeneFunction(n::AbstractString) = GeneFunction(n, missing)
 GeneFunction(n::AbstractString, t::AbstractString) = GeneFunction(n, taxon(t))
 
 """
-    taxon(t::GeneFunction)
+    taxon(gf::GeneFunction)
 
-Get the `taxon` field from a [`GeneFunction`](@ref).
+Get the `taxon` field from a [`GeneFunction`](@ref), `gf`.
 Returns `missing` if the taxon is not set.
 """
 taxon(gf::GeneFunction) = gf.taxon
 
 """
-    hastaxon(t::GeneFunction)::Bool
+    hastaxon(gf::GeneFunction)::Bool
 
 Boolean function that returns `true` if the `taxon`
-field in a [`GeneFunction`](@ref) is not `missing`,
+field in a [`GeneFunction`](@ref) `gf` is not `missing`,
 or `false` if it is `missing`
 """
 hastaxon(gf::GeneFunction) = !ismissing(taxon(gf))
@@ -146,8 +146,9 @@ hastaxon(gf::GeneFunction) = !ismissing(taxon(gf))
 """
     taxrank(gf::GeneFunction)
 
-Get the `rank` field from the [`Taxon`](@ref), if `gf` has one.
-Returns `missing` if the taxon or rank is not set.
+Get the `rank` field from the `taxon` field of a [`GeneFunction`](@ref) `gf`
+if it has one.
+Returns `missing` if the `taxon` or `rank` is not set.
 """
 taxrank(gf::GeneFunction) = taxrank(taxon(gf))
 
@@ -156,9 +157,9 @@ taxrank(gf::GeneFunction) = taxrank(taxon(gf))
 
 Boolean function that returns:
 
-    - `true` if `gf` has a [`Taxon`](@ref) with a non-missing `rank` field,
-    - `false` if there's no `Taxon`, or 
-    - `false` if the `Taxon` has no `rank`
+- `true` if `gf` has a [`Taxon`](@ref) with a non-missing `rank` field,
+- `false` if there's no `Taxon`, or 
+- `false` if the `Taxon` has no `rank`
 """
 hasrank(gf::GeneFunction) = hastaxon(gf) && !ismissing(taxrank(gf))
 
