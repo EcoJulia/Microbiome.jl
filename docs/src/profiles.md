@@ -3,6 +3,9 @@ CurrentModule = Microbiome
 DocTestSetup  = quote
     using Microbiome
     using Microbiome.SparseArrays
+    using CSV
+    using DataFrames
+    using Microbiome.Tables
     using Random
     Random.seed!(42)
 end
