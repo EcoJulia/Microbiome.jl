@@ -283,7 +283,7 @@ end
 present(::Missing, m) = missing
 
 function present(at::AbstractAbundanceTable, minabundance::Real=0.0)
-    mat = spzeros(Bool, Ssize(at)...)
+    mat = spzeros(Bool, size(at)...)
     for i in eachindex(mat)
         mat[i] = present(at[i], minabundance)
     end

@@ -155,12 +155,16 @@ end
         @test featurenames(filter(f-> hasrank(f) && taxrank(f) == :species, comm)) == featurenames(rankfilter(comm, :species))
 
         @test present(0.1)
+        @test ismissing(present(missing))
+        @test present(comm) == sparse(reshape([i==j || i+5==j for i in 1:5 for j in 1:10], 10,5))
         @test !present(0.1, 0.2)
         @test_throws DomainError present(-0.1)
         @test_throws DomainError present(0., -0.1)
 
         @test prevalence([0.0, 0.1, 0.2, 0.3]) ≈ 0.75
         @test prevalence([0.0, 0.1, 0.2, 0.3], 0.15) ≈ 0.5
+        @test prevalence((0.0, 0.1, 0.2, 0.3)) ≈ 0.75
+        @test prevalence((0.0, 0.1, 0.2, 0.3), 0.15) ≈ 0.5
 
         @test all(≈(0.2), prevalence(comm))
         @test all(prevalence(comm, 0.7) .≈ [0.2, 0.2, 0.2, 0.2, 0.2, 0, 0, 0, 0, 0])
