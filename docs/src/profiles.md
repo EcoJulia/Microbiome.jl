@@ -3,11 +3,17 @@ CurrentModule = Microbiome
 DocTestSetup  = quote
     using Microbiome
     using Microbiome.SparseArrays
-    using CSV
-    using DataFrames
-    using Microbiome.Tables
     using Random
     Random.seed!(42)
+
+    open("taxprof.csv", "w") do io
+        print(io, """
+        features,s1,s2
+        s__Escherichia_coli,1,0
+        s__Bifidobacterium_longum,3,2
+        s__Prevotella_copri,5,4
+        """)
+    end
 end
 ```
 
@@ -355,21 +361,8 @@ s1, s2
 
 Alternatively, with a CSV file, and the [`CSV.jl`](https://github.com/JuliaData/CSV.jl) package:
 
-```@setup csvexample
-open("taxprof.csv", "w") do io
-    print(io, """
-    features,s1,s2
-    s__Escherichia_coli,1,0
-    s__Bifidobacterium_longum,3,2
-    s__Prevotella_copri,5,4
-    """)
-end
-```
-
 ```jldoctest csvexample
-julia> # type ';' to get the shell REPL
-
-shell> cat taxprof.csv -p
+julia> println.(eachline("taxprof.csv"));
 features,s1,s2
 s__Escherichia_coli,1,0
 s__Bifidobacterium_longum,3,2
