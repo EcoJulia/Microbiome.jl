@@ -155,12 +155,16 @@ end
         @test featurenames(filter(f-> hasrank(f) && taxrank(f) == :species, comm)) == featurenames(rankfilter(comm, :species))
 
         @test present(0.1)
+        @test ismissing(present(missing))
+        @test present(comm) == sparse(reshape([i==j || i+5==j for i in 1:5 for j in 1:10], 10,5))
         @test !present(0.1, 0.2)
         @test_throws DomainError present(-0.1)
         @test_throws DomainError present(0., -0.1)
 
         @test prevalence([0.0, 0.1, 0.2, 0.3]) ≈ 0.75
         @test prevalence([0.0, 0.1, 0.2, 0.3], 0.15) ≈ 0.5
+        @test prevalence((0.0, 0.1, 0.2, 0.3)) ≈ 0.75
+        @test prevalence((0.0, 0.1, 0.2, 0.3), 0.15) ≈ 0.5
 
         @test all(≈(0.2), prevalence(comm))
         @test all(prevalence(comm, 0.7) .≈ [0.2, 0.2, 0.2, 0.2, 0.2, 0, 0, 0, 0, 0])
@@ -267,6 +271,7 @@ end
                 @test_throws IndexError insert!(c5, "sample2", Dict(:baz=> "test", :foo=>"bar"))
                 @test !haskey(c5, "sample2", :baz)
 
+                insert!(c5, "sample2", (; graw="gnaw", biff="boof"))
                 @test_throws IndexError insert!(c5, [(;sample="sample1", still_other="yes"), (;sample="sample2", still_other="no")])
                 @test !haskey(c5, "sample1", :still_other)
             end
@@ -286,6 +291,11 @@ end
     end
     
     @testset "Indexing and Tables integration" begin
+        @test Tables.istable(comm)
+        @test Tables.columnaccess(comm)
+        @test Tables.rowaccess(comm)
+        @test Tables.schema(comm) isa Tables.Schema
+        
         for i in 1:5
             @test abundances(comm[:, "sample$i"]) == mat[:, [i]]
             @test abundances(comm["taxon$i", :]) == mat[[i], :]
@@ -293,6 +303,7 @@ end
 
         @test abundances(comm[r"taxon1", :]) == abundances(comm[["taxon1", "taxon10"], :]) == abundances(comm[[1,10], :])
         @test abundances(comm[:, r"sample[13]"]) == abundances(comm[:,["sample1", "sample3"]]) == abundances(comm[:, [1,3]])
+        @test abundances(comm[r"taxon1", r"sample[13]"]) == abundances(comm[["taxon1", "taxon10"],["sample1", "sample3"]]) == abundances(comm[[1,10], [1,3]])
 
         for (i, col) in enumerate(Tables.columns(comm))
             if i == 1
@@ -358,6 +369,3 @@ end
         @test pcoa(comm) isa MDS
     end
 end
-
-
-doctest(Microbiome)
