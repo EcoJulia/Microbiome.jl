@@ -167,3 +167,4 @@ struct MicrobiomeSample <: AbstractSample
 end
 
 MicrobiomeSample(n::AbstractString; kwargs...) = isempty(kwargs) ? MicrobiomeSample(n, Dictionary{Symbol, Any}()) : MicrobiomeSample(n, dictionary(kwargs))
+MicrobiomeSample(n::AbstractString, d::Union{AbstractDict,NamedTuple}) = MicrobiomeSample(n; pairs(d)...)
