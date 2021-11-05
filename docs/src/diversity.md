@@ -3,8 +3,6 @@ CurrentModule = Microbiome
 DocTestSetup  = quote
     using Microbiome
     using SparseArrays
-    using Random
-    Random.seed!(42)
 end
 ```
 

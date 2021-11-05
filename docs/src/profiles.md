@@ -3,8 +3,6 @@ CurrentModule = Microbiome
 DocTestSetup  = quote
     using Microbiome
     using Microbiome.SparseArrays
-    using Random
-    Random.seed!(42)
 
     open("taxprof.csv", "w") do io
         print(io, """
