@@ -1,9 +1,22 @@
 # News for Microbiome.jl
 
-## Unreleased
+## v0.8.1
 
+- Some changes for JOSS review ([#115](https://github.com/EcoJulia/Microbiome.jl/pull/115)),
+  mostly in documentation
+## v0.8.0
+
+This release brings a host of changes,
+including a manuscript for [submission to the Journal of Open Source Software](https://github.com/openjournals/joss-reviews/issues/3876).
+Also, we're now part of [EcoJulia](http://github.com/EcoJulia)! (moved from [BioJulia](http://github.com/BioJulia)).
+
+Notable changes include:
+
+- Much better metadata handling in `CommunityProfile`s, (see esp issues [#63](https://github.com/EcoJulia/Microbiome.jl/issues/63) [#64](https://github.com/EcoJulia/Microbiome.jl/issues/64) [#65](https://github.com/EcoJulia/Microbiome.jl/issues/65) [#75](https://github.com/EcoJulia/Microbiome.jl/issues/75) [#76](https://github.com/EcoJulia/Microbiome.jl/issues/76))
 - Add `commjoin` function to merge the contents of multiple `CommunityProfile`s ([#58](https://github.com/EcoJulia/Microbiome.jl/pull/58))
-- Add `prevalence_filter` function to select features that are present at some minumum prevalence
+- Generic filtering of `CommunityProfile`s [#79](https://github.com/EcoJulia/Microbiome.jl/pull/79)
+
+See [Release notes](https://github.com/EcoJulia/Microbiome.jl/releases/tag/v0.8.0) for full details.
 
 ## v0.7.0 Major overhaul
 
