@@ -271,6 +271,7 @@ end
                 @test_throws IndexError insert!(c5, "sample2", Dict(:baz=> "test", :foo=>"bar"))
                 @test !haskey(c5, "sample2", :baz)
 
+                insert!(c5, "sample2", (; graw="gnaw", biff="boof"))
                 @test_throws IndexError insert!(c5, [(;sample="sample1", still_other="yes"), (;sample="sample2", still_other="no")])
                 @test !haskey(c5, "sample1", :still_other)
             end

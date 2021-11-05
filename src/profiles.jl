@@ -280,7 +280,7 @@ function present(t::Real, minabundance::Real=0.0)
     t == 0 ? false : t >= minabundance
 end
 
-present(::Missing, m) = missing
+present(::Missing, m::Real=0.0) = missing
 
 function present(at::AbstractAbundanceTable, minabundance::Real=0.0)
     mat = spzeros(Bool, size(at)...)
