@@ -50,23 +50,26 @@ julia> using SparseArrays
 
 julia> mat = spzeros(10, 3); # 10 x 3 matrix filled with zeros
 
-julia> for i in 1:10, j in 1:3 
-           # fill some spots with random values
-           rand() < 0.3 && (mat[i,j] = rand())
+julia> for i in 1:10, j in 1:3
+           if all(isodd, (i,j))
+               mat[i,j] = i+j
+           elseif all(iseven, (i, j))
+               mat[i,j] = i / j
+           end
        end
 
 julia> mat
-10×3 SparseMatrixCSC{Float64, Int64} with 10 stored entries:
-  ⋅         ⋅        0.172933
-  ⋅         ⋅         ⋅
- 0.956916   ⋅         ⋅
- 0.422956   ⋅         ⋅
-  ⋅         ⋅         ⋅
- 0.502952   ⋅        0.167169
-  ⋅         ⋅        0.244683
-  ⋅         ⋅        0.143638
- 0.570085  0.249238   ⋅
-  ⋅        0.841643   ⋅
+10×3 SparseMatrixCSC{Float64, Int64} with 15 stored entries:
+  2.0   ⋅    4.0
+   ⋅   1.0    ⋅
+  4.0   ⋅    6.0
+   ⋅   2.0    ⋅
+  6.0   ⋅    8.0
+   ⋅   3.0    ⋅
+  8.0   ⋅   10.0
+   ⋅   4.0    ⋅
+ 10.0   ⋅   12.0
+   ⋅   5.0    ⋅
 
 julia> comm = CommunityProfile(mat, taxa, samps)
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 3 samples
@@ -86,17 +89,18 @@ features, and samples using
 
 ```jldoctest profiles
 julia> abundances(comm)
-10×3 SparseMatrixCSC{Float64, Int64} with 10 stored entries:
-  ⋅         ⋅        0.172933
-  ⋅         ⋅         ⋅
- 0.956916   ⋅         ⋅
- 0.422956   ⋅         ⋅
-  ⋅         ⋅         ⋅
- 0.502952   ⋅        0.167169
-  ⋅         ⋅        0.244683
-  ⋅         ⋅        0.143638
- 0.570085  0.249238   ⋅
-  ⋅        0.841643   ⋅
+10×3 SparseMatrixCSC{Float64, Int64} with 15 stored entries:
+  2.0   ⋅    4.0
+   ⋅   1.0    ⋅
+  4.0   ⋅    6.0
+   ⋅   2.0    ⋅
+  6.0   ⋅    8.0
+   ⋅   3.0    ⋅
+  8.0   ⋅   10.0
+   ⋅   4.0    ⋅
+ 10.0   ⋅   12.0
+   ⋅   5.0    ⋅
+
 
 julia> features(comm)
 10-element Vector{Taxon}:
@@ -207,7 +211,7 @@ To get the values of a matrix slice, use `abundances` after indexing.
 
 ```jldoctest profiles
 julia> comm[1,3]
-0.17293302893695128
+4.0
 
 julia> comm[6:8,3]
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 3 features in 1 samples
@@ -219,10 +223,10 @@ Sample names:
 s3
 
 julia> comm[1:3,3] |> abundances
-3×1 SparseMatrixCSC{Float64, Int64} with 1 stored entry:
- 0.172933
+3×1 SparseMatrixCSC{Float64, Int64} with 2 stored entries:
+ 4.0
   ⋅
-  ⋅
+ 6.0
 ```
 
 ### Indexing with strings and regular expressions
