@@ -22,23 +22,26 @@ julia&gt; using SparseArrays
 
 julia&gt; mat = spzeros(10, 3); # 10 x 3 matrix filled with zeros
 
-julia&gt; for i in 1:10, j in 1:3 
-           # fill some spots with random values
-           rand() &lt; 0.3 &amp;&amp; (mat[i,j] = rand())
+julia&gt; for i in 1:10, j in 1:3
+           if all(isodd, (i,j))
+               mat[i,j] = i+j
+           elseif all(iseven, (i, j))
+               mat[i,j] = i / j
+           end
        end
 
 julia&gt; mat
-10×3 SparseMatrixCSC{Float64, Int64} with 10 stored entries:
-  ⋅         ⋅        0.172933
-  ⋅         ⋅         ⋅
- 0.956916   ⋅         ⋅
- 0.422956   ⋅         ⋅
-  ⋅         ⋅         ⋅
- 0.502952   ⋅        0.167169
-  ⋅         ⋅        0.244683
-  ⋅         ⋅        0.143638
- 0.570085  0.249238   ⋅
-  ⋅        0.841643   ⋅
+10×3 SparseMatrixCSC{Float64, Int64} with 15 stored entries:
+  2.0   ⋅    4.0
+   ⋅   1.0    ⋅
+  4.0   ⋅    6.0
+   ⋅   2.0    ⋅
+  6.0   ⋅    8.0
+   ⋅   3.0    ⋅
+  8.0   ⋅   10.0
+   ⋅   4.0    ⋅
+ 10.0   ⋅   12.0
+   ⋅   5.0    ⋅
 
 julia&gt; comm = CommunityProfile(mat, taxa, samps)
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 10 features in 3 samples
@@ -48,17 +51,18 @@ s1, s2, s3...g4, g5
 
 Sample names:
 s1, s2, s3</code></pre><h2 id="Accessing-CommunityProfile-contents"><a class="docs-heading-anchor" href="#Accessing-CommunityProfile-contents">Accessing <code>CommunityProfile</code> contents</a><a id="Accessing-CommunityProfile-contents-1"></a><a class="docs-heading-anchor-permalink" href="#Accessing-CommunityProfile-contents" title="Permalink"></a></h2><p>It is easy to get out the underlying abundance matrix, features, and samples using <a href="@ref"><code>abundances</code></a>, <a href="#Microbiome.features"><code>features</code></a>, and <a href="#Microbiome.samples"><code>samples</code></a> respectively:</p><pre><code class="language-julia-repl hljs">julia&gt; abundances(comm)
-10×3 SparseMatrixCSC{Float64, Int64} with 10 stored entries:
-  ⋅         ⋅        0.172933
-  ⋅         ⋅         ⋅
- 0.956916   ⋅         ⋅
- 0.422956   ⋅         ⋅
-  ⋅         ⋅         ⋅
- 0.502952   ⋅        0.167169
-  ⋅         ⋅        0.244683
-  ⋅         ⋅        0.143638
- 0.570085  0.249238   ⋅
-  ⋅        0.841643   ⋅
+10×3 SparseMatrixCSC{Float64, Int64} with 15 stored entries:
+  2.0   ⋅    4.0
+   ⋅   1.0    ⋅
+  4.0   ⋅    6.0
+   ⋅   2.0    ⋅
+  6.0   ⋅    8.0
+   ⋅   3.0    ⋅
+  8.0   ⋅   10.0
+   ⋅   4.0    ⋅
+ 10.0   ⋅   12.0
+   ⋅   5.0    ⋅
+
 
 julia&gt; features(comm)
 10-element Vector{Taxon}:
@@ -116,7 +120,7 @@ julia&gt; mat[3,2]
  2  6
  3  7
  4  8</code></pre><p>For <code>CommunityProfile</code>s, indexing with integer values will return the value of the matrix at that position, while indexing with slices will return a new <code>CommunityProfile</code>. To get the values of a matrix slice, use <code>abundances</code> after indexing.</p><pre><code class="language-julia-repl hljs">julia&gt; comm[1,3]
-0.17293302893695128
+4.0
 
 julia&gt; comm[6:8,3]
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 3 features in 1 samples
@@ -128,10 +132,10 @@ Sample names:
 s3
 
 julia&gt; comm[1:3,3] |&gt; abundances
-3×1 SparseMatrixCSC{Float64, Int64} with 1 stored entry:
- 0.172933
+3×1 SparseMatrixCSC{Float64, Int64} with 2 stored entries:
+ 4.0
   ⋅
-  ⋅</code></pre><h3 id="Indexing-with-strings-and-regular-expressions"><a class="docs-heading-anchor" href="#Indexing-with-strings-and-regular-expressions">Indexing with strings and regular expressions</a><a id="Indexing-with-strings-and-regular-expressions-1"></a><a class="docs-heading-anchor-permalink" href="#Indexing-with-strings-and-regular-expressions" title="Permalink"></a></h3><p>It is often inconvenient to find the numerical index of a particular feature or sample. Instead, you can use strings or regular expressions to get slices of a <code>CommunityProfile</code>, which will match on the <code>name</code> field of the features or samples. This kind of indexing always returns a <code>CommunityProfile</code>, even if it only has 1 value.</p><pre><code class="language-julia-repl hljs">julia&gt; comm[&quot;g1&quot;, &quot;s1&quot;]
+ 6.0</code></pre><h3 id="Indexing-with-strings-and-regular-expressions"><a class="docs-heading-anchor" href="#Indexing-with-strings-and-regular-expressions">Indexing with strings and regular expressions</a><a id="Indexing-with-strings-and-regular-expressions-1"></a><a class="docs-heading-anchor-permalink" href="#Indexing-with-strings-and-regular-expressions" title="Permalink"></a></h3><p>It is often inconvenient to find the numerical index of a particular feature or sample. Instead, you can use strings or regular expressions to get slices of a <code>CommunityProfile</code>, which will match on the <code>name</code> field of the features or samples. This kind of indexing always returns a <code>CommunityProfile</code>, even if it only has 1 value.</p><pre><code class="language-julia-repl hljs">julia&gt; comm[&quot;g1&quot;, &quot;s1&quot;]
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 1 features in 1 samples
 
 Feature names:
@@ -242,4 +246,4 @@ Feature names:
 Escherichia_coli, Bifidobacterium_longum, Prevotella_copri
 
 Sample names:
-s1, s2</code></pre><p>You may also be interested in <a href="https://github.com/EcoJulia/BiobakeryUtils.jl"><code>BiobakeryUtils.jl</code></a> which has convenient functions for reading in file types generated by the <code>bioBakery</code> suite of computational tools.</p><h2 id="Types-and-Methods"><a class="docs-heading-anchor" href="#Types-and-Methods">Types and Methods</a><a id="Types-and-Methods-1"></a><a class="docs-heading-anchor-permalink" href="#Types-and-Methods" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="Microbiome.CommunityProfile" href="#Microbiome.CommunityProfile"><code>Microbiome.CommunityProfile</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">CommunityProfile{T, F, S} &lt;: AbstractAbundanceTable{T, F, S}</code></pre><p>An <code>AbstractAssemblage</code> from <a href="https://github.com/EcoJulia/EcoBase.jl">EcoBase.jl</a> that uses an <code>AxisArray</code> of a <code>SparseMatrixCSC</code> under the hood.</p><p><code>CommunityProfile</code>s are tables with <code>AbstractFeature</code>-indexed rows and <code>AbstractSample</code>-indexed columns. Note - we can use the <code>name</code> of samples and features to index.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/EcoJulia/Microbiome.jl/blob/e338513676077ad109689b8ac2c2a9972fe5822f/src/profiles.jl#L6-L15">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.samples" href="#Microbiome.samples"><code>Microbiome.samples</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">samples(at::AbstractAbundanceTable)</code></pre><p>Returns samples in <code>at</code>. To get samplenames instead, use <a href="#Microbiome.samplenames"><code>samplenames</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/EcoJulia/Microbiome.jl/blob/e338513676077ad109689b8ac2c2a9972fe5822f/src/profiles.jl#L60-L64">source</a></section><section><div><pre><code class="nohighlight hljs">samples(at::AbstractAbundanceTable, name::AbstractString)</code></pre><p>Returns sample in <code>at</code> with name <code>name</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/EcoJulia/Microbiome.jl/blob/e338513676077ad109689b8ac2c2a9972fe5822f/src/profiles.jl#L67-L71">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.features" href="#Microbiome.features"><code>Microbiome.features</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">features(at::AbstractAbundanceTable)</code></pre><p>Returns features in <code>at</code>. To get featurenames instead, use <a href="@ref"><code>featurenames</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/EcoJulia/Microbiome.jl/blob/e338513676077ad109689b8ac2c2a9972fe5822f/src/profiles.jl#L53-L57">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.samplenames" href="#Microbiome.samplenames"><code>Microbiome.samplenames</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">samplenames(at::AbstractAbundanceTable)</code></pre><p>Get a vector of sample names from <code>at</code>, equivalent to <code>name.(samples(at))</code></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/EcoJulia/Microbiome.jl/blob/e338513676077ad109689b8ac2c2a9972fe5822f/src/ecobase.jl#L22-L26">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../samples_features/">« Samples and features</a><a class="docs-footer-nextpage" href="../diversity/">Diversity measures »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.10 on <span class="colophon-date" title="Friday 5 November 2021 13:44">Friday 5 November 2021</span>. Using Julia version 1.6.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+s1, s2</code></pre><p>You may also be interested in <a href="https://github.com/EcoJulia/BiobakeryUtils.jl"><code>BiobakeryUtils.jl</code></a> which has convenient functions for reading in file types generated by the <code>bioBakery</code> suite of computational tools.</p><h2 id="Types-and-Methods"><a class="docs-heading-anchor" href="#Types-and-Methods">Types and Methods</a><a id="Types-and-Methods-1"></a><a class="docs-heading-anchor-permalink" href="#Types-and-Methods" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-binding" id="Microbiome.CommunityProfile" href="#Microbiome.CommunityProfile"><code>Microbiome.CommunityProfile</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">CommunityProfile{T, F, S} &lt;: AbstractAbundanceTable{T, F, S}</code></pre><p>An <code>AbstractAssemblage</code> from <a href="https://github.com/EcoJulia/EcoBase.jl">EcoBase.jl</a> that uses an <code>AxisArray</code> of a <code>SparseMatrixCSC</code> under the hood.</p><p><code>CommunityProfile</code>s are tables with <code>AbstractFeature</code>-indexed rows and <code>AbstractSample</code>-indexed columns. Note - we can use the <code>name</code> of samples and features to index.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/EcoJulia/Microbiome.jl/blob/7af1a5889e2fe740762c0abd07ee81e15ed793dc/src/profiles.jl#L6-L15">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.samples" href="#Microbiome.samples"><code>Microbiome.samples</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">samples(at::AbstractAbundanceTable)</code></pre><p>Returns samples in <code>at</code>. To get samplenames instead, use <a href="#Microbiome.samplenames"><code>samplenames</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/EcoJulia/Microbiome.jl/blob/7af1a5889e2fe740762c0abd07ee81e15ed793dc/src/profiles.jl#L60-L64">source</a></section><section><div><pre><code class="nohighlight hljs">samples(at::AbstractAbundanceTable, name::AbstractString)</code></pre><p>Returns sample in <code>at</code> with name <code>name</code>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/EcoJulia/Microbiome.jl/blob/7af1a5889e2fe740762c0abd07ee81e15ed793dc/src/profiles.jl#L67-L71">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.features" href="#Microbiome.features"><code>Microbiome.features</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">features(at::AbstractAbundanceTable)</code></pre><p>Returns features in <code>at</code>. To get featurenames instead, use <a href="@ref"><code>featurenames</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/EcoJulia/Microbiome.jl/blob/7af1a5889e2fe740762c0abd07ee81e15ed793dc/src/profiles.jl#L53-L57">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Microbiome.samplenames" href="#Microbiome.samplenames"><code>Microbiome.samplenames</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">samplenames(at::AbstractAbundanceTable)</code></pre><p>Get a vector of sample names from <code>at</code>, equivalent to <code>name.(samples(at))</code></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/EcoJulia/Microbiome.jl/blob/7af1a5889e2fe740762c0abd07ee81e15ed793dc/src/ecobase.jl#L22-L26">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../samples_features/">« Samples and features</a><a class="docs-footer-nextpage" href="../diversity/">Diversity measures »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.10 on <span class="colophon-date" title="Friday 5 November 2021 16:47">Friday 5 November 2021</span>. Using Julia version 1.6.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
