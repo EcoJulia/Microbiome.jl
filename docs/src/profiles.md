@@ -282,6 +282,7 @@ where each "row" corresponds to one sample.
 All metadata fields found in any sample will be returned in every row,
 with the value `missing` in any samples that do not have that field set.
 
+
 ```jldoctest profiles
 julia> metadata(comm)
 3-element Vector{NamedTuple{(:sample, :subject), T} where T<:Tuple}:

@@ -358,6 +358,3 @@ end
         @test pcoa(comm) isa MDS
     end
 end
-
-
-doctest(Microbiome)

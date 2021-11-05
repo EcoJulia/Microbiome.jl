@@ -2,6 +2,7 @@ using Documenter, Microbiome, Microbiome.Dictionaries
 
 makedocs(
     sitename = "Microbiome.jl",
+    strict=:doctest,
     pages = [
         "Home" => "index.md",
         "Samples and features" => "samples_features.md",
