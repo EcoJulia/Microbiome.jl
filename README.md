@@ -1,6 +1,6 @@
 ![Microbiome.jl logo](logo.png)
 
-![EcoJulia maintainer: kescobo](https://img.shields.io/badge/EcoJulia%20Maintainer-kescobo-blue.svg)
+[![status](https://joss.theoj.org/papers/450fa18f47932c5fd3b837edeac91440/status.svg)](https://joss.theoj.org/papers/450fa18f47932c5fd3b837edeac91440) ![EcoJulia maintainer: kescobo](https://img.shields.io/badge/EcoJulia%20Maintainer-kescobo-blue.svg)
 ## Latest Release 
 
 [![Latest Release](https://img.shields.io/github/release/EcoJulia/Microbiome.jl.svg)](https://github.com/EcoJulia/Microbiome.jl/releases/latest)
