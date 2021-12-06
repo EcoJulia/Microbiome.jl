@@ -71,6 +71,7 @@ using NamedDims
 using Tables
 using Distances
 using MultivariateStats
+using InlineTest
 
 import Dictionaries: set!, unset!, insert!, delete!
 import Base: ==
