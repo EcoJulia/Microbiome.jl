@@ -239,6 +239,7 @@ end
             @test delete!(c4, "sample1", :something) isa MicrobiomeSample
             @test !haskey(c4, "sample1", :something)
             @test get(c4, "sample1", :something_else, 42) == 42
+            @test ismissing(get(c4, "sample1", :something_else))
             @test insert!(c4, "sample1", :something, 3.0) isa MicrobiomeSample
             @test get(c4, "sample1", :something, 42) == 3.0
             set!(c4, "sample1", :something, 1.0)
@@ -275,6 +276,8 @@ end
                 insert!(c5, "sample2", (; graw="gnaw", biff="boof"))
                 @test_throws IndexError insert!(c5, [(;sample="sample1", still_other="yes"), (;sample="sample2", still_other="no")])
                 @test !haskey(c5, "sample1", :still_other)
+                @test all(get(c5, :something) .=== [1.0, missing])
+                @test all(get(c5, :something, 42.0) .== [1.0, 42.0])
             end
 
             @testset "set!" begin

@@ -530,7 +530,14 @@ Base.haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol) = in(k
 
 Return the value of the metadata in a `sample` stored for the given `key`, or the given `default` value if no mapping for the key is present.
 """
-Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default) = get(metadata(samples(commp, sample)), key, default)
+Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default=missing) = get(metadata(samples(commp, sample)), key, default)
+
+"""
+    get(commp::CommunityProfile, key::Symbol, default)
+
+Return the value of the metadata in a `sample` stored for the given `key`, or the given `default` value if no mapping for the key is present.
+"""
+Base.get(commp::CommunityProfile, key::Symbol, default=missing) = [get(commp, sample, key, default) for sample in samplenames(commp)]
 
 
 """
