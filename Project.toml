@@ -25,5 +25,7 @@ Distances = "0.10"
 EcoBase = "0.1.4"
 MultivariateStats = "0.7, 0.8"
 NamedDims = "0.2"
+ReTest = "0.3"
 Tables = "1.2.1"
 julia = "1.6"
+
