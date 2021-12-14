@@ -201,7 +201,23 @@ a `commonname`, a mass / charge ratio (`mz`), and retention time (`rt`).
 
 
 ```jldoctest
+julia> m = Metabolite("name", "common", 1., 2.)
+Metabolite("name", "common", 1.0, 2.0)
 
+julia> name(m)
+"name"
+
+julia> commonname(m)
+"common"
+
+julia> masscharge(m)
+1.0
+
+julia> retentiontime(m)
+2.0
+
+julia> m2 = Metabolite("other name")
+Metabolite("other name", missing, missing, missing)
 ```
 
 ## Types and Methods
