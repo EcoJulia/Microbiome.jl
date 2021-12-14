@@ -196,6 +196,14 @@ GeneFunction("gene2", Taxon("Species_name", :species))
 
 ### Metabolites
 
+The [`Metabolite`](@ref) type has a `name` and optionally
+a `commonname`, a mass / charge ratio (`mz`), and retention time (`rt`).
+
+
+```jldoctest
+
+```
+
 ## Types and Methods
 
 ```@docs
