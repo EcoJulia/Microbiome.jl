@@ -182,7 +182,7 @@ end
 
 Base.string(f::AbstractFeature) = String(f)
 
-struct Metabolite <: Microbiome.AbstractFeature
+struct Metabolite <: AbstractFeature
     name::String
     commonname::Union{Missing, String}
     mz::Union{Missing, Float64}

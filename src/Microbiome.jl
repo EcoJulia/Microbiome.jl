@@ -80,10 +80,6 @@ using ReTest
 import Dictionaries: set!, unset!, insert!, delete!
 import Base: ==
 
-@testset "test" begin
-    @test true
-end
-
 include("ecobase.jl")
 include("samples.jl")
 include("features.jl")
