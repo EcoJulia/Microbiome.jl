@@ -4,6 +4,7 @@ module Microbiome
 export MicrobiomeSample,
        Taxon,
        GeneFunction,
+       Metabolite,
        metadata,
        set!,
        unset!,
@@ -14,7 +15,10 @@ export MicrobiomeSample,
        hasrank,
        taxon,
        hastaxon,
-       genefunction
+       genefunction,
+       commonname,
+       masscharge,
+       retentiontime
 
 # EcoBase Translations
 export abundances,
@@ -75,10 +79,6 @@ using ReTest
 
 import Dictionaries: set!, unset!, insert!, delete!
 import Base: ==
-
-@testset "test" begin
-    @test true
-end
 
 include("ecobase.jl")
 include("samples.jl")

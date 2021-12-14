@@ -181,3 +181,31 @@ function genefunction(n::AbstractString)
 end
 
 Base.string(f::AbstractFeature) = String(f)
+
+struct Metabolite <: AbstractFeature
+    name::String
+    commonname::Union{Missing, String}
+    mz::Union{Missing, Float64}
+    rt::Union{Missing, Float64}
+end
+
+Metabolite(n::AbstractString) = Metabolite(n, missing, missing, missing)
+
+name(m::Metabolite) = m.name
+commonname(m::Metabolite) = m.commonname
+masscharge(m::Metabolite) = m.mz
+retentiontime(m::Metabolite) = m.rt
+
+@testset "Metabolites" begin
+    m1 = Metabolite("name", "common", 1., 1.)
+    @test name(m1) == "name"
+    @test commonname(m1) == "common"
+    @test masscharge(m1) == 1
+    @test retentiontime(m1) == 1
+    m2 = Metabolite("name")
+    @test name(m2) == "name"
+    @test ismissing(commonname(m2))
+    @test ismissing(masscharge(m2))
+    @test ismissing(masscharge(m2))
+
+end
