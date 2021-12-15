@@ -310,7 +310,7 @@ julia> md2 = [(name="s1", other="Hello, World!"), (name="s2", other="Goodbye!")]
 julia> insert!(comm, md2; namecol=:name)
 
 julia> metadata(comm)
-3-element Vector{NamedTuple{(:sample, :subject, :foo, :other)}:
+3-element Vector{NamedTuple{(:sample, :subject, :foo, :other)}}:
  (sample = "s1", subject = "kevin", foo = "bar", other = "Hello, World!")
  (sample = "s2", subject = "anika", foo = missing, other = "Goodbye!")
  (sample = "s3", subject = "annelle", foo = "baz", other = missing)
