@@ -78,7 +78,8 @@ MicrobiomeSample("sample3", {:age = 23, :gender = "nonbinary", :genotype = "XY",
 ## Feature Types
 
 `AbstractFeature` types also have a `name`, but other fields are optional.
-`Microbiome.jl` defines two concrete `AbstractFeature` types, [`Taxon`](@ref) and [`GeneFunction`](@ref).
+`Microbiome.jl` defines three concrete `AbstractFeature` types,
+[`Taxon`](@ref), [`GeneFunction`](@ref), and [`Metabolite`](@ref).
 
 
 ### Taxon
@@ -134,8 +135,6 @@ Taxon("s__Escherichia_coli", missing)
 julia> String(ecoli) |> taxon
 Taxon("Escherichia_coli", :species)
 ```
-
-
 
 ### GeneFunction
 
@@ -195,6 +194,31 @@ GeneFunction("gene2", Taxon("Species_name", :species))
 ```
 
 
+### Metabolites
+
+The [`Metabolite`](@ref) type has a `name` and optionally
+a `commonname`, a mass / charge ratio (`mz`), and retention time (`rt`).
+
+
+```jldoctest
+julia> m = Metabolite("name", "common", 1., 2.)
+Metabolite("name", "common", 1.0, 2.0)
+
+julia> name(m)
+"name"
+
+julia> commonname(m)
+"common"
+
+julia> masscharge(m)
+1.0
+
+julia> retentiontime(m)
+2.0
+
+julia> m2 = Metabolite("other name")
+Metabolite("other name", missing, missing, missing)
+```
 
 ## Types and Methods
 
@@ -214,4 +238,11 @@ taxon
 ```@docs
 GeneFunction
 genefunction
+```
+
+```@docs
+Metabolite
+commonname
+masscharge
+retentiontime
 ```

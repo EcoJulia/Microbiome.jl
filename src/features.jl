@@ -182,6 +182,18 @@ end
 
 Base.string(f::AbstractFeature) = String(f)
 
+"""
+    Metabolite(name::String, commonname::Union{Missing, String}, mz::Union{Missing, Float64}, rt::Union{Missing, Float64}) <: AbstractFeature
+    Metabolite(name::String)
+
+Represents a small-molecule metabolite coming from an LCMS.
+The fields are
+
+- `name`: required, this should be a unique identifier
+- `commonname`: might refer to a chemical name like "proprionate"
+- `mz`: The mass/charge ratio
+- `rt`: The retention time
+"""
 struct Metabolite <: AbstractFeature
     name::String
     commonname::Union{Missing, String}
@@ -192,8 +204,27 @@ end
 Metabolite(n::AbstractString) = Metabolite(n, missing, missing, missing)
 
 name(m::Metabolite) = m.name
+
+"""
+    commonname(m::Metabolite)
+
+Accessor function for the `commonname` field of a [`Metabolite`](@ref).
+"""
 commonname(m::Metabolite) = m.commonname
+
+
+"""
+    masscharge(m::Metabolite)
+
+Accessor function for the `mz` field of a [`Metabolite`](@ref).
+"""
 masscharge(m::Metabolite) = m.mz
+
+"""
+    retentiontime(m::Metabolite)
+
+Accessor function for the `rt` field of a [`Metabolite`](@ref).
+"""
 retentiontime(m::Metabolite) = m.rt
 
 @testset "Metabolites" begin
