@@ -285,7 +285,7 @@ with the value `missing` in any samples that do not have that field set.
 
 ```jldoctest profiles
 julia> metadata(comm)
-3-element Vector{NamedTuple{(:sample, :subject)}:
+3-element Vector{NamedTuple{(:sample, :subject)}}:
  (sample = "s1", subject = "kevin")
  (sample = "s2", subject = "anika")
  (sample = "s3", subject = missing)
