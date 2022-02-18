@@ -69,9 +69,7 @@ export ginisimpson,
 using Statistics
 using SparseArrays
 using EcoBase
-using AxisIndices
 using Dictionaries
-using NamedDims
 using Tables
 using Distances
 using MultivariateStats

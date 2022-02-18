@@ -7,40 +7,36 @@ end
     CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
 
 An `AbstractAssemblage` from [EcoBase.jl](https://github.com/EcoJulia/EcoBase.jl)
-that uses an `AxisArray` of a `SparseMatrixCSC` under the hood.
+that uses a `SparseMatrixCSC` under the hood.
 
 `CommunityProfile`s are tables with `AbstractFeature`-indexed rows and
 `AbstractSample`-indexed columns.
 Note - we can use the `name` of samples and features to index.
 """
 mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
-    aa::NamedAxisArray
+    aa::AbstractSparseMatrix{T}
+    features::AbstractVector{S}
+    samples::AbstractVector{F}
+    fidx::Dictionary{String, Int}
+    sidx::Dictionary{String, Int}
 
-    function CommunityProfile(aa::NamedAxisArray)
-        @assert dimnames(aa) == (:features, :samples)
-        T = eltype(parent(aa))
-        F = eltype(keys(axes(aa, 1)))
-        S = eltype(keys(axes(aa, 2)))
-        return new{T, F, S}(aa)
+    function CommunityProfile(aa::AbstractSparseMatrix,
+                              feats::AbstractVector{<:AbstractFeature},
+                              samps::AbstractVector{<:AbstractSample})
+        fidx = Dictionary(name.(feats), eachindex(feats))
+        sidx = Dictionary(name.(samps), eachindex(samps))
+
+        T = eltype(aa)
+        F = eltype(feats)
+        S = eltype(samps)
+        return new{T, F, S}(aa, feats, samps, fidx, sidx)
     end
 end
 
-function CommunityProfile(tab::SparseMatrixCSC{<:Real}, 
-                          features::AbstractVector{<:AbstractFeature},
-                          samples::AbstractVector{<:AbstractSample})
-    return CommunityProfile(NamedAxisArray(tab, features=features, samples=samples))
-end
-
-function CommunityProfile{T, F, S}(tab::SparseMatrixCSC{<:T},
-                                   features::AbstractVector{F}, 
-                                   samples::AbstractVector{S}) where {T, F, S}
-    return CommunityProfile(tab, features, samples)
-end
-
 function CommunityProfile(tab::AbstractMatrix,
-                          features::AbstractVector{<:AbstractFeature},
-                          samples::AbstractVector{<:AbstractSample})
-    return CommunityProfile(sparse(tab), features, samples)
+                          feats::AbstractVector{<:AbstractFeature},
+                          samps::AbstractVector{<:AbstractSample})
+    return CommunityProfile(sparse(tab), feats, samps)
 end
 ## -- Convienience functions -- ##
 
@@ -55,14 +51,14 @@ end
 
 Returns features in `at`. To get featurenames instead, use [`featurenames`](@ref).
 """
-features(at::AbstractAbundanceTable) = axes(at.aa, 1) |> keys
+features(at::AbstractAbundanceTable) = at.features
 
 """
     samples(at::AbstractAbundanceTable)
 
 Returns samples in `at`. To get samplenames instead, use [`samplenames`](@ref).
 """
-samples(at::AbstractAbundanceTable) = axes(at.aa, 2) |> keys
+samples(at::AbstractAbundanceTable) = at.samples
 
 """
     samples(at::AbstractAbundanceTable, name::AbstractString)
@@ -85,30 +81,16 @@ Base.copy(at::AbstractAbundanceTable) = typeof(at)(copy(abundances(at)), copy(fe
 
 # -- Indexing -- #
 
-function _index_profile(at, idx, inds)
-    # single value - return that value
-    ndims(idx) == 0 && return idx 
-    # another table - return a new CommunityProfile with that table
-    ndims(idx) == 2 && return CommunityProfile(idx)
-    # a row or a column, figure out which, and make it 2D
-    if ndims(idx) == 1
-        dn = dimnames(idx)[1]
-        # if it's a row...
-        if dn == :samples
-            return at[[inds[1]], inds[2]]
-        # if it's a column
-        elseif dn == :features
-            return at[inds[1], [inds[2]]]
-        end
-    end
+function _toinds(d, inds::AbstractVector{Regex})
+    return findall(a-> any(ind-> contains(a, ind), inds), keys(d))
 end
 
-function _toinds(arr, inds::AbstractVector{Regex})
-    return findall(a-> any(ind-> contains(a, ind), inds), arr)
+function _toinds(d, inds::AbstractVector{<: Union{AbstractString}})
+    return findall(a-> any(==(a), inds), keys(d))
 end
 
-function _toinds(arr, inds::AbstractVector{<: Union{AbstractSample, AbstractFeature, AbstractString}})
-    return findall(a-> any(==(a), inds), arr)
+function _toinds(d, inds::AbstractVector{<: Union{AbstractFeature, AbstractSample}})
+    return findall(a-> any(i-> name(i) == a, inds), keys(d))
 end
 
 # fall back ↑
@@ -126,16 +108,16 @@ end
 
 function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex}, colind)
     rows = _toinds(featurenames(at), rowind)
-    idx = at.aa[rows, colind]
+    mat = at.aa[rows, colind]
 
-    _index_profile(at, idx, (rows, colind))
+    CommunityProfile(mat, features(aa)[rows], samples(aa)[colind])
 end
 
 function Base.getindex(at::CommunityProfile, rowind, colind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex})
     cols = _toinds(samplenames(at), colind)
-    idx = at.aa[rowind, cols]
+    mat = at.aa[rowind, cols]
 
-    _index_profile(at, idx, (rowind, cols))
+    CommunityProfile(mat, features(aa)[rowind], samples(aa)[cols])
 end
 
 function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex},
@@ -152,7 +134,7 @@ end
 
 EcoBase.thingnames(at::AbstractAbundanceTable) = name.(features(at))
 EcoBase.placenames(at::AbstractAbundanceTable) = name.(samples(at))
-EcoBase.occurrences(at::AbstractAbundanceTable) = parent(parent(at.aa)) # first parent is the unnamed AxisArray
+EcoBase.occurrences(at::AbstractAbundanceTable) = at.aa
 EcoBase.nthings(at::AbstractAbundanceTable) = size(at, 1)
 EcoBase.nplaces(at::AbstractAbundanceTable) = size(at, 2)
 ## todo
