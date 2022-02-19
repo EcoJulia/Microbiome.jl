@@ -143,14 +143,14 @@ end
 
 Base.getindex(at::CommunityProfile, rowind::Int, colind::Int) = at.abundances[rowind, colind]
     
-function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex}, colind)
+function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex,<:AbstractFeature}, colind)
     rows = _toinds(at.fidx, rowind)
     mat = at.abundances[rows, colind]
 
     CommunityProfile(mat, features(at)[rows], samples(at)[colind])
 end
 
-function Base.getindex(at::CommunityProfile, rowind, colind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex})
+function Base.getindex(at::CommunityProfile, rowind, colind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex,<:AbstractSample})
     cols = _toinds(at.sidx, colind)
     mat = at.abundances[rowind, cols]
 
@@ -171,7 +171,7 @@ end
 
 EcoBase.thingnames(at::AbstractAbundanceTable) = name.(features(at))
 EcoBase.placenames(at::AbstractAbundanceTable) = name.(samples(at))
-EcoBase.occurrences(at::AbstractAbundanceTable) = at.aa
+EcoBase.occurrences(at::AbstractAbundanceTable) = at.abundances
 EcoBase.nthings(at::AbstractAbundanceTable) = size(at, 1)
 EcoBase.nplaces(at::AbstractAbundanceTable) = size(at, 2)
 ## todo
