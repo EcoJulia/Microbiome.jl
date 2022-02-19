@@ -15,8 +15,8 @@ Note - we can use the `name` of samples and features to index.
 """
 mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
     aa::AbstractSparseMatrix{T}
-    features::AbstractVector{S}
-    samples::AbstractVector{F}
+    features::AbstractVector{F}
+    samples::AbstractVector{S}
     fidx::Dictionary{String, Int}
     sidx::Dictionary{String, Int}
 
@@ -45,6 +45,28 @@ function ==(p1::CommunityProfile, p2::CommunityProfile)
            samples(p1)    == samples(p2) &&
            features(p1)   == features(p2)
 end
+
+"""
+    taxonomicprofile(mat, features, samples)
+"""
+function taxonomicprofile(mat, features::AbstractVector{<:AbstractString}, samples::AbstractVector{<:AbstractString})
+    CommunityProfile(mat, Taxon.(features), MicrobiomeSample.(samples))
+end
+
+"""
+    functionalprofile(mat, features, samples)
+"""
+function functionalprofile(mat, features::AbstractVector{<:AbstractString}, samples::AbstractVector{<:AbstractString})
+    CommunityProfile(mat, GeneFunction.(features), MicrobiomeSample.(samples))
+end
+
+"""
+    metabolicprofile(mat, features, samples)
+"""
+function metabolicprofile(mat, features::AbstractVector{<:AbstractString}, samples::AbstractVector{<:AbstractString})
+    CommunityProfile(mat, Metabolite.(features), MicrobiomeSample.(samples))
+end
+
 
 """
     features(at::AbstractAbundanceTable)
@@ -77,7 +99,7 @@ ranks(at::AbstractAbundanceTable) = taxrank.(features(at))
 
 Base.size(at::AbstractAbundanceTable, dims...) = size(at.aa, dims...)
 
-Base.copy(at::AbstractAbundanceTable) = typeof(at)(copy(abundances(at)), copy(features(at)), deepcopy(samples(at)))
+Base.copy(at::AbstractAbundanceTable) = CommunityProfile(copy(abundances(at)), copy(features(at)), deepcopy(samples(at)))
 
 # -- Indexing -- #
 
@@ -101,11 +123,13 @@ _toinds(_, ind::Int) = ind
 _toinds(_, inds::AbstractVector{Int}) = inds
 
 function Base.getindex(at::CommunityProfile, inds...)
-    idx = at.aa[inds...]
+    mat = at.aa[inds...]
     
-    _index_profile(at, idx, inds)
+    CommunityProfile(mat, features(at)[inds[1]], samples(at)[inds[2]])
 end
 
+Base.getindex(at::CommunityProfile, rowind::Int, colind::Int) = at.aa[rowind, colind]
+    
 function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex}, colind)
     rows = _toinds(featurenames(at), rowind)
     mat = at.aa[rows, colind]
@@ -267,7 +291,7 @@ present(::Missing, m::Real=0.0) = missing
 function present(at::AbstractAbundanceTable, minabundance::Real=0.0)
     mat = spzeros(Bool, size(at)...)
     for i in eachindex(mat)
-        mat[i] = present(at[i], minabundance)
+        mat[i] = present(at[Tuple(i)...], minabundance)
     end
     return mat
 end

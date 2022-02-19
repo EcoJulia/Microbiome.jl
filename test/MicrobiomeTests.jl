@@ -6,7 +6,6 @@ using Microbiome.SparseArrays
 using Microbiome.Tables
 using Microbiome.Dictionaries
 import Microbiome.MultivariateStats: MDS
-using Documenter
 
 @testset "Samples and Features" begin
     @testset "MicriobiomeSamples and metadata" begin
@@ -131,7 +130,7 @@ end
     comm = CommunityProfile(mat, txs, mss)
 
     @testset "Profile operations" begin
-        @test CommunityProfile{Float64, Taxon, MicrobiomeSample}(mat, txs, mss) isa CommunityProfile
+        @test CommunityProfile(mat, txs, mss) isa CommunityProfile
         @test comm == CommunityProfile(dmat, txs, mss)
         
         @test nsamples(comm) == 5
