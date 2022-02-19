@@ -14,22 +14,22 @@ that uses a `SparseMatrixCSC` under the hood.
 Note - we can use the `name` of samples and features to index.
 """
 mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
-    aa::AbstractSparseMatrix{T}
+    abundances::AbstractSparseMatrix{T}
     features::AbstractVector{F}
     samples::AbstractVector{S}
     fidx::Dictionary{String, Int}
     sidx::Dictionary{String, Int}
 
-    function CommunityProfile(aa::AbstractSparseMatrix,
+    function CommunityProfile(abundances::AbstractSparseMatrix,
                               feats::AbstractVector{<:AbstractFeature},
                               samps::AbstractVector{<:AbstractSample})
         fidx = Dictionary(name.(feats), eachindex(feats))
         sidx = Dictionary(name.(samps), eachindex(samps))
 
-        T = eltype(aa)
+        T = eltype(abundances)
         F = eltype(feats)
         S = eltype(samps)
-        return new{T, F, S}(aa, feats, samps, fidx, sidx)
+        return new{T, F, S}(abundances, feats, samps, fidx, sidx)
     end
 end
 
@@ -38,6 +38,19 @@ function CommunityProfile(tab::AbstractMatrix,
                           samps::AbstractVector{<:AbstractSample})
     return CommunityProfile(sparse(tab), feats, samps)
 end
+
+function CommunityProfile(tab::AbstractVecOrMat,
+                          feats::AbstractVector{<:AbstractFeature},
+                          samp::AbstractSample)
+    return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), feats, [samp])
+end
+
+function CommunityProfile(tab::AbstractVecOrMat,
+                          feat::AbstractFeature,
+                          samps::AbstractVector{<:AbstractSample})
+    return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), [feat], samps)
+end
+
 ## -- Convienience functions -- ##
 
 function ==(p1::CommunityProfile, p2::CommunityProfile)
@@ -91,57 +104,57 @@ function samples(at::AbstractAbundanceTable, name::AbstractString)
     idx = findall(==(name), samplenames(at))
     length(idx) == 0 && throw(IndexError("No samples called $name"))
     length(idx) > 1 && throw(IndexError("More than one sample matches name $name"))
-    return samples(at)[axes(at.aa, 2)][first(idx)]
+    return samples(at)[axes(at.abundances, 2)][first(idx)]
 end
 
 profiletype(at::AbstractAbundanceTable) = eltype(features(at))
 ranks(at::AbstractAbundanceTable) = taxrank.(features(at))
 
-Base.size(at::AbstractAbundanceTable, dims...) = size(at.aa, dims...)
+Base.size(at::AbstractAbundanceTable, dims...) = size(at.abundances, dims...)
 
 Base.copy(at::AbstractAbundanceTable) = CommunityProfile(copy(abundances(at)), copy(features(at)), deepcopy(samples(at)))
 
 # -- Indexing -- #
 
 function _toinds(d, inds::AbstractVector{Regex})
-    return findall(a-> any(ind-> contains(a, ind), inds), keys(d))
+    return [d[i] for i in findall(a-> any(ind-> contains(a, ind), inds), keys(d))]
 end
 
 function _toinds(d, inds::AbstractVector{<: Union{AbstractString}})
-    return findall(a-> any(==(a), inds), keys(d))
+    return [d[i] for i in findall(a-> any(==(a), inds), keys(d))]
 end
 
 function _toinds(d, inds::AbstractVector{<: Union{AbstractFeature, AbstractSample}})
-    return findall(a-> any(i-> name(i) == a, inds), keys(d))
+    return [d[i] for i in findall(a-> any(i-> name(i) == a, inds), keys(d))]
 end
 
 # fall back ↑
-_toinds(arr, ind::Union{AbstractSample, AbstractFeature, AbstractString, Regex}) = _toinds(arr, [ind])
+_toinds(d, ind::Union{AbstractSample, AbstractFeature, AbstractString, Regex}) = _toinds(d, [ind])
 
 # if inds are integers, just return them
 _toinds(_, ind::Int) = ind
 _toinds(_, inds::AbstractVector{Int}) = inds
 
 function Base.getindex(at::CommunityProfile, inds...)
-    mat = at.aa[inds...]
+    mat = at.abundances[inds...]
     
     CommunityProfile(mat, features(at)[inds[1]], samples(at)[inds[2]])
 end
 
-Base.getindex(at::CommunityProfile, rowind::Int, colind::Int) = at.aa[rowind, colind]
+Base.getindex(at::CommunityProfile, rowind::Int, colind::Int) = at.abundances[rowind, colind]
     
 function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex}, colind)
-    rows = _toinds(featurenames(at), rowind)
-    mat = at.aa[rows, colind]
+    rows = _toinds(at.fidx, rowind)
+    mat = at.abundances[rows, colind]
 
-    CommunityProfile(mat, features(aa)[rows], samples(aa)[colind])
+    CommunityProfile(mat, features(at)[rows], samples(at)[colind])
 end
 
 function Base.getindex(at::CommunityProfile, rowind, colind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex})
-    cols = _toinds(samplenames(at), colind)
-    mat = at.aa[rowind, cols]
+    cols = _toinds(at.sidx, colind)
+    mat = at.abundances[rowind, cols]
 
-    CommunityProfile(mat, features(aa)[rowind], samples(aa)[cols])
+    CommunityProfile(mat, features(at)[rowind], samples(at)[cols])
 end
 
 function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex},
