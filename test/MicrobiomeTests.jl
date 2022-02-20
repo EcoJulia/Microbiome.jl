@@ -184,9 +184,9 @@ end
 
         @test_throws ErrorException commjoin(comm, comm)
         let c3 = commjoin(comm[:,1:2], comm[:, 3:4], comm[:, 5])
-            @test abundances(c3) .== abundances(comm)
-            @test samples(c3) .== samples(comm)
-            @test features(c3) .== features(comm)
+            @test all(abundances(c3) .== abundances(comm))
+            @test all(samples(c3) .== samples(comm))
+            @test all(features(c3) .== features(comm))
         end
 
         filtertest = CommunityProfile(sparse(Float64[3 2 1 # 0.66, assuming minabundance 2
