@@ -14,42 +14,63 @@ that uses a `SparseMatrixCSC` under the hood.
 Note - we can use the `name` of samples and features to index.
 """
 mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
-    abundances::AbstractSparseMatrix{T}
+    abundances::SparseMatrixCSC{T}
     features::AbstractVector{F}
     samples::AbstractVector{S}
     fidx::Dictionary{String, Int}
     sidx::Dictionary{String, Int}
 
-    function CommunityProfile(abundances::AbstractSparseMatrix,
+    function CommunityProfile(abunds::AbstractSparseMatrix,
                               feats::AbstractVector{<:AbstractFeature},
-                              samps::AbstractVector{<:AbstractSample})
+                              smpls::AbstractVector{<:AbstractSample})
+        
+        length(feats) == size(abunds, 1) || throw(DimensionMismatch("Number of features must equal number of rows in matrix"))
+        length(smpls) == size(abunds, 2) || throw(DimensionMismatch("Number of samples must equal number columns in matrix"))
         fidx = Dictionary(name.(feats), eachindex(feats))
-        sidx = Dictionary(name.(samps), eachindex(samps))
+        sidx = Dictionary(name.(smpls), eachindex(smpls))
 
-        T = eltype(abundances)
+        T = eltype(abunds)
         F = eltype(feats)
-        S = eltype(samps)
-        return new{T, F, S}(abundances, feats, samps, fidx, sidx)
+        S = eltype(smpls)
+        return new{T, F, S}(abunds, feats, smpls, fidx, sidx)
     end
 end
 
-function CommunityProfile(tab::AbstractMatrix,
-                          feats::AbstractVector{<:AbstractFeature},
-                          samps::AbstractVector{<:AbstractSample})
-    return CommunityProfile(sparse(tab), feats, samps)
-end
 
 function CommunityProfile(tab::AbstractVecOrMat,
                           feats::AbstractVector{<:AbstractFeature},
-                          samp::AbstractSample)
-    return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), feats, [samp])
+                          smpls::AbstractVector{<:AbstractSample})
+    return CommunityProfile(sparse(tab), feats, smpls)
 end
 
+# single-column CommunityProfile
+function CommunityProfile(tab::AbstractVecOrMat,
+                          feats::AbstractVector{<:AbstractFeature},
+                          smpl::AbstractSample)
+    return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), feats, [smpl])
+end
+
+# single-row CommunityProfile
 function CommunityProfile(tab::AbstractVecOrMat,
                           feat::AbstractFeature,
-                          samps::AbstractVector{<:AbstractSample})
-    return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), [feat], samps)
+                          smpls::AbstractVector{<:AbstractSample})
+    return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), [feat], smpls)
 end
+
+# # single-cell CommunityProfile
+# function CommunityProfile(tab::AbstractVecOrMat,
+#                           feat::AbstractFeature,
+#                           smpl::AbstractSample)
+#     return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), [feat], [smpl])
+# end
+
+
+# function CommunityProfile(tab::Real,
+#                           feat::AbstractFeature,
+#                           smpl::AbstractSample)
+#     return CommunityProfile(sparse(reshape([tab], 1, 1), [feat], [smpl]))
+# end
+
 
 ## -- Convienience functions -- ##
 
@@ -116,52 +137,35 @@ Base.copy(at::AbstractAbundanceTable) = CommunityProfile(copy(abundances(at)), c
 
 # -- Indexing -- #
 
-function _toinds(d, inds::AbstractVector{Regex})
-    return [d[i] for i in findall(a-> any(ind-> contains(a, ind), inds), keys(d))]
-end
-
-function _toinds(d, inds::AbstractVector{<: Union{AbstractString}})
-    return [d[i] for i in findall(a-> any(==(a), inds), keys(d))]
-end
-
-function _toinds(d, inds::AbstractVector{<: Union{AbstractFeature, AbstractSample}})
-    return [d[i] for i in findall(a-> any(i-> name(i) == a, inds), keys(d))]
-end
-
-# fall back ↑
-_toinds(d, ind::Union{AbstractSample, AbstractFeature, AbstractString, Regex}) = _toinds(d, [ind])
-
-# if inds are integers, just return them
-_toinds(_, ind::Int) = ind
-_toinds(_, inds::AbstractVector{Int}) = inds
-
-function Base.getindex(at::CommunityProfile, inds...)
-    mat = at.abundances[inds...]
+function Base.getindex(at::AbstractAbundanceTable, rowind, colind)
+    rows = _toind(at.fidx, rowind)
+    cols = _toind(at.sidx, colind)
     
-    CommunityProfile(mat, features(at)[inds[1]], samples(at)[inds[2]])
-end
-
-Base.getindex(at::CommunityProfile, rowind::Int, colind::Int) = at.abundances[rowind, colind]
+    mat = copy(abundances(at)[rows, cols])
     
-function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex,<:AbstractFeature}, colind)
-    rows = _toinds(at.fidx, rowind)
-    mat = at.abundances[rows, colind]
+    isempty(size(mat)) && return mat
+    
+    feat = copy(features(at))[rows]
+    smpl = deepcopy(samples(at))[cols]
 
-    CommunityProfile(mat, features(at)[rows], samples(at)[colind])
+    return CommunityProfile(mat, feat, smpl)
 end
 
-function Base.getindex(at::CommunityProfile, rowind, colind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex,<:AbstractSample})
-    cols = _toinds(at.sidx, colind)
-    mat = at.abundances[rowind, cols]
+# For integers, or vectors of integers, just return them
+_toind(_, ind) = ind
+_toind(_, inds::AbstractVector) = inds
 
-    CommunityProfile(mat, features(at)[rowind], samples(at)[cols])
-end
+# for strings and regex, look for matches
+_toind(d, ind::AbstractString) = only((d[i] for i in findall(key-> key == ind, keys(d))))
+_toind(d, ind::Regex)          = [d[i] for i in findall(key-> contains(key, ind), keys(d))]
 
-function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex},
-                                             colind::Union{S, AbstractVector{<:S}} where S<:Union{AbstractString,Regex})
-    rows = _toinds(featurenames(at), rowind)
-    at[rows, colind]
-end
+_toind(d, inds::AbstractVector{<:AbstractString}) = only((d[i] for i in findall(key-> any(ind-> key == ind, inds), keys(d))))
+_toind(d, inds::AbstractVector{<:Regex})          = [d[i] for i in findall(key-> any(ind-> contains(key, ind), inds), keys(d))]
+
+# For samples and features, look for name matches
+_toind(d, ind::Union{AbstractSample, AbstractFeature}) = only((d[i] for i in findall(key-> key == name(ind), keys(d))))
+_toind(d, inds::AbstractVector{<:Union{AbstractSample, AbstractFeature}}) = [d[i] for i in findall(key-> any(ind-> key == name(ind), inds), keys(d))]
+
 
 ## -- EcoBase Translations -- ##
 # see src/ecobase.jl for Microbiome function names
@@ -281,7 +285,7 @@ end
 Like [`relativeabundance!`](@ref), but does not mutate original.
 """
 function relativeabundance(at::AbstractAbundanceTable, kind::Symbol=:fraction)
-    comm = typeof(at)(float.(abundances(at)), deepcopy(features(at)), deepcopy(samples(at)))
+    comm = CommunityProfile(float.(abundances(at)), deepcopy(features(at)), deepcopy(samples(at)))
     relativeabundance!(comm)
 end
 
