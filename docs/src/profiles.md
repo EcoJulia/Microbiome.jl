@@ -241,7 +241,7 @@ Otherwise, it will return a new CommunityProfile.
 
 ```jldoctest profiles
 julia> comm["g__g1", "s1"]
-
+0.0
 
 julia> comm[r"[gs]1", "s1"]
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 2 features in 1 samples
