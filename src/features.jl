@@ -1,3 +1,6 @@
+name(as::AbstractFeature) = as.name
+name(as::AbstractFeature) = as.name
+
 const _ranks = (
     domain     = 0,
     kingdom    = 1,
@@ -164,6 +167,14 @@ Boolean function that returns:
 hasrank(gf::GeneFunction) = hastaxon(gf) && !ismissing(taxrank(gf))
 
 Base.String(gf::GeneFunction) = hastaxon(gf) ? string(name(gf), '|', String(taxon(gf))) : name(gf)
+
+Base.:(==)(g1::GeneFunction, g2::GeneFunction) = String(g1) == String(g2)
+
+@testset "GeneFunction Equality" begin
+    @test GeneFunction("test") == GeneFunction("test")
+    @test GeneFunction("test", Taxon("taxon")) == GeneFunction("test", Taxon("taxon"))
+    @test GeneFunction("test") != GeneFunction("test", Taxon("taxon"))
+end
 
 """
     genefunction(n::AbstractString)

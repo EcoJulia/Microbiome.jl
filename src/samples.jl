@@ -19,7 +19,17 @@ will update the parent `AbstractSample` as well.
 """
 metadata(as::AbstractSample) = as.metadata
 
-name(as::AbstractFeature) = as.name
+Base.:(==)(as1::AbstractSample, as2::AbstractSample) = name(as1) == name(as2)
+
+@testset "Sample equality" begin
+    as1 = MicrobiomeSample("test")
+    as2 = deepcopy(as1)
+    as3 = MicrobiomeSample("test2")
+    set!(as1, :testvar, 1)
+    @test as1 == as2
+    @test as1 != as3
+    @test as2 != as3
+end
 
 Base.String(as::AbstractSample) = name(as)
 Base.String(af::AbstractFeature) = name(af)

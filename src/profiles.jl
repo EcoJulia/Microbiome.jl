@@ -7,41 +7,56 @@ end
     CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
 
 An `AbstractAssemblage` from [EcoBase.jl](https://github.com/EcoJulia/EcoBase.jl)
-that uses an `AxisArray` of a `SparseMatrixCSC` under the hood.
+that uses a `SparseMatrixCSC` under the hood.
 
 `CommunityProfile`s are tables with `AbstractFeature`-indexed rows and
 `AbstractSample`-indexed columns.
 Note - we can use the `name` of samples and features to index.
 """
 mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
-    aa::NamedAxisArray
+    abundances::SparseMatrixCSC{T}
+    features::AbstractVector{F}
+    samples::AbstractVector{S}
+    fidx::Dictionary{String, Int}
+    sidx::Dictionary{String, Int}
 
-    function CommunityProfile(aa::NamedAxisArray)
-        @assert dimnames(aa) == (:features, :samples)
-        T = eltype(parent(aa))
-        F = eltype(keys(axes(aa, 1)))
-        S = eltype(keys(axes(aa, 2)))
-        return new{T, F, S}(aa)
+    function CommunityProfile(abunds::AbstractSparseMatrix,
+                              feats::AbstractVector{<:AbstractFeature},
+                              smpls::AbstractVector{<:AbstractSample})
+        
+        length(feats) == size(abunds, 1) || throw(DimensionMismatch("Number of features must equal number of rows in matrix"))
+        length(smpls) == size(abunds, 2) || throw(DimensionMismatch("Number of samples must equal number columns in matrix"))
+        fidx = Dictionary(String.(feats), eachindex(feats))
+        sidx = Dictionary(String.(smpls), eachindex(smpls))
+
+        T = eltype(abunds)
+        F = eltype(feats)
+        S = eltype(smpls)
+        return new{T, F, S}(abunds, feats, smpls, fidx, sidx)
     end
 end
 
-function CommunityProfile(tab::SparseMatrixCSC{<:Real}, 
-                          features::AbstractVector{<:AbstractFeature},
-                          samples::AbstractVector{<:AbstractSample})
-    return CommunityProfile(NamedAxisArray(tab, features=features, samples=samples))
+
+function CommunityProfile(tab::AbstractVecOrMat,
+                          feats::AbstractVector{<:AbstractFeature},
+                          smpls::AbstractVector{<:AbstractSample})
+    return CommunityProfile(sparse(tab), feats, smpls)
 end
 
-function CommunityProfile{T, F, S}(tab::SparseMatrixCSC{<:T},
-                                   features::AbstractVector{F}, 
-                                   samples::AbstractVector{S}) where {T, F, S}
-    return CommunityProfile(tab, features, samples)
+# single-column CommunityProfile
+function CommunityProfile(tab::AbstractVecOrMat,
+                          feats::AbstractVector{<:AbstractFeature},
+                          smpl::AbstractSample)
+    return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), feats, [smpl])
 end
 
-function CommunityProfile(tab::AbstractMatrix,
-                          features::AbstractVector{<:AbstractFeature},
-                          samples::AbstractVector{<:AbstractSample})
-    return CommunityProfile(sparse(tab), features, samples)
+# single-row CommunityProfile
+function CommunityProfile(tab::AbstractVecOrMat,
+                          feat::AbstractFeature,
+                          smpls::AbstractVector{<:AbstractSample})
+    return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), [feat], smpls)
 end
+
 ## -- Convienience functions -- ##
 
 function ==(p1::CommunityProfile, p2::CommunityProfile)
@@ -51,18 +66,51 @@ function ==(p1::CommunityProfile, p2::CommunityProfile)
 end
 
 """
+    taxonomicprofile(mat, features, samples)
+"""
+function taxonomicprofile(mat, features::AbstractVector{<:AbstractString}, samples::AbstractVector{<:AbstractString})
+    CommunityProfile(mat, Taxon.(features), MicrobiomeSample.(samples))
+end
+
+"""
+    functionalprofile(mat, features, samples)
+"""
+function functionalprofile(mat, features::AbstractVector{<:AbstractString}, samples::AbstractVector{<:AbstractString})
+    CommunityProfile(mat, GeneFunction.(features), MicrobiomeSample.(samples))
+end
+
+"""
+    metabolicprofile(mat, features, samples)
+"""
+function metabolicprofile(mat, features::AbstractVector{<:AbstractString}, samples::AbstractVector{<:AbstractString})
+    CommunityProfile(mat, Metabolite.(features), MicrobiomeSample.(samples))
+end
+
+@testset "String Constructors" begin
+    tp = taxonomicprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
+    @test tp isa CommunityProfile
+    @test all(f-> f isa Taxon, features(tp))
+    fp = functionalprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
+    @test fp isa CommunityProfile
+    @test all(f-> f isa GeneFunction, features(fp))
+    mp = metabolicprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
+    @test mp isa CommunityProfile
+    @test all(f-> f isa Metabolite, features(mp))
+end
+
+"""
     features(at::AbstractAbundanceTable)
 
 Returns features in `at`. To get featurenames instead, use [`featurenames`](@ref).
 """
-features(at::AbstractAbundanceTable) = axes(at.aa, 1) |> keys
+features(at::AbstractAbundanceTable) = at.features
 
 """
     samples(at::AbstractAbundanceTable)
 
 Returns samples in `at`. To get samplenames instead, use [`samplenames`](@ref).
 """
-samples(at::AbstractAbundanceTable) = axes(at.aa, 2) |> keys
+samples(at::AbstractAbundanceTable) = at.samples
 
 """
     samples(at::AbstractAbundanceTable, name::AbstractString)
@@ -73,76 +121,48 @@ function samples(at::AbstractAbundanceTable, name::AbstractString)
     idx = findall(==(name), samplenames(at))
     length(idx) == 0 && throw(IndexError("No samples called $name"))
     length(idx) > 1 && throw(IndexError("More than one sample matches name $name"))
-    return samples(at)[axes(at.aa, 2)][first(idx)]
+    return samples(at)[axes(at.abundances, 2)][first(idx)]
 end
 
 profiletype(at::AbstractAbundanceTable) = eltype(features(at))
 ranks(at::AbstractAbundanceTable) = taxrank.(features(at))
 
-Base.size(at::AbstractAbundanceTable, dims...) = size(at.aa, dims...)
+Base.size(at::AbstractAbundanceTable, dims...) = size(at.abundances, dims...)
 
-Base.copy(at::AbstractAbundanceTable) = typeof(at)(copy(abundances(at)), copy(features(at)), deepcopy(samples(at)))
+Base.copy(at::AbstractAbundanceTable) = CommunityProfile(copy(abundances(at)), copy(features(at)), deepcopy(samples(at)))
 
 # -- Indexing -- #
 
-function _index_profile(at, idx, inds)
-    # single value - return that value
-    ndims(idx) == 0 && return idx 
-    # another table - return a new CommunityProfile with that table
-    ndims(idx) == 2 && return CommunityProfile(idx)
-    # a row or a column, figure out which, and make it 2D
-    if ndims(idx) == 1
-        dn = dimnames(idx)[1]
-        # if it's a row...
-        if dn == :samples
-            return at[[inds[1]], inds[2]]
-        # if it's a column
-        elseif dn == :features
-            return at[inds[1], [inds[2]]]
-        end
-    end
-end
-
-function _toinds(arr, inds::AbstractVector{Regex})
-    return findall(a-> any(ind-> contains(a, ind), inds), arr)
-end
-
-function _toinds(arr, inds::AbstractVector{<: Union{AbstractSample, AbstractFeature, AbstractString}})
-    return findall(a-> any(==(a), inds), arr)
-end
-
-# fall back ↑
-_toinds(arr, ind::Union{AbstractSample, AbstractFeature, AbstractString, Regex}) = _toinds(arr, [ind])
-
-# if inds are integers, just return them
-_toinds(_, ind::Int) = ind
-_toinds(_, inds::AbstractVector{Int}) = inds
-
-function Base.getindex(at::CommunityProfile, inds...)
-    idx = at.aa[inds...]
+function Base.getindex(at::AbstractAbundanceTable, rowind, colind)
+    rows = _toind(at.fidx, rowind)
+    cols = _toind(at.sidx, colind)
     
-    _index_profile(at, idx, inds)
+    mat = copy(abundances(at)[rows, cols])
+    
+    isempty(size(mat)) && return mat
+    
+    feat = copy(features(at))[rows]
+    smpl = deepcopy(samples(at))[cols]
+
+    feat isa AbstractFeature && (mat = reshape(mat, 1, length(mat)))
+    return CommunityProfile(mat, feat, smpl)
 end
 
-function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex}, colind)
-    rows = _toinds(featurenames(at), rowind)
-    idx = at.aa[rows, colind]
+# For integers, or vectors of integers, just return them
+_toind(_, ind) = ind
+_toind(_, inds::AbstractVector) = inds
 
-    _index_profile(at, idx, (rows, colind))
-end
+# for strings and regex, look for matches
+_toind(d, ind::AbstractString) = only((d[i] for i in findall(key-> key == ind, keys(d))))
+_toind(d, ind::Regex)          = [d[i] for i in findall(key-> contains(key, ind), keys(d))]
 
-function Base.getindex(at::CommunityProfile, rowind, colind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex})
-    cols = _toinds(samplenames(at), colind)
-    idx = at.aa[rowind, cols]
+_toind(d, inds::AbstractVector{<:AbstractString}) = [d[i] for i in findall(key-> any(ind-> key == ind, inds), keys(d))]
+_toind(d, inds::AbstractVector{<:Regex})          = [d[i] for i in findall(key-> any(ind-> contains(key, ind), inds), keys(d))]
 
-    _index_profile(at, idx, (rowind, cols))
-end
+# For samples and features, look for string representation matches
+_toind(d, ind::Union{AbstractSample, AbstractFeature}) = only((d[i] for i in findall(key-> key == String(ind), keys(d))))
+_toind(d, inds::AbstractVector{<:Union{AbstractSample, AbstractFeature}}) = [d[i] for i in findall(key-> any(ind-> key == String(ind), inds), keys(d))]
 
-function Base.getindex(at::CommunityProfile, rowind::Union{T, AbstractVector{<:T}} where T<:Union{AbstractString,Regex},
-                                             colind::Union{S, AbstractVector{<:S}} where S<:Union{AbstractString,Regex})
-    rows = _toinds(featurenames(at), rowind)
-    at[rows, colind]
-end
 
 ## -- EcoBase Translations -- ##
 # see src/ecobase.jl for Microbiome function names
@@ -152,7 +172,7 @@ end
 
 EcoBase.thingnames(at::AbstractAbundanceTable) = name.(features(at))
 EcoBase.placenames(at::AbstractAbundanceTable) = name.(samples(at))
-EcoBase.occurrences(at::AbstractAbundanceTable) = parent(parent(at.aa)) # first parent is the unnamed AxisArray
+EcoBase.occurrences(at::AbstractAbundanceTable) = at.abundances
 EcoBase.nthings(at::AbstractAbundanceTable) = size(at, 1)
 EcoBase.nplaces(at::AbstractAbundanceTable) = size(at, 2)
 ## todo
@@ -262,7 +282,7 @@ end
 Like [`relativeabundance!`](@ref), but does not mutate original.
 """
 function relativeabundance(at::AbstractAbundanceTable, kind::Symbol=:fraction)
-    comm = typeof(at)(float.(abundances(at)), deepcopy(features(at)), deepcopy(samples(at)))
+    comm = CommunityProfile(float.(abundances(at)), deepcopy(features(at)), deepcopy(samples(at)))
     relativeabundance!(comm)
 end
 
@@ -285,7 +305,7 @@ present(::Missing, m::Real=0.0) = missing
 function present(at::AbstractAbundanceTable, minabundance::Real=0.0)
     mat = spzeros(Bool, size(at)...)
     for i in eachindex(mat)
-        mat[i] = present(at[i], minabundance)
+        mat[i] = present(at[Tuple(i)...], minabundance)
     end
     return mat
 end

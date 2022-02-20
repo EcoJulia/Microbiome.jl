@@ -30,10 +30,10 @@ Otherwise, uses `set!`.
 """
 function shannon!(abt::AbstractAbundanceTable; overwrite=false)
     func! = overwrite ? set! : insert!
-    for s in samplenames(abt)
+    for s in samples(abt)
         col = abt[:, s]
         sh = shannon(abundances(col))
-        func!(samples(col)[1], :shannon, sh)
+        func!(s, :shannon, sh)
     end
     return abt
 end
@@ -68,10 +68,10 @@ Otherwise, uses `set!`.
 """
 function ginisimpson!(abt::AbstractAbundanceTable; overwrite=false)
     func! = overwrite ? set! : insert!
-    for s in samplenames(abt)
+    for s in samples(abt)
         col = abt[:, s]
         sh = ginisimpson(abundances(col))
-        func!(samples(col)[1], :ginisimpson, sh)
+        func!(s, :ginisimpson, sh)
     end
     return abt
 end

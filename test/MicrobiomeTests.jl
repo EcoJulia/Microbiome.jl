@@ -6,7 +6,6 @@ using Microbiome.SparseArrays
 using Microbiome.Tables
 using Microbiome.Dictionaries
 import Microbiome.MultivariateStats: MDS
-using Documenter
 
 @testset "Samples and Features" begin
     @testset "MicriobiomeSamples and metadata" begin
@@ -131,7 +130,7 @@ end
     comm = CommunityProfile(mat, txs, mss)
 
     @testset "Profile operations" begin
-        @test CommunityProfile{Float64, Taxon, MicrobiomeSample}(mat, txs, mss) isa CommunityProfile
+        @test CommunityProfile(mat, txs, mss) isa CommunityProfile
         @test comm == CommunityProfile(dmat, txs, mss)
         
         @test nsamples(comm) == 5
@@ -185,9 +184,9 @@ end
 
         @test_throws ErrorException commjoin(comm, comm)
         let c3 = commjoin(comm[:,1:2], comm[:, 3:4], comm[:, 5])
-            @test abundances(c3) == abundances(comm)
-            @test samples(c3) == samples(comm)
-            @test features(c3) == features(comm)
+            @test all(abundances(c3) .== abundances(comm))
+            @test all(samples(c3) .== samples(comm))
+            @test all(features(c3) .== features(comm))
         end
 
         filtertest = CommunityProfile(sparse(Float64[3 2 1 # 0.66, assuming minabundance 2
@@ -219,8 +218,10 @@ end
         
         @test filter(hastaxon, strat)         |> nfeatures == 2
         @test filter(!hastaxon, strat)        |> nfeatures == 2
-        @test strat["gene1", :]               |> nfeatures == 3
-        @test strat[["gene1", "gene2"], :]    |> nfeatures == 4
+        @test strat["gene1", :]               |> nfeatures == 1
+        @test strat[["gene1", "gene2"], :]    |> nfeatures == 2
+        @test strat[r"gene1", :]               |> nfeatures == 3
+        @test strat[r"gene[12]", :]    |> nfeatures == 4
         @test strat[GeneFunction("gene1"), :] |> nfeatures == 1
     end
 
@@ -302,12 +303,16 @@ end
         
         for i in 1:5
             @test abundances(comm[:, "sample$i"]) == mat[:, [i]]
-            @test abundances(comm["taxon$i", :]) == mat[[i], :]
+            @test abundances(comm["$(keys(Microbiome._shortranks)[i])__taxon$i", :]) == mat[[i], :]
         end
 
-        @test abundances(comm[r"taxon1", :]) == abundances(comm[["taxon1", "taxon10"], :]) == abundances(comm[[1,10], :])
+        @test abundances(comm[r"taxon1", :]) == abundances(comm[["d__taxon1", "u__taxon10"], :]) == abundances(comm[[1,10], :])
         @test abundances(comm[:, r"sample[13]"]) == abundances(comm[:,["sample1", "sample3"]]) == abundances(comm[:, [1,3]])
-        @test abundances(comm[r"taxon1", r"sample[13]"]) == abundances(comm[["taxon1", "taxon10"],["sample1", "sample3"]]) == abundances(comm[[1,10], [1,3]])
+        @test abundances(comm[r"taxon1", r"sample[13]"]) == 
+              abundances(comm[["d__taxon1", "u__taxon10"],["sample1", "sample3"]]) == 
+              abundances(comm[["d__taxon1", "u__taxon10"],[r"sample1", r"sample3"]]) == 
+              abundances(comm[[1,10], [1,3]])
+
 
         for (i, col) in enumerate(Tables.columns(comm))
             if i == 1

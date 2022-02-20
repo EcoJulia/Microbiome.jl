@@ -233,21 +233,15 @@ It is often inconvenient to find the numerical index
 of a particular feature or sample.
 Instead, you can use strings or regular expressions
 to get slices of a `CommunityProfile`,
-which will match on the `name` field of the features or samples.
-This kind of indexing always returns a `CommunityProfile`,
-even if it only has 1 value.
+which will match on the `String`  representation of the features or samples.
+As with numerical indexing, if the index returns
+a unique (feature, sample) pair,
+it will return the abundance of that pair.
+Otherwise, it will return a new CommunityProfile.
 
 ```jldoctest profiles
-julia> comm["g1", "s1"]
-CommunityProfile{Float64, Taxon, MicrobiomeSample} with 1 features in 1 samples
-
-Feature names:
-g1
-
-Sample names:
-s1
-
-
+julia> comm["g__g1", "s1"]
+0.0
 
 julia> comm[r"[gs]1", "s1"]
 CommunityProfile{Float64, Taxon, MicrobiomeSample} with 2 features in 1 samples
@@ -258,8 +252,6 @@ s1, g1
 Sample names:
 s1
 ```
-
-
 
 ## [Working with metadata](@id working-metadata)
 
