@@ -26,8 +26,8 @@ mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
         
         length(feats) == size(abunds, 1) || throw(DimensionMismatch("Number of features must equal number of rows in matrix"))
         length(smpls) == size(abunds, 2) || throw(DimensionMismatch("Number of samples must equal number columns in matrix"))
-        fidx = Dictionary(name.(feats), eachindex(feats))
-        sidx = Dictionary(name.(smpls), eachindex(smpls))
+        fidx = Dictionary(String.(feats), eachindex(feats))
+        sidx = Dictionary(String.(smpls), eachindex(smpls))
 
         T = eltype(abunds)
         F = eltype(feats)
@@ -56,21 +56,6 @@ function CommunityProfile(tab::AbstractVecOrMat,
                           smpls::AbstractVector{<:AbstractSample})
     return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), [feat], smpls)
 end
-
-# # single-cell CommunityProfile
-# function CommunityProfile(tab::AbstractVecOrMat,
-#                           feat::AbstractFeature,
-#                           smpl::AbstractSample)
-#     return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), [feat], [smpl])
-# end
-
-
-# function CommunityProfile(tab::Real,
-#                           feat::AbstractFeature,
-#                           smpl::AbstractSample)
-#     return CommunityProfile(sparse(reshape([tab], 1, 1), [feat], [smpl]))
-# end
-
 
 ## -- Convienience functions -- ##
 
@@ -148,6 +133,7 @@ function Base.getindex(at::AbstractAbundanceTable, rowind, colind)
     feat = copy(features(at))[rows]
     smpl = deepcopy(samples(at))[cols]
 
+    feat isa AbstractFeature && (mat = reshape(mat, 1, length(mat)))
     return CommunityProfile(mat, feat, smpl)
 end
 
@@ -159,12 +145,12 @@ _toind(_, inds::AbstractVector) = inds
 _toind(d, ind::AbstractString) = only((d[i] for i in findall(key-> key == ind, keys(d))))
 _toind(d, ind::Regex)          = [d[i] for i in findall(key-> contains(key, ind), keys(d))]
 
-_toind(d, inds::AbstractVector{<:AbstractString}) = only((d[i] for i in findall(key-> any(ind-> key == ind, inds), keys(d))))
+_toind(d, inds::AbstractVector{<:AbstractString}) = [d[i] for i in findall(key-> any(ind-> key == ind, inds), keys(d))]
 _toind(d, inds::AbstractVector{<:Regex})          = [d[i] for i in findall(key-> any(ind-> contains(key, ind), inds), keys(d))]
 
-# For samples and features, look for name matches
-_toind(d, ind::Union{AbstractSample, AbstractFeature}) = only((d[i] for i in findall(key-> key == name(ind), keys(d))))
-_toind(d, inds::AbstractVector{<:Union{AbstractSample, AbstractFeature}}) = [d[i] for i in findall(key-> any(ind-> key == name(ind), inds), keys(d))]
+# For samples and features, look for string representation matches
+_toind(d, ind::Union{AbstractSample, AbstractFeature}) = only((d[i] for i in findall(key-> key == String(ind), keys(d))))
+_toind(d, inds::AbstractVector{<:Union{AbstractSample, AbstractFeature}}) = [d[i] for i in findall(key-> any(ind-> key == String(ind), inds), keys(d))]
 
 
 ## -- EcoBase Translations -- ##

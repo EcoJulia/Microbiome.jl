@@ -19,7 +19,7 @@ will update the parent `AbstractSample` as well.
 """
 metadata(as::AbstractSample) = as.metadata
 
-name(as::AbstractFeature) = as.name
+Base.:(==)(m1::AbstractSample, m2::AbstractSample) = name(m1) == name(m2)
 
 Base.String(as::AbstractSample) = name(as)
 Base.String(af::AbstractFeature) = name(af)

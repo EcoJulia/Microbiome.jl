@@ -218,8 +218,10 @@ end
         
         @test filter(hastaxon, strat)         |> nfeatures == 2
         @test filter(!hastaxon, strat)        |> nfeatures == 2
-        @test strat["gene1", :]               |> nfeatures == 3
-        @test strat[["gene1", "gene2"], :]    |> nfeatures == 4
+        @test strat["gene1", :]               |> nfeatures == 1
+        @test strat[["gene1", "gene2"], :]    |> nfeatures == 2
+        @test strat[r"gene1", :]               |> nfeatures == 3
+        @test strat[r"gene[12]", :]    |> nfeatures == 4
         @test strat[GeneFunction("gene1"), :] |> nfeatures == 1
     end
 
@@ -301,12 +303,12 @@ end
         
         for i in 1:5
             @test abundances(comm[:, "sample$i"]) == mat[:, [i]]
-            @test abundances(comm["taxon$i", :]) == mat[[i], :]
+            @test abundances(comm["$(keys(Microbiome._shortranks)[i])__taxon$i", :]) == mat[[i], :]
         end
 
-        @test abundances(comm[r"taxon1", :]) == abundances(comm[["taxon1", "taxon10"], :]) == abundances(comm[[1,10], :])
+        @test abundances(comm[r"taxon1", :]) == abundances(comm[["d__taxon1", "u__taxon10"], :]) == abundances(comm[[1,10], :])
         @test abundances(comm[:, r"sample[13]"]) == abundances(comm[:,["sample1", "sample3"]]) == abundances(comm[:, [1,3]])
-        @test abundances(comm[r"taxon1", r"sample[13]"]) == abundances(comm[["taxon1", "taxon10"],["sample1", "sample3"]]) == abundances(comm[[1,10], [1,3]])
+        @test abundances(comm[r"taxon1", r"sample[13]"]) == abundances(comm[["d__taxon1", "u__taxon10"],["sample1", "sample3"]]) == abundances(comm[[1,10], [1,3]])
 
         for (i, col) in enumerate(Tables.columns(comm))
             if i == 1
