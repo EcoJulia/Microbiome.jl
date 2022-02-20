@@ -89,13 +89,13 @@ end
 @testset "String Constructors" begin
     tp = taxonomicprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
     @test tp isa CommunityProfile
-    @test all(f-> f isa Taxon)
-    tp = functionalprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
-    @test tp isa CommunityProfile
-    @test all(f-> f isa GeneFunction)
-    tp = metabolicprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
-    @test tp isa CommunityProfile
-    @test all(f-> f isa Metabolite)
+    @test all(f-> f isa Taxon, features(tp))
+    fp = functionalprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
+    @test fp isa CommunityProfile
+    @test all(f-> f isa GeneFunction, features(fp))
+    mp = metabolicprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
+    @test mp isa CommunityProfile
+    @test all(f-> f isa Metabolite, features(mp))
 end
 
 """
