@@ -86,6 +86,17 @@ function metabolicprofile(mat, features::AbstractVector{<:AbstractString}, sampl
     CommunityProfile(mat, Metabolite.(features), MicrobiomeSample.(samples))
 end
 
+@testset "String Constructors" begin
+    tp = taxonomicprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
+    @test tp isa CommunityProfile
+    @test all(f-> f isa Taxon)
+    tp = functionalprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
+    @test tp isa CommunityProfile
+    @test all(f-> f isa GeneFunction)
+    tp = metabolicprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
+    @test tp isa CommunityProfile
+    @test all(f-> f isa Metabolite)
+end
 
 """
     features(at::AbstractAbundanceTable)

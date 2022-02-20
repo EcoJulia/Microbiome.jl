@@ -308,7 +308,11 @@ end
 
         @test abundances(comm[r"taxon1", :]) == abundances(comm[["d__taxon1", "u__taxon10"], :]) == abundances(comm[[1,10], :])
         @test abundances(comm[:, r"sample[13]"]) == abundances(comm[:,["sample1", "sample3"]]) == abundances(comm[:, [1,3]])
-        @test abundances(comm[r"taxon1", r"sample[13]"]) == abundances(comm[["d__taxon1", "u__taxon10"],["sample1", "sample3"]]) == abundances(comm[[1,10], [1,3]])
+        @test abundances(comm[r"taxon1", r"sample[13]"]) == 
+              abundances(comm[["d__taxon1", "u__taxon10"],["sample1", "sample3"]]) == 
+              abundances(comm[["d__taxon1", "u__taxon10"],[r"sample1", r"sample3"]]) == 
+              abundances(comm[[1,10], [1,3]]) == 
+
 
         for (i, col) in enumerate(Tables.columns(comm))
             if i == 1
