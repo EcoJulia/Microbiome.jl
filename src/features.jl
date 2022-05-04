@@ -1,5 +1,4 @@
 name(as::AbstractFeature) = as.name
-name(as::AbstractFeature) = as.name
 
 const _ranks = (
     domain     = 0,
