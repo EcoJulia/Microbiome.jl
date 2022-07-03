@@ -76,7 +76,7 @@ end
 md"""
 ### 📊 Data format
 
-The data we've downloade here is in the form of tab-separated files,
+The data we've downloaded here is in the form of tab-separated files,
 one per biosample,
 where rows represent individual features - in this case, indivudual taxa.
 
@@ -311,7 +311,7 @@ The first and most straightforward is using numbers -
 keep in mind that indexing in julia starts at 1,
 that rows are the first dimension, and columns are the second dimension.
 
-For example, the following will return the relative abundance of the 3rd row and 6th column:
+For example, the following will return the relative abundance of the 4th row and 6th column:
 """
 
 # ╔═╡ c98a4d00-e94d-47aa-aa1b-d91c8422ddee
