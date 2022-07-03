@@ -154,7 +154,7 @@ Notice that, in the DataFrame above,
 a number of taxa are missing from a number of samples.
 This is expected,
 but "missing" in the contex of microbial community data just means
-that the relative abundance is 0.
+that the relative abundance is 0 (zero).
 So we'll convert those to 0 to generate our matrix:
 """
 
