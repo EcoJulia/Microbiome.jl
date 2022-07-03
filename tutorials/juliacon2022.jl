@@ -41,12 +41,12 @@ from the human microbiome project
 These files are subsampled from real human biosamples
 from different body sites:
 
-- SRS014459-Stool_profile.txt (💩)
-- SRS014464-Anterior_nares_profile.txt (back of the 👃)
-- SRS014470-Tongue_dorsum_profile.txt (top of the 👅)
-- SRS014472-Buccal_mucosa_profile.txt (inside of cheek)
-- SRS014476-Supragingival_plaque_profile.txt (🦷 plaque near the gums)
-- SRS014494-Posterior_fornix_profile.txt (vagina near the cervix)
+- `SRS014459-Stool_profile.txt` (💩)
+- `SRS014464-Anterior_nares_profile.txt` (back of the 👃)
+- `SRS014470-Tongue_dorsum_profile.txt` (top of the 👅)
+- `SRS014472-Buccal_mucosa_profile.txt` (inside of cheek)
+- `SRS014476-Supragingival_plaque_profile.txt` (🦷 plaque near the gums)
+- `SRS014494-Posterior_fornix_profile.txt` (vagina near the cervix)
 """
 
 # ╔═╡ 1be1644b-7270-4a8d-a208-8f000df47c5d
@@ -1621,13 +1621,13 @@ version = "0.9.1+5"
 # ╠═8b6bc20b-6cc6-4450-a8c3-9b58fdbda6d8
 # ╟─1e48e79b-7242-473b-a730-0ea7c5313c0f
 # ╠═0b80a1b8-b6c6-4663-987d-b4613536056b
-# ╠═7fdf6e5c-471e-4170-9a7c-2c027ec02100
+# ╟─7fdf6e5c-471e-4170-9a7c-2c027ec02100
 # ╠═cd06d809-0a85-485e-9ec7-7698cc748344
 # ╠═3a064eac-2e45-4565-a35b-71e3f755c5c0
-# ╠═e57c4876-f4c2-40d4-befc-1f6e82ae1496
+# ╟─e57c4876-f4c2-40d4-befc-1f6e82ae1496
 # ╠═e5cbfd13-7224-453d-b108-a4e54259540d
 # ╠═bc0f81b3-3750-426e-8113-712f7490236e
-# ╠═f151ec8d-08c4-4e2c-bc2e-555b999d771a
+# ╟─f151ec8d-08c4-4e2c-bc2e-555b999d771a
 # ╠═71be47ae-1682-4068-a4d7-e36291682efa
 # ╟─8d64359d-3ab4-4da0-af92-afc4d25389bf
 # ╠═e0675c3d-7e3d-4866-adc0-ade649d3955c
