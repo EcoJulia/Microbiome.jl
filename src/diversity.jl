@@ -11,8 +11,9 @@ See also [`shannon!`](@ref).
 """
 function shannon(v::Union{AbstractVector{T}, AbstractSparseMatrix{T}}) where T<:Real
     total = sum(v)
-    relab = map(x-> x/total, v)
-    return -sum([log(x^x) for x in relab])
+    logtotal = log(total)
+    # The iszero condition is necessary to prevent log(0)
+    return logtotal - sum(x -> iszero(x) ? x : x * log(x), v) / total
 end
 
 function shannon(abt::AbstractAbundanceTable)
@@ -49,8 +50,7 @@ See also [`ginisimpson!`](@ref).
 """
 function ginisimpson(v::Union{AbstractVector{T}, AbstractSparseMatrix{T}}) where T<:Real
     total = sum(v)
-    relab = map(x-> x/total, v)
-    return 1 - sum([x^2 for x in relab])
+    return 1 - sum(x -> x^2, v) / (total^2)
 end
 
 function ginisimpson(abt::AbstractAbundanceTable)
