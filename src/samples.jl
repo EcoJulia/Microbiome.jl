@@ -11,13 +11,13 @@ Get the `name` field from an `AbstractSample` or `AbstractFeature`.
 name(as::AbstractSample) = as.name
 
 """
-    metadata(t::AbstractSample)
+    get(t::AbstractSample)
 
 Get the `metadata` field from an `AbstractSample`.
 Note that this is not a copy, so modifications to the returned value
 will update the parent `AbstractSample` as well.
 """
-metadata(as::AbstractSample) = as.metadata
+get(as::AbstractSample) = as.metadata
 
 Base.:(==)(as1::AbstractSample, as2::AbstractSample) = name(as1) == name(as2)
 
@@ -123,7 +123,7 @@ end
 Return an iterator over all keys of the metadata attached to sample `as`. 
 `collect(keys(as))` returns an array of keys. 
 """
-Base.keys(as::AbstractSample) = keys(metadata(as))
+Base.keys(as::AbstractSample) = keys(get(as))
 
 """
     haskey(as::AbstractSample, key::Symbol)
@@ -138,7 +138,7 @@ Base.haskey(as::AbstractSample, key::Symbol) = in(key, keys(as))
 
 Return the value of the metadata in the sample `as` stored for the given `key`, or the given `default` value if no mapping for the key is present.
 """
-Base.get(as::AbstractSample, key::Symbol, default) = get(metadata(as), key, default)
+Base.get(as::AbstractSample, key::Symbol, default) = get(get(as), key, default)
 
 
 function set!(as::AbstractSample, d::Union{NamedTuple, Dictionary{Symbol, <:Any}})

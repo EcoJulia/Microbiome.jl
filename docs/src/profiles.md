@@ -145,13 +145,13 @@ julia> samplenames(comm)
 ```
 
 Finally, you can pull out the metadata of all samples
-or a subset using [`metadata`](@ref).
+or a subset using [`get`](@ref).
 The returned value is a vector of `NamedTuple`s,
 which is compliant with the [`Tables.jl`](https://github.com/JuliaData/Tables.jl) interface,
 so it's easy to load into other formats (like [`DataFrames.jl`](https://github.com/JuliaData/DataFrames.jl) for example):
 
 ```jldoctest profiles
-julia> metadata(comm)
+julia> get(comm)
 3-element Vector{NamedTuple{(:sample,), Tuple{String}}}:
  (sample = "s1",)
  (sample = "s2",)
@@ -276,7 +276,7 @@ with the value `missing` in any samples that do not have that field set.
 
 
 ```jldoctest profiles
-julia> metadata(comm)
+julia> get(comm)
 3-element Vector{NamedTuple{(:sample, :subject)}}:
  (sample = "s1", subject = "kevin")
  (sample = "s2", subject = "anika")
@@ -301,7 +301,7 @@ julia> md2 = [(name="s1", other="Hello, World!"), (name="s2", other="Goodbye!")]
 
 julia> insert!(comm, md2; namecol=:name)
 
-julia> metadata(comm)
+julia> get(comm)
 3-element Vector{NamedTuple{(:sample, :subject, :foo, :other)}}:
  (sample = "s1", subject = "kevin", foo = "bar", other = "Hello, World!")
  (sample = "s2", subject = "anika", foo = missing, other = "Goodbye!")
