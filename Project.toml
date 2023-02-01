@@ -4,7 +4,7 @@ keywords = ["microbiology", "microbiome", "biology"]
 license = "MIT"
 desc = "Functions and types for working with microbial community data"
 authors = ["@kescobo <kevbonham@gmail.com>"]
-version = "0.9.3"
+version = "0.9.4"
 
 [deps]
 Dictionaries = "85a47980-9c8c-11e8-2b9f-f7ca1fa99fb4"
