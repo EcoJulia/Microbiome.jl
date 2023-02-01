@@ -256,11 +256,15 @@ end
         @testset "Whole community" begin
             c5 = CommunityProfile(sparse([1 1; 2 2; 3 3]), [Taxon(string(i)) for i in 1:3], [s1, s2])
             md1, md2 = get(c5)
-            
-            @test all(row-> row[:age] == 37, [md1, md2])
-            @test all(row-> row[:name] == "kevin", [md1, md2])
+            md1_2, md2_2 = get(c5, [:name, :age, :test])
+            @test all(row-> row[:age] == 37, [md1, md2, md1_2, md2_2])
+            @test all(row-> row[:name] == "kevin", [md1, md2, md1_2, md2_2])
             @test md1[:something] == 1.0
             @test ismissing(md2[:something])
+            @test !haskey(md1_2, :something)
+            @test !haskey(md2_2, :something)
+            @test ismissing(md1_2[:test])
+            @test ismissing(md2_2[:test])
             @test md2[:something_else] == 2.0
             @test ismissing(md1[:something_else])
 

@@ -123,7 +123,7 @@ end
 Return an iterator over all keys of the metadata attached to sample `as`. 
 `collect(keys(as))` returns an array of keys. 
 """
-Base.keys(as::AbstractSample) = keys(get(as))
+Base.keys(as::AbstractSample) = keys(as.metadata)
 
 """
     haskey(as::AbstractSample, key::Symbol)
@@ -138,8 +138,16 @@ Base.haskey(as::AbstractSample, key::Symbol) = in(key, keys(as))
 
 Return the value of the metadata in the sample `as` stored for the given `key`, or the given `default` value if no mapping for the key is present.
 """
-Base.get(as::AbstractSample, key::Symbol, default) = get(get(as), key, default)
+Base.get(as::AbstractSample, key::Symbol, default) = get(as.metadata, key, default)
 
+"""
+    get(as::AbstractSample, key::Symbol, default)
+
+Return the value of the metadata in the sample `as` stored for the given `key`, or the given `default` value if no mapping for the key is present.
+"""
+Base.get(as::AbstractSample, keys::AbstractVector{<:Symbol}, default) = NamedTuple(key=> get(as.metadata, key, default) for key in keys)
+
+Base.get(as::AbstractSample, keys::AbstractVector{<:Symbol}) = NamedTuple(key=> get(as.metadata, key, missing) for key in keys)
 
 function set!(as::AbstractSample, d::Union{NamedTuple, Dictionary{Symbol, <:Any}})
     for (key, value) in pairs(d)

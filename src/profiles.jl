@@ -541,6 +541,26 @@ Return the value of the metadata in a `sample` stored for the given `key`, or th
 """
 Base.get(commp::CommunityProfile, key::Symbol, default=missing) = [get(commp, sample, key, default) for sample in samplenames(commp)]
 
+
+"""
+    get(commp::CommunityProfile, cols::AbstractVector{<:Symbol}, default)
+
+end
+
+Returns iterator of `NamedTuple` per sample, where keys are `:sample`
+and each metadata key found in `commp`.
+Samples without given metadata are filled with `default`.
+
+Returned values can be passed to any Tables.rowtable - compliant type,
+eg `DataFrame`.
+"""
+function Base.get(commp::CommunityProfile, cols::AbstractVector{<:Symbol}, default)
+    ss = samples(commp)
+    return Tables.rowtable(merge((; sample=name(s)), get(s, cols, default)) for s in ss)
+end
+
+Base.get(commp::CommunityProfile, cols::AbstractVector{<:Symbol}) = get(commp, cols, missing)
+
 """
     get(commp::CommunityProfile)
 
@@ -551,12 +571,10 @@ Samples without given metadata are filled with `missing`.
 Returned values can be passed to any Tables.rowtable - compliant type,
 eg `DataFrame`.
 """
-function get(commp::CommunityProfile)
+function Base.get(commp::CommunityProfile)
     ss = samples(commp)
-    cols = unique(reduce(vcat, collect.(keys.(metadata.(samples(commp))))))
-    return Tables.rowtable(merge((; sample=name(s)), 
-                     NamedTuple(c => get(s, c, missing) for c in cols)
-                    ) for s in ss)
+    cols = unique(reduce(vcat, collect.(keys.(get.(samples(commp))))))
+    return get(commp, cols)
 end
 
 Base.@deprecate_binding metadata get
