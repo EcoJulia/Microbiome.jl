@@ -428,7 +428,7 @@ And you can get all of the metadata out as a vector of `NamedTuple`s
 """
 
 # ╔═╡ 71be47ae-1682-4068-a4d7-e36291682efa
-DataFrame(metadata(comm))
+DataFrame(get(comm))
 
 # ╔═╡ 8d64359d-3ab4-4da0-af92-afc4d25389bf
 md"""

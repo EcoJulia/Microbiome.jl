@@ -5,7 +5,6 @@ export MicrobiomeSample,
        Taxon,
        GeneFunction,
        Metabolite,
-       metadata,
        set!,
        unset!,
        insert!,
@@ -43,8 +42,7 @@ export CommunityProfile,
        profiletype,
        featuretotals,
        sampletotals,
-       commjoin,
-       metadata
+       commjoin
    
 # Abundances
 export present,
@@ -76,7 +74,7 @@ using MultivariateStats
 using ReTest
 
 import Dictionaries: set!, unset!, insert!, delete!
-import Base: ==
+import Base: ==, get
 
 include("ecobase.jl")
 include("samples.jl")

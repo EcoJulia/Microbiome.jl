@@ -11,8 +11,8 @@ import Microbiome.MultivariateStats: MDS
     @testset "MicriobiomeSamples and metadata" begin
         ms = MicrobiomeSample("sample")
         @test name(ms) == "sample"
-        @test isempty(metadata(ms))
-        @test metadata(ms) isa Dictionary
+        @test isempty(get(ms))
+        @test get(ms) isa Dictionary
         @test_throws Dictionaries.IndexError ms.thing = "metadata"
         @test_throws Dictionaries.IndexError ms[:thing] = "metadata"
         
@@ -232,7 +232,7 @@ end
 
         @testset "Single sample" begin
             c4 = CommunityProfile(sparse([1 1; 2 2; 3 3]), [Taxon(string(i)) for i in 1:3], [s1, s2])
-            md1, md2 = metadata(c4)
+            md1, md2 = get(c4)
 
             @test_throws Dictionaries.IndexError insert!(c4, "sample1", :something, 3.0)
             @test_throws Dictionaries.IndexError delete!(c4, "sample1", :something_else)
@@ -244,7 +244,7 @@ end
             @test insert!(c4, "sample1", :something, 3.0) isa MicrobiomeSample
             @test get(c4, "sample1", :something, 42) == 3.0
             set!(c4, "sample1", :something, 1.0)
-            @test first(metadata(c4))[:something] == 1.0
+            @test first(get(c4))[:something] == 1.0
             @test haskey(c4, "sample1", :something)
             @test unset!(c4, "sample1", :something) isa MicrobiomeSample
             @test !haskey(c4, "sample1", :something)
@@ -255,12 +255,16 @@ end
 
         @testset "Whole community" begin
             c5 = CommunityProfile(sparse([1 1; 2 2; 3 3]), [Taxon(string(i)) for i in 1:3], [s1, s2])
-            md1, md2 = metadata(c5)
-            
-            @test all(row-> row[:age] == 37, [md1, md2])
-            @test all(row-> row[:name] == "kevin", [md1, md2])
+            md1, md2 = get(c5)
+            md1_2, md2_2 = get(c5, [:name, :age, :test])
+            @test all(row-> row[:age] == 37, [md1, md2, md1_2, md2_2])
+            @test all(row-> row[:name] == "kevin", [md1, md2, md1_2, md2_2])
             @test md1[:something] == 1.0
             @test ismissing(md2[:something])
+            @test !haskey(md1_2, :something)
+            @test !haskey(md2_2, :something)
+            @test ismissing(md1_2[:test])
+            @test ismissing(md2_2[:test])
             @test md2[:something_else] == 2.0
             @test ismissing(md1[:something_else])
 
