@@ -577,8 +577,6 @@ function Base.get(commp::CommunityProfile)
     return get(commp, cols)
 end
 
-Base.@deprecate_binding metadata get
-
 """
     filter(f, comm::CommunityProfile)
 
