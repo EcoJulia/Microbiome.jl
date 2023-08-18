@@ -90,6 +90,7 @@ Taxon("Prevotella_copri", :species)
 ```
 """
 function taxon(n::AbstractString)
+    n = String(n)
     m = match(r"^([dkpcofgstu])__(.+)", n)
     isnothing(m) && return Taxon(n)
     return Taxon(string(m.captures[2]), _shortranks[Symbol(m.captures[1])])
