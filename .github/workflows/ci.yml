@@ -30,10 +30,11 @@ jobs:
           - macOS-latest
         arch:
           - x64
-        experimental: [false]
         include:
           - version: 'nightly'
             experimental: true
+          - version: '1'
+            experimental: false
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
