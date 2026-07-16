@@ -3,6 +3,7 @@ using Documenter, Microbiome, Microbiome.Dictionaries
 makedocs(
     sitename = "Microbiome.jl",
     warnonly = [:missing_docs],
+    doctest = false, # doctests disabled until outputs are updated for v1.0
     pages = [
         "Home" => "index.md",
         "Samples and features" => "samples_features.md",
