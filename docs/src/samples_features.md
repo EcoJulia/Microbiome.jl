@@ -224,7 +224,6 @@ Metabolite("other name", missing, missing, missing)
 
 ```@docs
 MicrobiomeSample
-metadata
 ```
 
 ```@docs

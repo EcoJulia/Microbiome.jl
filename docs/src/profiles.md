@@ -405,7 +405,7 @@ CommunityProfile
 samples
 features
 samplenames
-**featurenames**
+featurenames
 commjoin
 relativeabundance
 relativeabundance!
