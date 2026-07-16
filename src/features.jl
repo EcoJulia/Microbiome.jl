@@ -1,16 +1,16 @@
 name(as::AbstractFeature) = as.name
 
 const _ranks = (
-    domain     = 0,
-    kingdom    = 1,
-    phylum     = 2,
-    class      = 3,
-    order      = 4,
-    family     = 5,
-    genus      = 6,
-    species    = 7,
+    domain = 0,
+    kingdom = 1,
+    phylum = 2,
+    class = 3,
+    order = 4,
+    family = 5,
+    genus = 6,
+    species = 7,
     subspecies = 8,
-    strain     = 9
+    strain = 9,
 )
 
 const _shortranks = (
@@ -23,7 +23,7 @@ const _shortranks = (
     g = :genus,
     s = :species,
     t = :subspecies,
-    u = missing
+    u = missing,
 )
 
 """
@@ -51,16 +51,16 @@ See also [`taxon`](@ref Microbiome.taxon).
 struct Taxon <: AbstractFeature
     name::String
     rank::Union{Missing, Symbol}
-    
+
     Taxon(s::AbstractString, ::Missing) = new(s, missing)
-    Taxon(s::AbstractString, rank::Symbol) = in(rank, keys(_ranks)) ? 
-                                                        new(s, rank)  :
-                                                        error("Invalid rank $rank, must be one of $(keys(_ranks))")
+    Taxon(s::AbstractString, rank::Symbol) = in(rank, keys(_ranks)) ?
+        new(s, rank) :
+        error("Invalid rank $rank, must be one of $(keys(_ranks))")
 end
 
 Taxon(n::AbstractString, rank::Int) = 0 <= rank <= 9 ?
-                                            Taxon(n, keys(_ranks)[rank+1]) :
-                                            error("Invalid rank $rank, must be one of $_ranks")
+    Taxon(n, keys(_ranks)[rank + 1]) :
+    error("Invalid rank $rank, must be one of $_ranks")
 Taxon(n::AbstractString) = Taxon(n, missing)
 
 function Base.String(t::Taxon)
@@ -239,7 +239,7 @@ Accessor function for the `rt` field of a [`Metabolite`](@ref).
 retentiontime(m::Metabolite) = m.rt
 
 @testset "Metabolites" begin
-    m1 = Metabolite("name", "common", 1., 1.)
+    m1 = Metabolite("name", "common", 1.0, 1.0)
     @test name(m1) == "name"
     @test commonname(m1) == "common"
     @test masscharge(m1) == 1
