@@ -42,7 +42,7 @@ This enables using bracket syntax for access, eg `as[prop]`.
 """
 function Base.getindex(as::AbstractSample, prop::Symbol)
     prop in _restricted_fields(as) && error("Do not use getindex to access $prop of $(typeof(as)). Use accessor function or getfield instead.")
-    getindex(as.metadata, prop)
+    return getindex(as.metadata, prop)
 end
 
 
@@ -59,7 +59,7 @@ Return the `prop` value in the metadata dictionary of `as`.
 This enables using dot syntax for access, eg `as.prop`.
 """
 function Base.getproperty(as::AbstractSample, prop::Symbol)
-    prop in _restricted_fields(as) ? getfield(as, prop) : as.metadata[prop]
+    return prop in _restricted_fields(as) ? getfield(as, prop) : as.metadata[prop]
 end
 
 function Base.setproperty!(as::AbstractSample, prop::Symbol, val)
@@ -145,9 +145,9 @@ Base.get(as::AbstractSample, key::Symbol, default) = get(as.metadata, key, defau
 
 Return the value of the metadata in the sample `as` stored for the given `key`, or the given `default` value if no mapping for the key is present.
 """
-Base.get(as::AbstractSample, keys::AbstractVector{<:Symbol}, default) = NamedTuple(key=> get(as.metadata, key, default) for key in keys)
+Base.get(as::AbstractSample, keys::AbstractVector{<:Symbol}, default) = NamedTuple(key => get(as.metadata, key, default) for key in keys)
 
-Base.get(as::AbstractSample, keys::AbstractVector{<:Symbol}) = NamedTuple(key=> get(as.metadata, key, missing) for key in keys)
+Base.get(as::AbstractSample, keys::AbstractVector{<:Symbol}) = NamedTuple(key => get(as.metadata, key, missing) for key in keys)
 
 function set!(as::AbstractSample, d::Union{NamedTuple, Dictionary{Symbol, <:Any}})
     for (key, value) in pairs(d)
@@ -185,4 +185,4 @@ struct MicrobiomeSample <: AbstractSample
 end
 
 MicrobiomeSample(n::AbstractString; kwargs...) = isempty(kwargs) ? MicrobiomeSample(n, Dictionary{Symbol, Any}()) : MicrobiomeSample(n, dictionary(kwargs))
-MicrobiomeSample(n::AbstractString, d::Union{AbstractDict,NamedTuple}) = MicrobiomeSample(n; pairs(d)...)
+MicrobiomeSample(n::AbstractString, d::Union{AbstractDict, NamedTuple}) = MicrobiomeSample(n; pairs(d)...)

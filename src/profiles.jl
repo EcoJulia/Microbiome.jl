@@ -1,6 +1,8 @@
-abstract type AbstractAbundanceTable{T <: Real, 
-                                     F <: AbstractFeature, 
-                                     S <: AbstractSample} <: EcoBase.AbstractAssemblage{T, F, S}
+abstract type AbstractAbundanceTable{
+    T <: Real,
+    F <: AbstractFeature,
+    S <: AbstractSample,
+} <: EcoBase.AbstractAssemblage{T, F, S}
 end
 
 """
@@ -20,10 +22,12 @@ mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
     fidx::Dictionary{String, Int}
     sidx::Dictionary{String, Int}
 
-    function CommunityProfile(abunds::AbstractSparseMatrix,
-                              feats::AbstractVector{<:AbstractFeature},
-                              smpls::AbstractVector{<:AbstractSample})
-        
+    function CommunityProfile(
+            abunds::AbstractSparseMatrix,
+            feats::AbstractVector{<:AbstractFeature},
+            smpls::AbstractVector{<:AbstractSample}
+        )
+
         length(feats) == size(abunds, 1) || throw(DimensionMismatch("Number of features must equal number of rows in matrix"))
         length(smpls) == size(abunds, 2) || throw(DimensionMismatch("Number of samples must equal number columns in matrix"))
         fidx = Dictionary(String.(feats), eachindex(feats))
@@ -37,65 +41,71 @@ mutable struct CommunityProfile{T, F, S} <: AbstractAbundanceTable{T, F, S}
 end
 
 
-function CommunityProfile(tab::AbstractVecOrMat,
-                          feats::AbstractVector{<:AbstractFeature},
-                          smpls::AbstractVector{<:AbstractSample})
+function CommunityProfile(
+        tab::AbstractVecOrMat,
+        feats::AbstractVector{<:AbstractFeature},
+        smpls::AbstractVector{<:AbstractSample}
+    )
     return CommunityProfile(sparse(tab), feats, smpls)
 end
 
 # single-column CommunityProfile
-function CommunityProfile(tab::AbstractVecOrMat,
-                          feats::AbstractVector{<:AbstractFeature},
-                          smpl::AbstractSample)
-    return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), feats, [smpl])
+function CommunityProfile(
+        tab::AbstractVecOrMat,
+        feats::AbstractVector{<:AbstractFeature},
+        smpl::AbstractSample
+    )
+    return CommunityProfile(sparse(reshape(tab, size(tab, 1), size(tab, 2))), feats, [smpl])
 end
 
 # single-row CommunityProfile
-function CommunityProfile(tab::AbstractVecOrMat,
-                          feat::AbstractFeature,
-                          smpls::AbstractVector{<:AbstractSample})
-    return CommunityProfile(sparse(reshape(tab, size(tab,1), size(tab,2))), [feat], smpls)
+function CommunityProfile(
+        tab::AbstractVecOrMat,
+        feat::AbstractFeature,
+        smpls::AbstractVector{<:AbstractSample}
+    )
+    return CommunityProfile(sparse(reshape(tab, size(tab, 1), size(tab, 2))), [feat], smpls)
 end
 
 ## -- Convienience functions -- ##
 
 function ==(p1::CommunityProfile, p2::CommunityProfile)
-    return abundances(p1) == abundances(p2) && 
-           samples(p1)    == samples(p2) &&
-           features(p1)   == features(p2)
+    return abundances(p1) == abundances(p2) &&
+        samples(p1) == samples(p2) &&
+        features(p1) == features(p2)
 end
 
 """
     taxonomicprofile(mat, features, samples)
 """
 function taxonomicprofile(mat, features::AbstractVector{<:AbstractString}, samples::AbstractVector{<:AbstractString})
-    CommunityProfile(mat, Taxon.(features), MicrobiomeSample.(samples))
+    return CommunityProfile(mat, Taxon.(features), MicrobiomeSample.(samples))
 end
 
 """
     functionalprofile(mat, features, samples)
 """
 function functionalprofile(mat, features::AbstractVector{<:AbstractString}, samples::AbstractVector{<:AbstractString})
-    CommunityProfile(mat, GeneFunction.(features), MicrobiomeSample.(samples))
+    return CommunityProfile(mat, GeneFunction.(features), MicrobiomeSample.(samples))
 end
 
 """
     metabolicprofile(mat, features, samples)
 """
 function metabolicprofile(mat, features::AbstractVector{<:AbstractString}, samples::AbstractVector{<:AbstractString})
-    CommunityProfile(mat, Metabolite.(features), MicrobiomeSample.(samples))
+    return CommunityProfile(mat, Metabolite.(features), MicrobiomeSample.(samples))
 end
 
 @testset "String Constructors" begin
     tp = taxonomicprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
     @test tp isa CommunityProfile
-    @test all(f-> f isa Taxon, features(tp))
+    @test all(f -> f isa Taxon, features(tp))
     fp = functionalprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
     @test fp isa CommunityProfile
-    @test all(f-> f isa GeneFunction, features(fp))
+    @test all(f -> f isa GeneFunction, features(fp))
     mp = metabolicprofile([1 0; 0 1], ["feature1", "feature2"], ["sample1", "sample2"])
     @test mp isa CommunityProfile
-    @test all(f-> f isa Metabolite, features(mp))
+    @test all(f -> f isa Metabolite, features(mp))
 end
 
 """
@@ -136,11 +146,11 @@ Base.copy(at::AbstractAbundanceTable) = CommunityProfile(copy(abundances(at)), c
 function Base.getindex(at::AbstractAbundanceTable, rowind, colind)
     rows = _toind(at.fidx, rowind)
     cols = _toind(at.sidx, colind)
-    
+
     mat = copy(abundances(at)[rows, cols])
-    
+
     isempty(size(mat)) && return mat
-    
+
     feat = copy(features(at))[rows]
     smpl = deepcopy(samples(at))[cols]
 
@@ -153,15 +163,15 @@ _toind(_, ind) = ind
 _toind(_, inds::AbstractVector) = inds
 
 # for strings and regex, look for matches
-_toind(d, ind::AbstractString) = only((d[i] for i in findall(key-> key == ind, keys(d))))
-_toind(d, ind::Regex)          = [d[i] for i in findall(key-> contains(key, ind), keys(d))]
+_toind(d, ind::AbstractString) = only((d[i] for i in findall(key -> key == ind, keys(d))))
+_toind(d, ind::Regex) = [d[i] for i in findall(key -> contains(key, ind), keys(d))]
 
-_toind(d, inds::AbstractVector{<:AbstractString}) = [d[i] for i in findall(key-> any(ind-> key == ind, inds), keys(d))]
-_toind(d, inds::AbstractVector{<:Regex})          = [d[i] for i in findall(key-> any(ind-> contains(key, ind), inds), keys(d))]
+_toind(d, inds::AbstractVector{<:AbstractString}) = [d[i] for i in findall(key -> any(ind -> key == ind, inds), keys(d))]
+_toind(d, inds::AbstractVector{<:Regex}) = [d[i] for i in findall(key -> any(ind -> contains(key, ind), inds), keys(d))]
 
 # For samples and features, look for string representation matches
-_toind(d, ind::Union{AbstractSample, AbstractFeature}) = only((d[i] for i in findall(key-> key == String(ind), keys(d))))
-_toind(d, inds::AbstractVector{<:Union{AbstractSample, AbstractFeature}}) = [d[i] for i in findall(key-> any(ind-> key == String(ind), inds), keys(d))]
+_toind(d, ind::Union{AbstractSample, AbstractFeature}) = only((d[i] for i in findall(key -> key == String(ind), keys(d))))
+_toind(d, inds::AbstractVector{<:Union{AbstractSample, AbstractFeature}}) = [d[i] for i in findall(key -> any(ind -> key == String(ind), inds), keys(d))]
 
 
 ## -- EcoBase Translations -- ##
@@ -193,7 +203,7 @@ Returns sum of each row (feature) in `at`.
 Note, return value is a nfeatures x 1 `Matrix`, not a `Vector`.
 If you need 1D `Vector`, use `vec(featuretotals(at))`.
 """
-featuretotals(at::AbstractAbundanceTable) = sum(abundances(at), dims=2)
+featuretotals(at::AbstractAbundanceTable) = sum(abundances(at), dims = 2)
 
 """
     sampletotals(at::AbstractAbundanceTable)
@@ -202,7 +212,7 @@ Returns sum of each row (feature) in `at`.
 Note, return value is a 1 x nsamples `Matrix`, not a `Vector`.
 If you need 1D `Vector`, use `vec(sampletotals(at))`.
 """
-sampletotals(at::AbstractAbundanceTable) = sum(abundances(at), dims=1)
+sampletotals(at::AbstractAbundanceTable) = sum(abundances(at), dims = 1)
 
 ## -- Tables Interface -- ##
 
@@ -210,7 +220,7 @@ Tables.istable(::AbstractAbundanceTable) = true
 Tables.columnaccess(::AbstractAbundanceTable) = true
 Tables.rowaccess(::AbstractAbundanceTable) = true
 
-Tables.getcolumn(at::AbstractAbundanceTable, i::Int) = i == 1 ? featurenames(at) : abundances(at[:, i-1])
+Tables.getcolumn(at::AbstractAbundanceTable, i::Int) = i == 1 ? featurenames(at) : abundances(at[:, i - 1])
 Tables.getcolumn(at::AbstractAbundanceTable, i::AbstractString) = i == "features" ? features(at) : abundances(at[:, i])
 Tables.getcolumn(at::AbstractAbundanceTable, i::Symbol) = Tables.getcolumn(at, string(i))
 
@@ -227,7 +237,7 @@ Tables.columns(at::AbstractAbundanceTable) = (; (col => Tables.getcolumn(at, col
 
 function _makerow(row::AbstractAbundanceTable)
     size(row, 1) == 1 || error("Can't make row from table of size $(size(row))")
-    NamedTuple{(:features, Symbol.(samplenames(row))...)}((first(features(row)), abundances(row)...))
+    return NamedTuple{(:features, Symbol.(samplenames(row))...)}((first(features(row)), abundances(row)...))
 end
 
 Tables.rows(at::AbstractAbundanceTable) = (_makerow(at[i, :]) for i in 1:nfeatures(at))
@@ -266,7 +276,7 @@ Normalize each sample in AbstractAbundanceTable to the sum of the sample.
 By default, columns sum to 1.0.
 Use `kind=:percent` for columns to sum to 100.
 """
-function relativeabundance!(at::AbstractAbundanceTable; kind::Symbol=:fraction)
+function relativeabundance!(at::AbstractAbundanceTable; kind::Symbol = :fraction)
     in(kind, [:percent, :fraction]) || throw(ArgumentError("Invalid kind: $kind"))
     eltype(abundances(at)) <: AbstractFloat || throw(ArgumentError("relativeabundance! requires profile to have AbstractFloat eltype. Try relativeabundance instead"))
     abund = abundances(at)
@@ -281,9 +291,9 @@ end
 
 Like [`relativeabundance!`](@ref), but does not mutate original.
 """
-function relativeabundance(at::AbstractAbundanceTable, kind::Symbol=:fraction)
+function relativeabundance(at::AbstractAbundanceTable, kind::Symbol = :fraction)
     comm = CommunityProfile(float.(abundances(at)), deepcopy(features(at)), deepcopy(samples(at)))
-    relativeabundance!(comm)
+    return relativeabundance!(comm)
 end
 
 """
@@ -295,14 +305,14 @@ If the minimum abundance is 0, just checks if value is non-zero.
 
 If used on an `AbstractAbundanceTable`, returns a sparse boolean matrix of the same size.
 """
-function present(t::Real, minabundance::Real=0.0)
+function present(t::Real, minabundance::Real = 0.0)
     (minabundance >= 0 && t >= 0) || throw(DomainError("Only defined for positive values"))
-    t == 0 ? false : t >= minabundance
+    return t == 0 ? false : t >= minabundance
 end
 
-present(::Missing, m::Real=0.0) = missing
+present(::Missing, m::Real = 0.0) = missing
 
-function present(at::AbstractAbundanceTable, minabundance::Real=0.0)
+function present(at::AbstractAbundanceTable, minabundance::Real = 0.0)
     mat = spzeros(Bool, size(at)...)
     for i in eachindex(mat)
         mat[i] = present(at[Tuple(i)...], minabundance)
@@ -321,13 +331,13 @@ If the minimum abundance is 0, returns the fraction of non-zero values.
 If used on an `AbstractAbundanceTable`,
 returns a prevalence value for each `feature` accross the `sample`s.
 """
-prevalence(a::AbstractArray{<:Real}, minabundance::Real=0.0) = mean(x-> present(x, minabundance), a)
+prevalence(a::AbstractArray{<:Real}, minabundance::Real = 0.0) = mean(x -> present(x, minabundance), a)
 
 # makes it work for any iterable
-prevalence(a, minabundance::Real=0.0) = mean(x-> present(x, minabundance), (y for y in a))
+prevalence(a, minabundance::Real = 0.0) = mean(x -> present(x, minabundance), (y for y in a))
 
-function prevalence(at::AbstractAbundanceTable, minabundance::Real=0.0)
-    mean(x-> present(x, minabundance), abundances(at), dims=2)
+function prevalence(at::AbstractAbundanceTable, minabundance::Real = 0.0)
+    return mean(x -> present(x, minabundance), abundances(at), dims = 2)
 end
 
 """
@@ -338,7 +348,7 @@ By default, a feature is considered "present" if > 0, but this can be changed by
 
 Optionally, set `renorm = true` to calculate relative abundances after low prevalence features are removed.
 """
-function prevalence_filter(comm::AbstractAbundanceTable; minabundance=0.0, minprevalence=0.05, renorm=false)
+function prevalence_filter(comm::AbstractAbundanceTable; minabundance = 0.0, minprevalence = 0.05, renorm = false)
     comm = comm[vec(prevalence(comm, minabundance) .>= minprevalence), :]
     return renorm ? relativeabundance(comm) : comm
 end
@@ -349,18 +359,18 @@ end
 Return a copy of `comm`, where only rows that have `taxrank(feature) == cl` are kept.
 Use `keepempty = true` to also keep features that don't have a `rank` (eg "UNIDENTIFIED").
 """
-function rankfilter(comm::AbstractAbundanceTable, cl::Symbol; keepempty=false)
+function rankfilter(comm::AbstractAbundanceTable, cl::Symbol; keepempty = false)
     in(cl, keys(_ranks)) ||  error("Invalid rank $cl, must be one of $(keys(_ranks))")
     if keepempty
-        return filter(f-> !hasrank(f) || taxrank(f) == cl, comm)
+        return filter(f -> !hasrank(f) || taxrank(f) == cl, comm)
     else
-        return filter(f-> hasrank(f) && taxrank(f) == cl, comm)
+        return filter(f -> hasrank(f) && taxrank(f) == cl, comm)
     end
 end
 
-function rankfilter(comm::AbstractAbundanceTable, rank::Int; keepempty=false)
+function rankfilter(comm::AbstractAbundanceTable, rank::Int; keepempty = false)
     0 <= rank <= 9 ||  error("Invalid rank $rank, must be one of $_ranks")
-    return rankfilter(comm, keys(_ranks)[rank+1]; keepempty)
+    return rankfilter(comm, keys(_ranks)[rank + 1]; keepempty)
 end
 
 
@@ -405,10 +415,10 @@ Add metadata (in the form of a `Tables.jl` table) a `CommunityProfile`.
 One column (`namecol`) should contain sample names that exist in `commp`,
 and other columns should contain metadata that will be added to the metadata of each sample.
 """
-function set!(commp::CommunityProfile, md; namecol=:sample)
+function set!(commp::CommunityProfile, md; namecol = :sample)
     Tables.istable(md) || throw(ArgumentError("Metadata must be a Tables.table"))
     sns = Set(samplenames(commp))
-    md = filter(row-> row[namecol] in sns, md)
+    md = filter(row -> row[namecol] in sns, md)
     for row in Tables.rows(md)
         sample = samples(commp, row[namecol])
         ks = filter(!=(namecol), keys(first(md)))
@@ -462,10 +472,10 @@ This requires iterating over the metadata table twice, which may be slow.
 If performance matters, you can use `set!` instead, 
 though this will overwrite existing data.
 """
-function insert!(commp::CommunityProfile, md; namecol=:sample, careful=true)
+function insert!(commp::CommunityProfile, md; namecol = :sample, careful = true)
     Tables.istable(md) || throw(ArgumentError("Metadata must be a Tables.table"))
     sns = Set(samplenames(commp))
-    md = filter(row-> row[namecol] in sns, md)
+    md = filter(row -> row[namecol] in sns, md)
     for row in Tables.rows(md)
         sample = samples(commp, row[namecol])
         ks = filter(!=(namecol), keys(first(md)))
@@ -532,14 +542,14 @@ Base.haskey(commp::CommunityProfile, sample::AbstractString, key::Symbol) = in(k
 
 Return the value of the metadata in a `sample` stored for the given `key`, or the given `default` value if no mapping for the key is present.
 """
-Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default=missing) = get(get(samples(commp, sample)), key, default)
+Base.get(commp::CommunityProfile, sample::AbstractString, key::Symbol, default = missing) = get(get(samples(commp, sample)), key, default)
 
 """
     get(commp::CommunityProfile, key::Symbol, default)
 
 Return the value of the metadata in a `sample` stored for the given `key`, or the given `default` value if no mapping for the key is present.
 """
-Base.get(commp::CommunityProfile, key::Symbol, default=missing) = [get(commp, sample, key, default) for sample in samplenames(commp)]
+Base.get(commp::CommunityProfile, key::Symbol, default = missing) = [get(commp, sample, key, default) for sample in samplenames(commp)]
 
 
 """
@@ -556,7 +566,7 @@ eg `DataFrame`.
 """
 function Base.get(commp::CommunityProfile, cols::AbstractVector{<:Symbol}, default)
     ss = samples(commp)
-    return Tables.rowtable(merge((; sample=name(s)), get(s, cols, default)) for s in ss)
+    return Tables.rowtable(merge((; sample = name(s)), get(s, cols, default)) for s in ss)
 end
 
 Base.get(commp::CommunityProfile, cols::AbstractVector{<:Symbol}) = get(commp, cols, missing)
