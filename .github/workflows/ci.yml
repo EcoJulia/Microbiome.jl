@@ -45,6 +45,7 @@ jobs:
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
       - uses: julia-actions/julia-processcoverage@v1
+        continue-on-error: true
       - uses: codecov/codecov-action@v4
         continue-on-error: true # re-enable after v1.0
         with:
