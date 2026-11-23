@@ -400,6 +400,13 @@ the `bioBakery` suite of computational tools.
 
 ## Types and Methods
 
+`commjoin(profile1, profile2, ...)` concatenates sample columns and aligns feature
+rows in first-occurrence order. It retains zero-only features and converts
+abundances to `Float64`. Sample names must be unique across every input. The result
+owns its sparse matrix; sample metadata and feature objects are shared with the
+inputs. A single profile can also be passed to obtain an independent abundance
+matrix. Joining does not mutate the inputs or retain a persistent feature index.
+
 ```@docs
 CommunityProfile
 samples
