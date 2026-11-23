@@ -41,6 +41,12 @@ _random_join_values(rng, ::Type{T}, m, n) where {T} = T.(rand(rng, -3:3, m, n))
     @test single == firstprofile
     @test abundances(single) !== abundances(firstprofile)
     @test eltype(abundances(single)) == Float64
+    @test commjoin([firstprofile, secondprofile]) == joined
+    @test commjoin(view([firstprofile, secondprofile], :)) == joined
+    @test commjoin(CommunityProfile[firstprofile, secondprofile]) == joined
+    @test commjoin([firstprofile]) == single
+    @test_throws ArgumentError commjoin(CommunityProfile[])
+    @test_throws ErrorException commjoin([firstprofile, firstprofile])
     @test_throws ErrorException commjoin(firstprofile, firstprofile)
     thirdprofile = CommunityProfile([1], [a], MicrobiomeSample("s4"))
     @test_throws ErrorException commjoin(firstprofile, firstprofile, thirdprofile)
@@ -86,6 +92,7 @@ _random_join_values(rng, ::Type{T}, m, n) where {T} = T.(rand(rng, -3:3, m, n))
             end
             expected_features, expected_samples, expected = _dense_join_reference(profiles)
             output = commjoin(profiles...)
+            @test commjoin(profiles) == output
             @test features(output) == expected_features
             @test samples(output) == expected_samples
             @test Matrix(abundances(output)) == expected
