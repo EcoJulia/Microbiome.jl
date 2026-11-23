@@ -8,6 +8,8 @@
   and reduce specialization overhead for large collections.
 - Support joining a single profile and reject duplicate sample names before assembly.
 - Allow ReTest 0.4 for compatibility with Julia 1.13.
+- Update development checks to ReTest 0.4.3, Runic 1.13, and Documenter 1.20;
+  refresh GitHub Actions and automate action updates with Dependabot.
 
 ## v0.8.1
 

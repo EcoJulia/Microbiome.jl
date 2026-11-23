@@ -9,12 +9,13 @@ jobs:
     name: Runic formatting check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: julia-actions/setup-julia@v2
+      - uses: actions/checkout@v7
+      - uses: julia-actions/setup-julia@v3
         with:
           version: '1'
-      - run: julia -e 'using Pkg; Pkg.add("Runic")'
-      - run: julia -m Runic --check src/ test/
+      - uses: fredrikekre/runic-action@v1
+        with:
+          version: '1'
   test:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
     runs-on: ${{ matrix.os }}
@@ -31,17 +32,17 @@ jobs:
         include:
           - version: '1'
     steps:
-      - uses: actions/checkout@v4
-      - uses: julia-actions/setup-julia@v2
+      - uses: actions/checkout@v7
+      - uses: julia-actions/setup-julia@v3
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-      - uses: julia-actions/cache@v2
-      - uses: julia-actions/julia-buildpkg@v1
-      - uses: julia-actions/julia-runtest@v1
-      - uses: julia-actions/julia-processcoverage@v1
+      - uses: julia-actions/cache@v3
+      - uses: julia-actions/julia-buildpkg@v1.7.0
+      - uses: julia-actions/julia-runtest@v1.13.0
+      - uses: julia-actions/julia-processcoverage@v1.2.2
         continue-on-error: true
-      - uses: codecov/codecov-action@v4
-        continue-on-error: true # re-enable after v1.0
+      - uses: codecov/codecov-action@v7
+        continue-on-error: true
         with:
-          file: lcov.info
+          files: lcov.info

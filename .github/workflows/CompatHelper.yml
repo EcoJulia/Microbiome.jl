@@ -8,8 +8,11 @@ jobs:
   CompatHelper:
     runs-on: ubuntu-latest
     steps:
-      - name: Pkg.add("CompatHelper")
-        run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
+      - uses: julia-actions/setup-julia@v3
+        with:
+          version: '1'
+      - name: Pkg.add(PackageSpec(name="CompatHelper", version="3"))
+        run: julia -e 'using Pkg; Pkg.add(PackageSpec(name="CompatHelper", version="3"))'
       - name: CompatHelper.main()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

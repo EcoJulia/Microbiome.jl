@@ -7,4 +7,4 @@ Microbiome = "3bd8f0ae-a0f2-5238-a5af-e1b399a4940c"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
-Documenter = "1"
+Documenter = "1.20"

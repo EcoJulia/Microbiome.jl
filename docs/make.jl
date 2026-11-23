@@ -3,7 +3,7 @@ using Documenter, Microbiome, Microbiome.Dictionaries
 makedocs(
     sitename = "Microbiome.jl",
     warnonly = [:missing_docs, :cross_references],
-    doctest = false, # doctests disabled until outputs are updated for v1.0
+    doctest = false,
     pages = [
         "Home" => "index.md",
         "Samples and features" => "samples_features.md",
@@ -20,6 +20,6 @@ makedocs(
 
 deploydocs(
     repo = "github.com/EcoJulia/Microbiome.jl.git",
-    push_preview=true,
-    devbranch="main"
+    push_preview = true,
+    devbranch = "main"
 )
