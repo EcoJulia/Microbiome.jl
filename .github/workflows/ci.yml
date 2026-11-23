@@ -4,6 +4,11 @@ on:
     branches: [main]
     tags: [v*]
   pull_request:
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   format:
     name: Runic formatting check
@@ -19,6 +24,10 @@ jobs:
   test:
     name: Julia ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
     runs-on: ${{ matrix.os }}
+    permissions:
+      actions: write
+      contents: read
+      id-token: write
     strategy:
       fail-fast: false
       matrix:
@@ -29,8 +38,6 @@ jobs:
           - macOS-latest
         arch:
           - x64
-        include:
-          - version: '1'
     steps:
       - uses: actions/checkout@v7
       - uses: julia-actions/setup-julia@v3
@@ -46,3 +53,5 @@ jobs:
         continue-on-error: true
         with:
           files: lcov.info
+          use_oidc: true
+          fail_ci_if_error: false

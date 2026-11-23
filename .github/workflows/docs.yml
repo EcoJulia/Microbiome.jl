@@ -4,10 +4,16 @@ on:
     branches: [main]
     tags: [v*]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   Documenter:
     name: Documentation
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: read
+      statuses: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -15,7 +21,6 @@ jobs:
         with:
           version: '1'
       - uses: julia-actions/cache@v3
-      - uses: julia-actions/julia-buildpkg@v1.7.0
       - uses: julia-actions/julia-docdeploy@v1.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
