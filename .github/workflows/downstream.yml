@@ -1,7 +1,7 @@
 name: Downstream
 on:
   push:
-    branches: [master]
+    branches: [main]
     tags: [v*]
   pull_request:
 
@@ -9,24 +9,28 @@ jobs:
   test:
     name: ${{ matrix.package.repo }}/${{ matrix.package.group }}
     runs-on: ${{ matrix.os }}
+    permissions:
+      actions: write
+      contents: read
     env:
       GROUP: ${{ matrix.package.group }}
     strategy:
       fail-fast: false
       matrix:
-        julia-version: [1]
+        julia-version: ['1']
         os: [ubuntu-latest]
         package:
           - {user: EcoJulia, repo: BiobakeryUtils.jl, group: Microbiome}
     steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+      - uses: actions/checkout@v7
+      - uses: julia-actions/setup-julia@v3
         with:
           version: ${{ matrix.julia-version }}
           arch: x64
-      - uses: julia-actions/julia-buildpkg@latest
+      - uses: julia-actions/cache@v3
+      - uses: julia-actions/julia-buildpkg@v1.7.0
       - name: Clone Downstream
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
         with:
           repository: ${{ matrix.package.user }}/${{ matrix.package.repo }}
           path: downstream

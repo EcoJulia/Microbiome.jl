@@ -1,5 +1,16 @@
 # News for Microbiome.jl
 
+## v0.11.0
+
+- Build `commjoin` results with bulk sparse assembly, reducing time and allocations
+  for large feature sets while preserving feature order, sample order, and metadata.
+- Accept vectors of profiles in `commjoin`, alongside the existing varargs interface,
+  and reduce specialization overhead for large collections.
+- Support joining a single profile and reject duplicate sample names before assembly.
+- Allow ReTest 0.4 for compatibility with Julia 1.13.
+- Update development checks to ReTest 0.4.3, Runic 1.13, and Documenter 1.20;
+  refresh GitHub Actions and use Dependabot for Julia and action dependencies.
+
 ## v0.8.1
 
 - Some changes for JOSS review ([#115](https://github.com/EcoJulia/Microbiome.jl/pull/115)),

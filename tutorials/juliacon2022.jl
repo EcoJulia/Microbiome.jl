@@ -51,12 +51,12 @@ from different body sites:
 
 # ╔═╡ 1be1644b-7270-4a8d-a208-8f000df47c5d
 files = [
-	"SRS014459-Stool_profile.txt",
-	"SRS014464-Anterior_nares_profile.txt",
-	"SRS014470-Tongue_dorsum_profile.txt",
-	"SRS014472-Buccal_mucosa_profile.txt",
-	"SRS014476-Supragingival_plaque_profile.txt",
-	"SRS014494-Posterior_fornix_profile.txt"
+    "SRS014459-Stool_profile.txt",
+    "SRS014464-Anterior_nares_profile.txt",
+    "SRS014470-Tongue_dorsum_profile.txt",
+    "SRS014472-Buccal_mucosa_profile.txt",
+    "SRS014476-Supragingival_plaque_profile.txt",
+    "SRS014494-Posterior_fornix_profile.txt",
 ]
 
 # ╔═╡ 4cf6bb90-684b-431e-ae72-fdf541550d17
@@ -64,9 +64,9 @@ baseurl = "https://github.com/biobakery/biobakery/raw/master/test_suite/biobaker
 
 # ╔═╡ c78b8938-2f4e-4b21-afa0-01c6aa03b689
 for f in files
-	localpath = joinpath(".", f)
-	isfile(localpath) && continue # skip file if it's already downloaded
-	Downloads.download(joinpath(baseurl, f), localpath)
+    localpath = joinpath(".", f)
+    isfile(localpath) && continue # skip file if it's already downloaded
+    Downloads.download(joinpath(baseurl, f), localpath)
 end
 
 # ╔═╡ 64624649-8a70-44fb-bbd5-5c3466ce484a
@@ -102,10 +102,11 @@ Let's load it into a DataFrame to start with:
 """
 
 # ╔═╡ 370e4f43-3835-45d1-b614-5732c66842f5
-stool = CSV.read("SRS014459-Stool_profile.txt", DataFrame;
-	header = 4, # get the column headers from the 4th line
-	skipto = 5, # start parsing on the 5th line
-	delim = '\t', # use tabs 
+stool = CSV.read(
+    "SRS014459-Stool_profile.txt", DataFrame;
+    header = 4, # get the column headers from the 4th line
+    skipto = 5, # start parsing on the 5th line
+    delim = '\t', # use tabs
 )
 
 # ╔═╡ 88564be4-7943-4577-adee-b5e96351912b
@@ -128,19 +129,20 @@ But first, let's load in all of our samples:
 
 # ╔═╡ 4a5cfe7c-109f-4bb0-ba17-6a4aba9dc16a
 comm_df = let dfs = DataFrame[]
-	for f in files
-		df = CSV.read(f, DataFrame;
-			header = 4, # get the column headers from the 4th line
-			skipto = 5, # start parsing on the 5th line
-			delim = '\t', # use tabs 
-		)
-	
-		samplename=splitext(f)[1] # get sample name from file
-		
-		rename!(df, "#clade_name" => "taxon", "relative_abundance" => samplename)
-		push!(dfs, select(df, [1,3]))
-	end
-	outerjoin(dfs...; on="taxon")
+    for f in files
+        df = CSV.read(
+            f, DataFrame;
+            header = 4, # get the column headers from the 4th line
+            skipto = 5, # start parsing on the 5th line
+            delim = '\t', # use tabs
+        )
+
+        samplename = splitext(f)[1] # get sample name from file
+
+        rename!(df, "#clade_name" => "taxon", "relative_abundance" => samplename)
+        push!(dfs, select(df, [1, 3]))
+    end
+    outerjoin(dfs...; on = "taxon")
 end
 
 # ╔═╡ 287fd231-4ff9-4c2e-a55d-1786a7e41659
@@ -160,8 +162,8 @@ So we'll convert those to 0 to generate our matrix:
 
 # ╔═╡ 851b7260-1701-4e92-b2ec-cc9ba37d2e46
 mat = coalesce.( # this function returns either a non-missing value or 0
-	Matrix(comm_df[:, 2:end]), # our numerical values are in columns 2:end
-	0.0
+    Matrix(comm_df[:, 2:end]), # our numerical values are in columns 2:end
+    0.0
 )
 
 # ╔═╡ cdabefa8-77c6-4a56-bef4-c5591330ea59
@@ -218,8 +220,8 @@ So, to get a vector of `Taxon`s, we can do the following:
 
 # ╔═╡ 064c6b27-f16d-4fbd-9ec6-67e091ecc9d2
 taxa = map(comm_df.taxon) do t
-	ranks = split(t, '|')
-	taxon(last(ranks))
+    ranks = split(t, '|')
+    taxon(last(ranks))
 end
 
 # ╔═╡ 4e282e00-0749-4c0a-b44d-ef3cdfbdb10f
@@ -260,10 +262,10 @@ So let's do this for all of our samples:
 
 # ╔═╡ b9d102ac-0aab-45f6-9f1d-f23ba590bcc6
 mbiom_samples = map(files) do f
-	(name, site, ext) = split(f, r"(-|_profile)"; limit = 3)
-	s = MicrobiomeSample(name)
-	insert!(s, :body_site, site)
-	s
+    (name, site, ext) = split(f, r"(-|_profile)"; limit = 3)
+    s = MicrobiomeSample(name)
+    insert!(s, :body_site, site)
+    s
 end
 
 # ╔═╡ 5e77d309-ca1b-47b2-8c71-a0cb2c96758a
@@ -413,9 +415,9 @@ All that's required is a column called "sample" to match metadata rows.
 
 # ╔═╡ e5cbfd13-7224-453d-b108-a4e54259540d
 mtdt = DataFrame(
-	sample = samplenames(comm),
-	sex    = rand(("male", "female"), 6),
-	age    = [10, 11, 12, 13, 14, 15]
+    sample = samplenames(comm),
+    sex = rand(("male", "female"), 6),
+    age = [10, 11, 12, 13, 14, 15]
 )
 
 # ╔═╡ bc0f81b3-3750-426e-8113-712f7490236e
@@ -461,43 +463,46 @@ but since the example data is so sparse, it's really boring when we do that.
 
 # ╔═╡ 82d5d99b-e2b6-46a0-806e-514a019ccb4d
 #eg
-filter(t-> taxrank(t) == :species, comm)
+filter(t -> taxrank(t) == :species, comm)
 
 # ╔═╡ 72a0d2de-aa12-492f-a4f2-22b5eb8e5076
 # the `pairwise()` function is from `Distances.jl`
-distance_matrix = pairwise(BrayCurtis(), abundances(comm); dims=2)
+distance_matrix = pairwise(BrayCurtis(), abundances(comm); dims = 2)
 
 # ╔═╡ bee631cc-5aa4-45e5-9499-38e60bad9418
 # from `MultivariateStats.jl`
-pco = fit(MDS, distance_matrix; distances=true)
+pco = fit(MDS, distance_matrix; distances = true)
 
 # ╔═╡ 184c8e04-687b-4ea7-90ad-40fb12cd5b13
 # each column is a principal coordinates axis
 pco_axes = projection(pco)
 
 # ╔═╡ e59580c0-8b15-417a-951c-0e7778a949d9
-scatter(pco_axes[:, 1], pco_axes[:, 2]; 
-	xlabel = "PCo Axis 1",
-	ylabel = "PCo Axis 2",
-	legend = false
+scatter(
+    pco_axes[:, 1], pco_axes[:, 2];
+    xlabel = "PCo Axis 1",
+    ylabel = "PCo Axis 2",
+    legend = false
 )
 
 # ╔═╡ 0eabcaa7-4c33-4463-a3bb-c4da1f37b36a
-scatter(pco_axes[:, 1], pco_axes[:, 2]; 
-	xlabel = "PCo Axis 1",
-	ylabel = "PCo Axis 2",
-	title  = "Colored by body site",
-	groups = get(comm, :body_site),
-	legend = :bottomright
+scatter(
+    pco_axes[:, 1], pco_axes[:, 2];
+    xlabel = "PCo Axis 1",
+    ylabel = "PCo Axis 2",
+    title = "Colored by body site",
+    groups = get(comm, :body_site),
+    legend = :bottomright
 )
 
 # ╔═╡ 9eb41aa2-f534-488a-8f1b-90842353393d
-scatter(pco_axes[:, 1], pco_axes[:, 2]; 
-	xlabel = "PCo Axis 1",
-	ylabel = "PCo Axis 2",
-	title  = "Colored by Shannon diversity", 
-	zcolor = get(comm, :shannon),
-	legend = :bottomright
+scatter(
+    pco_axes[:, 1], pco_axes[:, 2];
+    xlabel = "PCo Axis 1",
+    ylabel = "PCo Axis 2",
+    title = "Colored by Shannon diversity",
+    zcolor = get(comm, :shannon),
+    legend = :bottomright
 )
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001

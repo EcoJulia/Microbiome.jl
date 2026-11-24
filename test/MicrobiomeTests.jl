@@ -2,6 +2,7 @@ module MicrobiomeTests
 
 using Microbiome
 using ReTest
+using Random
 using Microbiome.SparseArrays
 using Microbiome.Tables
 using Microbiome.Dictionaries
@@ -393,5 +394,7 @@ end
         @test pcoa(comm) isa MDS
     end
 end
+
+include("commjoin.jl")
 
 end # module
