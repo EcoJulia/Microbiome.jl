@@ -2,6 +2,8 @@
 
 ## v0.11.0
 
+- Allow Dictionaries 0.4 and EcoBase 0.2 while retaining compatibility with older releases.
+
 - Build `commjoin` results with bulk sparse assembly, reducing time and allocations
   for large feature sets while preserving feature order, sample order, and metadata.
 - Accept vectors of profiles in `commjoin`, alongside the existing varargs interface,
